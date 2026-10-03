@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Dữ liệu thô khi inspect: bundle/asset/HAR của bên thứ ba (bản quyền + có thể chứa token)
+research/*/raw/
+research/*/user-provided/*
+!research/*/user-provided/README.md

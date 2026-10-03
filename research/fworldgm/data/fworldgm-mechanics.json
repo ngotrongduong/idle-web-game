@@ -1,0 +1,303 @@
+{
+  "source": "https://fworldgm.com/ client bundle (index-93ffc551…js), trích ngày 2026-10-03",
+  "counts": {
+    "families": 8,
+    "classes": 288,
+    "dungeons": 8,
+    "enemyFamilies": 32,
+    "items": 502,
+    "recipes": 340,
+    "materials": 95,
+    "formations": 31
+  },
+  "counterWheel": {
+    "kiem_si": "sat_thu",
+    "sat_thu": "phap_su",
+    "phap_su": "trieu_hoi",
+    "trieu_hoi": "cuong_bao",
+    "cuong_bao": "cung_thu",
+    "cung_thu": "dao_si",
+    "dao_si": "saija",
+    "saija": "kiem_si"
+  },
+  "counterMultipliers": {
+    "advantage": 1.25,
+    "disadvantage": 0.85
+  },
+  "enemyTierRoll": {
+    "boss": 0.0001,
+    "leader": 0.0099,
+    "elite": 0.1,
+    "normal": 0.89
+  },
+  "lootDropChance": {
+    "normal": "0.3 - 0.0357*(dungeonTier-1)",
+    "elite": 1,
+    "leader": 1,
+    "boss": 1
+  },
+  "lootCount": {
+    "normal": 1,
+    "elite": 1,
+    "leader": 5,
+    "boss": 10
+  },
+  "combat": {
+    "turnOrder": "sort by (ultFirst && mp>=100) desc, then effective SPD desc",
+    "mp": {
+      "max": 100,
+      "perTurn": 10,
+      "onHit": 5
+    },
+    "dodge": "base 10% + dodgeBonus; minus (accuracyBonus + max(0,(atkSPD-defSPD)/10))%; cap 50% vs boss",
+    "damage": "atk>def ? atk-def : atk*(1 - def/(def+atk/5)); ×U(0.9,1.1); crit chance 10%+crit → ×(2+critDmg/100); block chance min(30%, 5%+0.1%×def) → ×0.5; ×(1+phys/magDmgBonus); ×(1+dmgTaken); ×counter; ×skillPower; min 1",
+    "maxTurns": 1000,
+    "rng": "xorshift32 seeded (but target selection uses Math.random)",
+    "rewards": "gold = sum U(goldReward); xp = floor(U(xpReward)/10)"
+  },
+  "xpCurve": "base = L<=40 ? 32*1.22^(L-1) : 74676*1.08^(L-40); × bandFactor(L); × (30+6*(tier-1))/31",
+  "levelCap": "tier<7 ? 5*tier : Infinity",
+  "quality": {
+    "normal": {
+      "label": "Thường",
+      "labelEn": "Normal",
+      "statBonus": 0,
+      "color": "#ffffff",
+      "chance": 0.5
+    },
+    "medium": {
+      "label": "Trung",
+      "labelEn": "Medium",
+      "statBonus": 10,
+      "color": "#3fb950",
+      "chance": 0.4
+    },
+    "fine": {
+      "label": "Tinh Anh",
+      "labelEn": "Fine",
+      "statBonus": 20,
+      "color": "#2f81f7",
+      "chance": 0.09
+    },
+    "high": {
+      "label": "Cao Cấp",
+      "labelEn": "High",
+      "statBonus": 30,
+      "color": "#e3b341",
+      "chance": 0.009
+    },
+    "super": {
+      "label": "Siêu Cấp",
+      "labelEn": "Super",
+      "statBonus": 40,
+      "color": "#db6d28",
+      "chance": 0.00009
+    },
+    "divine": {
+      "label": "Thần Cấp",
+      "labelEn": "Divine",
+      "statBonus": 60,
+      "color": "#f85149",
+      "chance": 0.000001
+    }
+  },
+  "upgradeSuccessRate": {
+    "1": 90,
+    "2": 80,
+    "3": 70,
+    "4": 60,
+    "5": 50,
+    "6": 40,
+    "7": 30,
+    "8": 20,
+    "9": 10
+  },
+  "facilities": {
+    "guildUpgradeCost": "500 × 4^(L-1)",
+    "guildMaxAdventurers": "L + 1",
+    "tavernUpgradeCost": "100 × 4^(L-1)",
+    "tavernMaxSlots": "L + 1",
+    "inventoryUpgradeCost": "100 × 4^(L-1)",
+    "shopUpgradeCost": "1000 × 10^(L-1)"
+  },
+  "offline": {
+    "goldPerSec": 0.2,
+    "efficiency": 0.8,
+    "waveDurationSec": 18,
+    "minOfflineSec": 120,
+    "restDurationMs": 300000
+  },
+  "scrollMergeCount": 4,
+  "essenceMatCount": 100,
+  "starShop": [
+    {
+      "scrollId": "class_scroll_t4",
+      "price": 3
+    },
+    {
+      "scrollId": "class_scroll_t5",
+      "price": 9
+    },
+    {
+      "scrollId": "class_scroll_t6",
+      "price": 27
+    },
+    {
+      "scrollId": "class_scroll_t7",
+      "price": 243
+    },
+    {
+      "scrollId": "mat_tavern_refresh_book",
+      "price": 2
+    },
+    {
+      "scrollId": "mat_rename_card",
+      "price": 10
+    },
+    {
+      "scrollId": "mat_player_rename_card",
+      "price": 200
+    },
+    {
+      "scrollId": "mat_equip_upgrade_stone",
+      "price": 5
+    },
+    {
+      "scrollId": "mat_revive_stone",
+      "price": 100
+    },
+    {
+      "scrollId": "mat_pet_egg",
+      "price": 100
+    }
+  ],
+  "topupMilestones": [
+    {
+      "threshold": 1,
+      "mats": {
+        "mat_tavern_refresh_book": 5
+      }
+    },
+    {
+      "threshold": 100,
+      "mats": {
+        "mat_tavern_refresh_book": 5,
+        "mat_equip_upgrade_stone": 5
+      }
+    },
+    {
+      "threshold": 200,
+      "mats": {
+        "class_scroll_t2": 1,
+        "class_scroll_t3": 1,
+        "class_scroll_t4": 1
+      }
+    },
+    {
+      "threshold": 500,
+      "mats": {
+        "mat_divinity_shard": 5,
+        "mat_tavern_refresh_book": 5,
+        "mat_equip_upgrade_stone": 5
+      }
+    },
+    {
+      "threshold": 1000,
+      "mats": {
+        "mat_divinity_shard": 5,
+        "mat_tavern_refresh_book": 10,
+        "mat_equip_upgrade_stone": 10,
+        "mat_heart_of_baragos": 1
+      }
+    },
+    {
+      "threshold": 2000,
+      "mats": {
+        "mat_divinity_shard": 5,
+        "mat_tavern_refresh_book": 15,
+        "mat_equip_upgrade_stone": 15,
+        "mat_heart_of_baragos": 2
+      }
+    },
+    {
+      "threshold": 5000,
+      "mats": {
+        "mat_divinity_shard": 10,
+        "mat_tavern_refresh_book": 20,
+        "mat_equip_upgrade_stone": 20,
+        "class_scroll_t3": 1,
+        "class_scroll_t4": 1,
+        "class_scroll_t5": 1,
+        "class_scroll_t6": 1,
+        "class_scroll_t7": 1,
+        "mat_heart_of_baragos": 3
+      }
+    }
+  ],
+  "dailyQuest": {
+    "tasks": [
+      "craft",
+      "upgrade",
+      "arena",
+      "boss",
+      "tavern"
+    ],
+    "milestones": {
+      "1": {
+        "mats": {
+          "class_scroll_t1": 1
+        }
+      },
+      "2": {
+        "mats": {
+          "mat_tavern_refresh_book": 1
+        }
+      },
+      "3": {
+        "mats": {
+          "mat_equip_upgrade_stone": 1
+        }
+      },
+      "4": {
+        "stars": 1
+      },
+      "5": {
+        "mats": {
+          "mat_tavern_refresh_book": 1
+        }
+      }
+    }
+  },
+  "weeklyQuest": {
+    "req": 10,
+    "milestones": {
+      "1": {
+        "mats": {
+          "class_scroll_t1": 3
+        }
+      },
+      "2": {
+        "mats": {
+          "mat_tavern_refresh_book": 3
+        }
+      },
+      "3": {
+        "mats": {
+          "mat_equip_upgrade_stone": 3
+        }
+      },
+      "4": {
+        "stars": 3
+      },
+      "5": {
+        "mats": {
+          "mat_tavern_refresh_book": 3
+        }
+      }
+    }
+  },
+  "starPrice": {
+    "closedBeta": "1,000 VND = 10 stars",
+    "afterBeta": "1,000 VND = 5 stars"
+  }
+}

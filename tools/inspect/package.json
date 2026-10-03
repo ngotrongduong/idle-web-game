@@ -1,0 +1,29 @@
+{
+  "name": "@idle/inspect",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Công cụ inspect thụ động một web game: capture HAR/WebSocket/screenshot, phân tích HAR, trích xuất bảng config.",
+  "type": "module",
+  "scripts": {
+    "capture": "tsx src/capture.ts",
+    "analyze": "tsx src/analyze-har.ts",
+    "extract": "tsx src/extract-config.ts",
+    "deobf": "tsx src/deobfuscate-strings.ts",
+    "dump-metro": "tsx src/dump-metro-modules.ts",
+    "explore": "tsx src/explore.ts",
+    "fworldgm:tabulate": "tsx src/tabulate-fworldgm.ts",
+    "fworldgm:report": "tsx src/report-fworldgm-data.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx test/selftest.ts"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "ws": "^8.18.0"
+  }
+}

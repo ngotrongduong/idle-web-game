@@ -1,0 +1,3 @@
+packages:
+  - "tools/*"
+  # Sẽ thêm ở M0: "apps/*", "packages/*"
