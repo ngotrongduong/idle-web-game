@@ -28,9 +28,7 @@ export const UpgradeHallCommandSchema = z.object({
   type: z.literal("upgrade_hall"),
 });
 
-export const CommandSchema = z.discriminatedUnion("type", [
-  UpgradeHallCommandSchema,
-]);
+export const CommandSchema = UpgradeHallCommandSchema;
 
 export type GameCommand = z.infer<typeof CommandSchema>;
 
@@ -47,14 +45,12 @@ export const CommandPatchSchema = z.object({
   hallLevel: z.number().int().min(1).max(10).optional(),
 });
 
-export const CommandEventSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("hall_upgraded"),
-    fromLevel: z.number().int().min(1).max(9),
-    toLevel: z.number().int().min(2).max(10),
-    goldCost: z.number().int().positive(),
-  }),
-]);
+export const CommandEventSchema = z.object({
+  type: z.literal("hall_upgraded"),
+  fromLevel: z.number().int().min(1).max(9),
+  toLevel: z.number().int().min(2).max(10),
+  goldCost: z.number().int().positive(),
+});
 
 export const CommandSuccessSchema = z.object({
   ok: z.literal(true),
