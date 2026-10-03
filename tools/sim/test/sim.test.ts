@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
+import { foundationGameData } from "@idle/game-data";
 import { runBattleSimulation } from "../src/battle-sim";
+import { SAMPLE_ENCOUNTERS } from "../src/scenarios";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
 describe("sim tools", () => {
@@ -19,7 +21,17 @@ describe("sim tools", () => {
     expect(result.hash).toMatch(/^[0-9a-f]{8}$/);
   });
 
-  it("summarizes all four sample encounters", () => {
+  it("derives encounter definitions from game-data", () => {
+    expect(SAMPLE_ENCOUNTERS.map((entry) => entry.id)).toEqual(
+      foundationGameData.dungeons.map((entry) => entry.id),
+    );
+
+    for (const encounter of SAMPLE_ENCOUNTERS) {
+      expect(encounter.enemies).toHaveLength(3);
+    }
+  });
+
+  it("summarizes all four MVP encounters", () => {
     const summaries = runBattleSimulation({ runs: 10, seedBase: 10 });
     expect(summaries).toHaveLength(4);
     expect(summaries.every((summary) => summary.runs === 10)).toBe(true);

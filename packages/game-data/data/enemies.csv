@@ -1,0 +1,13 @@
+id,name_vi,name_en,dungeon_id,hp,attack,defense,speed
+reedling,Mầm Sậy,Reedling,bamboo_grove,90,24,8,10
+mudhopper,Ếch Bùn,Mudhopper,bamboo_grove,120,27,12,8
+dew_sprite,Tinh Linh Sương,Dew Sprite,bamboo_grove,80,31,7,14
+mist_crab,Cua Sương,Mist Crab,misty_riverbank,165,38,24,8
+river_wisp,Linh Hồn Sông,River Wisp,misty_riverbank,125,49,13,16
+shellback,Lưng Giáp,Shellback,misty_riverbank,210,35,31,7
+shrine_sentinel,Vệ Binh Đền,Shrine Sentinel,sunken_shrine,260,53,38,10
+echo_moth,Bướm Vọng Âm,Echo Moth,sunken_shrine,180,66,20,17
+moss_golem,Người Đá Rêu,Moss Golem,sunken_shrine,310,48,45,7
+ember_hound,Khuyển Hồng Than,Ember Hound,ember_ridge,330,72,34,15
+cinder_wing,Cánh Tro,Cinder Wing,ember_ridge,245,84,25,19
+basalt_turtle,Rùa Huyền Vũ,Basalt Turtle,ember_ridge,410,64,58,8
