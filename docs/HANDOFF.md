@@ -22,14 +22,16 @@ This branch is stacked on `chatgpt/m0-foundation` / PR #2. Keep content work sep
 - Added class-parent and enemy-dungeon cross-reference validation.
 - Added explicit MVP shape validation for required counts and class-tier structure.
 - Added `docs/M0_CONTENT_SLICE.md`.
+- Removed duplicated hard-coded dungeon encounter data from `tools/sim`; battle simulation now derives the four encounters and enemies directly from `@idle/game-data`.
+- The sample simulation team is also derived from four T3 classes in game-data.
 
 ## Verification status
 Runtime verification remains pending until the root lockfile is regenerated in a checkout with package-registry access.
 
 ## Next work on this branch
-1. Connect `tools/sim` encounters to `game-data` instead of duplicated sample encounter constants.
-2. Add skills/ULT/passive config for the 24 classes.
-3. Add dungeon wave composition and boss definitions.
+1. Add skills/ULT/passive config for the 24 classes.
+2. Add dungeon wave composition and boss definitions.
+3. Extend `simulateWave` to consume those skill definitions under a versioned battle ruleset.
 4. Run simulations and tune numbers after package installation is available.
 
 ## Parallel infrastructure work
