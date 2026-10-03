@@ -1,9 +1,14 @@
-import { validateGameData, type GameData } from "./schema";
+import {
+  validateGameData,
+  type GameData,
+} from "./schema";
 
 export type CsvSources = {
   materials: string;
   items: string;
   dungeons: string;
+  classes: string;
+  enemies: string;
 };
 
 export function parseCsv(input: string): Record<string, string>[] {
@@ -121,7 +126,7 @@ function parseRecipe(raw: string, context: string) {
 
 export function loadGameDataFromCsv(
   sources: CsvSources,
-  version = "m0.3",
+  version = "m0.3-mvp-slice",
 ): GameData {
   const materials = parseCsv(sources.materials).map((row, index) => ({
     id: requireValue(row, "id", `materials row ${index + 2}`),
@@ -156,5 +161,43 @@ export function loadGameDataFromCsv(
     };
   });
 
-  return validateGameData({ version, materials, items, dungeons });
+  const classes = parseCsv(sources.classes).map((row, index) => {
+    const context = `classes row ${index + 2}`;
+    return {
+      id: requireValue(row, "id", context),
+      family: requireValue(row, "family", context),
+      tier: parseIntField(row, "tier", context),
+      parentClassId: row.parent_class_id || null,
+      role: requireValue(row, "role", context),
+      nameVi: requireValue(row, "name_vi", context),
+      nameEn: requireValue(row, "name_en", context),
+      baseHp: parseIntField(row, "base_hp", context),
+      baseAttack: parseIntField(row, "base_attack", context),
+      baseDefense: parseIntField(row, "base_defense", context),
+      baseSpeed: parseIntField(row, "base_speed", context),
+    };
+  });
+
+  const enemies = parseCsv(sources.enemies).map((row, index) => {
+    const context = `enemies row ${index + 2}`;
+    return {
+      id: requireValue(row, "id", context),
+      nameVi: requireValue(row, "name_vi", context),
+      nameEn: requireValue(row, "name_en", context),
+      dungeonId: requireValue(row, "dungeon_id", context),
+      hp: parseIntField(row, "hp", context),
+      attack: parseIntField(row, "attack", context),
+      defense: parseIntField(row, "defense", context),
+      speed: parseIntField(row, "speed", context),
+    };
+  });
+
+  return validateGameData({
+    version,
+    materials,
+    items,
+    dungeons,
+    classes,
+    enemies,
+  });
 }

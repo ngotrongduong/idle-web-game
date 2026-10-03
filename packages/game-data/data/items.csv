@@ -1,3 +1,33 @@
 id,name_vi,name_en,slot,attack,defense,recipe
 bamboo_training_sword,Kiếm Tre Tập Luyện,Bamboo Training Sword,weapon,12,0,bamboo_fiber:3|river_stone:1
+reed_shortbow,Cung Ngắn Sậy,Reed Shortbow,weapon,14,0,bamboo_fiber:2|reed_resin:2
+dew_wand,Trượng Sương,Dew Wand,weapon,15,0,bamboo_fiber:2|moon_dew:2
 woven_guard,Giáp Đan Sơ Khai,Woven Guard,armor,0,10,bamboo_fiber:2|slime_gel:1
+reed_cap,Mũ Sậy,Reed Cap,helmet,0,7,bamboo_fiber:2|reed_resin:1
+dew_charm,Bùa Sương,Dew Charm,accessory,3,3,moon_dew:2|slime_gel:1
+trail_boot_token,Phù Hiệu Đường Mòn,Trail Token,accessory,4,2,bamboo_fiber:1|river_stone:2
+resin_buckler,Khiên Nhựa Sậy,Resin Buckler,armor,0,12,reed_resin:3|bamboo_fiber:1
+riverstone_blade,Kiếm Đá Suối,Riverstone Blade,weapon,24,0,river_stone:4|mist_pearl:1
+mistpiercer_bow,Cung Xuyên Sương,Mistpiercer Bow,weapon,26,0,reed_resin:2|mist_pearl:2|spirit_thread:1
+pearl_focus,Tiêu Điểm Ngọc Sương,Pearl Focus,weapon,28,0,mist_pearl:3|spirit_thread:2
+shellweave_armor,Giáp Dệt Vỏ,Shellweave Armor,armor,0,20,river_stone:2|slime_gel:2|spirit_thread:1
+mist_hood,Mũ Trùm Sương,Mist Hood,helmet,0,16,mist_pearl:2|spirit_thread:2
+river_knot,Nút Thắt Sông,River Knot,accessory,6,7,spirit_thread:2|river_stone:2
+pearl_brooch,Trâm Ngọc Sương,Pearl Brooch,accessory,8,5,mist_pearl:2|slime_gel:2
+stoneguard_vest,Áo Hộ Đá,Stoneguard Vest,armor,0,23,river_stone:4|slime_gel:1
+echo_sabre,Đao Vọng Âm,Echo Sabre,weapon,40,0,echo_shard:3|shrine_clay:2
+mosswood_staff,Trượng Mộc Rêu,Mosswood Staff,weapon,42,0,ancient_moss:3|spirit_thread:2|echo_shard:1
+sentinel_pike,Thương Vệ Đền,Sentinel Pike,weapon,39,4,shrine_clay:3|echo_shard:2
+mossbound_plate,Giáp Buộc Rêu,Mossbound Plate,armor,0,34,ancient_moss:3|shrine_clay:3
+echo_veil,Màn Vọng Âm,Echo Veil,helmet,2,25,echo_shard:2|spirit_thread:3
+clay_circlet,Vòng Đất Đền,Clay Circlet,helmet,0,28,shrine_clay:3|ancient_moss:2
+spirit_locket,Mặt Dây Linh,Spirit Locket,accessory,11,10,spirit_thread:3|echo_shard:2
+moss_talisman,Bùa Rêu Cổ,Ancient Moss Talisman,accessory,8,14,ancient_moss:3|shrine_clay:1
+emberforged_edge,Lưỡi Rèn Hồng Than,Emberforged Edge,weapon,62,0,ember_ore:4|tempered_dust:2
+cinder_longbow,Trường Cung Tro,Cinder Longbow,weapon,65,0,cinder_scale:3|sunleaf:2|tempered_dust:1
+sunflare_focus,Tiêu Điểm Nhật Diễm,Sunflare Focus,weapon,69,0,ember_ore:2|sunleaf:3|tempered_dust:2
+basalt_plate,Giáp Huyền Vũ,Basalt Plate,armor,0,52,basalt_chip:5|ember_ore:2
+cinder_cowl,Mũ Tro,Cinder Cowl,helmet,4,39,cinder_scale:3|tempered_dust:2
+sunleaf_coronet,Vương Miện Lá Nắng,Sunleaf Coronet,helmet,6,36,sunleaf:3|cinder_scale:2
+tempered_signet,Nhẫn Tôi Luyện,Tempered Signet,accessory,16,16,tempered_dust:3|ember_ore:2
+basalt_ember_charm,Bùa Đá Hồng,Basalt Ember Charm,accessory,13,20,basalt_chip:3|cinder_scale:2|ember_ore:1

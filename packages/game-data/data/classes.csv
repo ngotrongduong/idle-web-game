@@ -1,0 +1,25 @@
+id,family,tier,parent_class_id,role,name_vi,name_en,base_hp,base_attack,base_defense,base_speed
+vanguard_recruit,vanguard,1,,tank,Tân Binh Khiên,Shield Recruit,160,32,28,8
+iron_guard,vanguard,2,vanguard_recruit,tank,Vệ Binh Sắt,Iron Guard,205,38,38,8
+blade_guard,vanguard,2,vanguard_recruit,physical_dps,Vệ Binh Kiếm,Blade Guard,180,45,30,10
+bastion_keeper,vanguard,3,iron_guard,tank,Người Giữ Pháo Đài,Bastion Keeper,265,44,52,7
+oakbreaker,vanguard,3,blade_guard,physical_dps,Phá Mộc Giả,Oakbreaker,215,60,34,10
+duelist_captain,vanguard,3,blade_guard,physical_dps,Đội Trưởng Đấu Kiếm,Duelist Captain,195,66,30,13
+trail_archer,ranger,1,,physical_dps,Cung Thủ Đường Mòn,Trail Archer,105,39,13,14
+wind_scout,ranger,2,trail_archer,physical_dps,Trinh Sát Gió,Wind Scout,125,50,15,18
+reed_hunter,ranger,2,trail_archer,physical_dps,Thợ Săn Sậy,Reed Hunter,135,54,17,15
+gale_marksman,ranger,3,wind_scout,physical_dps,Xạ Thủ Cuồng Phong,Gale Marksman,145,70,18,20
+thorn_tracker,ranger,3,reed_hunter,physical_dps,Kẻ Lần Dấu Gai,Thorn Tracker,160,68,21,16
+falcon_eye,ranger,3,reed_hunter,physical_dps,Mắt Ưng,Falcon Eye,150,75,18,18
+spark_apprentice,arcanist,1,,magic_dps,Học Đồ Tia Sáng,Spark Apprentice,95,44,10,12
+mist_weaver,arcanist,2,spark_apprentice,magic_dps,Kẻ Dệt Sương,Mist Weaver,115,57,13,14
+ember_scholar,arcanist,2,spark_apprentice,magic_dps,Học Giả Hồng Than,Ember Scholar,110,61,11,13
+tide_oracle,arcanist,3,mist_weaver,magic_dps,Tiên Tri Thủy Triều,Tide Oracle,135,74,16,15
+cinder_sage,arcanist,3,ember_scholar,magic_dps,Hiền Giả Tro Hồng,Cinder Sage,125,82,13,14
+echo_magus,arcanist,3,mist_weaver,magic_dps,Pháp Sư Vọng Âm,Echo Magus,130,78,15,17
+field_aide,warden,1,,support,Trợ Tá Dã Ngoại,Field Aide,120,28,18,11
+herb_keeper,warden,2,field_aide,healer,Người Giữ Thảo Dược,Herb Keeper,145,34,22,12
+ward_singer,warden,2,field_aide,support,Ca Sĩ Kết Giới,Ward Singer,135,39,20,14
+moon_mender,warden,3,herb_keeper,healer,Người Vá Ánh Trăng,Moon Mender,175,42,27,13
+spirit_warden,warden,3,ward_singer,support,Hộ Vệ Linh,Spirit Warden,165,48,29,15
+sun_chantor,warden,3,ward_singer,support,Người Xướng Nhật Quang,Sun Chantor,155,53,24,16
