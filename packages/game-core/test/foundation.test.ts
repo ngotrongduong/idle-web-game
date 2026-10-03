@@ -11,8 +11,8 @@ import {
 } from "../src/index";
 
 describe("game-core foundation", () => {
-  it("exports the simulation-ready milestone version", () => {
-    expect(GAME_CORE_VERSION).toBe("m0.5-simulation-ready");
+  it("exports the command-ready milestone version", () => {
+    expect(GAME_CORE_VERSION).toBe("m0.6a-command-ready");
   });
 
   it("keeps integer values inside bounds", () => {

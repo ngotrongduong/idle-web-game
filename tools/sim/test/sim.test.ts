@@ -4,8 +4,8 @@ import { runBattleSimulation } from "../src/battle-sim";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
 describe("sim tools", () => {
-  it("depends on the simulation-ready shared game-core package", () => {
-    expect(GAME_CORE_VERSION).toBe("m0.5-simulation-ready");
+  it("depends on the command-ready shared game-core package", () => {
+    expect(GAME_CORE_VERSION).toBe("m0.6a-command-ready");
   });
 
   it("can run a tiny deterministic wave", () => {

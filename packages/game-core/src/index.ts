@@ -10,6 +10,11 @@ export {
   type Combatant,
 } from "./battle";
 export {
+  HALL_MAX_LEVEL,
+  HALL_UPGRADE_GOLD_COST,
+  hallUpgradeGoldCost,
+} from "./economy";
+export {
   getUpgradeSuccessBps,
   resolveUpgradeAttempt,
   simulateUpgradeJourney,
@@ -21,7 +26,7 @@ export {
   type UpgradeState,
 } from "./upgrade";
 
-export const GAME_CORE_VERSION = "m0.5-simulation-ready";
+export const GAME_CORE_VERSION = "m0.6a-command-ready";
 
 export function clampInt(value: number, min: number, max: number): number {
   const integer = Math.trunc(value);
