@@ -40,11 +40,20 @@ describe("sim tools", () => {
     }
   });
 
-  it("runs v2 with configured ULT actions", () => {
+  it("runs configured ULT actions when a fight lasts long enough", () => {
     const result = simulateWaveV2({
       seed: 10,
       allies: SAMPLE_TEAM,
-      enemies: SAMPLE_ENCOUNTERS[2]!.enemies,
+      enemies: [
+        {
+          id: "training_wall",
+          hp: 10_000,
+          attack: 1,
+          defense: 100,
+          speed: 1,
+          critBps: 0,
+        },
+      ],
       rules: { maxTurns: 60 },
     });
 
