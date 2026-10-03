@@ -1,4 +1,8 @@
-import type { Combatant } from "@idle/game-core";
+import type {
+  Combatant,
+  CombatantV2,
+  CombatSkill,
+} from "@idle/game-core";
 import { foundationGameData } from "@idle/game-data";
 
 function toCombatant(input: {
@@ -17,14 +21,7 @@ function toCombatant(input: {
   };
 }
 
-const sampleClassIds = [
-  "bastion_keeper",
-  "gale_marksman",
-  "cinder_sage",
-  "moon_mender",
-] as const;
-
-export const SAMPLE_TEAM: Combatant[] = sampleClassIds.map((classId) => {
+function toHeroCombatant(classId: string): CombatantV2 {
   const heroClass = foundationGameData.classes.find(
     (entry) => entry.id === classId,
   );
@@ -32,14 +29,43 @@ export const SAMPLE_TEAM: Combatant[] = sampleClassIds.map((classId) => {
     throw new Error(`Missing sample class in game-data: ${classId}`);
   }
 
-  return toCombatant({
+  const skill = foundationGameData.skills.find(
+    (entry) => entry.classId === classId,
+  );
+  if (!skill) {
+    throw new Error(`Missing sample skill in game-data: ${classId}`);
+  }
+
+  const ult: CombatSkill = {
+    id: skill.ultId,
+    effect: skill.effect,
+    target: skill.target,
+    powerBps: skill.powerBps,
+  };
+
+  return {
     id: heroClass.id,
     hp: heroClass.baseHp,
     attack: heroClass.baseAttack,
     defense: heroClass.baseDefense,
     speed: heroClass.baseSpeed,
-  });
-});
+    ult,
+    passive: {
+      stat: skill.passiveStat,
+      bonusBps: skill.passiveBonusBps,
+    },
+  };
+}
+
+const sampleClassIds = [
+  "bastion_keeper",
+  "gale_marksman",
+  "cinder_sage",
+  "moon_mender",
+] as const;
+
+export const SAMPLE_TEAM: CombatantV2[] =
+  sampleClassIds.map(toHeroCombatant);
 
 export const SAMPLE_ENCOUNTERS = foundationGameData.dungeons.map(
   (dungeon) => {

@@ -1,16 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
+import {
+  GAME_CORE_VERSION,
+  simulateWave,
+  simulateWaveV2,
+} from "@idle/game-core";
 import { foundationGameData } from "@idle/game-data";
 import { runBattleSimulation } from "../src/battle-sim";
-import { SAMPLE_ENCOUNTERS } from "../src/scenarios";
+import { SAMPLE_ENCOUNTERS, SAMPLE_TEAM } from "../src/scenarios";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
 describe("sim tools", () => {
-  it("depends on the command-ready shared game-core package", () => {
-    expect(GAME_CORE_VERSION).toBe("m0.6a-command-ready");
+  it("depends on battle rules v2", () => {
+    expect(GAME_CORE_VERSION).toBe("m0-battle-v2");
   });
 
-  it("can run a tiny deterministic wave", () => {
+  it("keeps the legacy deterministic wave available", () => {
     const result = simulateWave({
       seed: 5,
       allies: [{ id: "hero", hp: 100, attack: 30, defense: 10, speed: 10 }],
@@ -21,7 +25,8 @@ describe("sim tools", () => {
     expect(result.hash).toMatch(/^[0-9a-f]{8}$/);
   });
 
-  it("derives encounter definitions from game-data", () => {
+  it("derives team skills/passives and encounters from game-data", () => {
+    expect(SAMPLE_TEAM.every((entry) => entry.ult && entry.passive)).toBe(true);
     expect(SAMPLE_ENCOUNTERS.map((entry) => entry.id)).toEqual(
       foundationGameData.dungeons.map((entry) => entry.id),
     );
@@ -31,9 +36,26 @@ describe("sim tools", () => {
     }
   });
 
-  it("summarizes all four MVP encounters", () => {
+  it("runs v2 with configured ULT actions", () => {
+    const result = simulateWaveV2({
+      seed: 10,
+      allies: SAMPLE_TEAM,
+      enemies: SAMPLE_ENCOUNTERS[2]!.enemies,
+      rules: { maxTurns: 60 },
+    });
+
+    expect(result.rulesVersion).toBe("v2");
+    expect(
+      result.events.some((event) => event.action !== "basic_attack"),
+    ).toBe(true);
+  });
+
+  it("summarizes all four MVP encounters with v2", () => {
     const summaries = runBattleSimulation({ runs: 10, seedBase: 10 });
     expect(summaries).toHaveLength(4);
+    expect(summaries.every((summary) => summary.rulesVersion === "v2")).toBe(
+      true,
+    );
     expect(summaries.every((summary) => summary.runs === 10)).toBe(true);
     expect(
       summaries.every(

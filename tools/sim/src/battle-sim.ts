@@ -1,8 +1,9 @@
-import { simulateWave } from "@idle/game-core";
+import { simulateWaveV2 } from "@idle/game-core";
 import { SAMPLE_ENCOUNTERS, SAMPLE_TEAM } from "./scenarios";
 import { mean, percentile } from "./stats";
 
 export type BattleSimulationSummary = {
+  rulesVersion: "v2";
   encounterId: string;
   label: string;
   runs: number;
@@ -13,6 +14,7 @@ export type BattleSimulationSummary = {
   averageTurns: number;
   p50Turns: number;
   p90Turns: number;
+  averageUltActions: number;
 };
 
 export function runBattleSimulation(input: {
@@ -40,21 +42,31 @@ export function runBattleSimulation(input: {
     let losses = 0;
     let draws = 0;
     const turns: number[] = [];
+    const ultActions: number[] = [];
 
     for (let run = 0; run < input.runs; run += 1) {
-      const result = simulateWave({
+      const result = simulateWaveV2({
         allies: SAMPLE_TEAM,
         enemies: encounter.enemies,
         seed: seedBase + encounterIndex * 1_000_000 + run,
       });
 
       turns.push(result.turns);
+      ultActions.push(
+        new Set(
+          result.events
+            .filter((event) => event.action !== "basic_attack")
+            .map((event) => `${event.turn}:${event.actorId}`),
+        ).size,
+      );
+
       if (result.result === "win") wins += 1;
       else if (result.result === "lose") losses += 1;
       else draws += 1;
     }
 
     return {
+      rulesVersion: "v2",
       encounterId: encounter.id,
       label: encounter.label,
       runs: input.runs,
@@ -65,6 +77,7 @@ export function runBattleSimulation(input: {
       averageTurns: mean(turns),
       p50Turns: percentile(turns, 0.5),
       p90Turns: percentile(turns, 0.9),
+      averageUltActions: mean(ultActions),
     };
   });
 }

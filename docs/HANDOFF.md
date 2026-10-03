@@ -1,36 +1,30 @@
 # HANDOFF — Project Guildhall
 
 ## Current branch
-`chatgpt/m0-content-slice`
+`chatgpt/m0-battle-v2`
 
 ## Branch relationship
-This branch is stacked on `chatgpt/m0-foundation` / PR #2. Keep content work separate from the foundation PR.
+This branch stacks on `chatgpt/m0-content-slice` / PR #3, which stacks on foundation PR #2.
 
-## Completed on the parent foundation branch
-- M0.1 monorepo + web/server/shared packages.
-- M0.2 CI scaffold (runtime verification still blocked).
-- M0.3 CSV → JSON/Zod pipeline.
-- M0.4 deterministic battle core.
-- M0.5 battle + enhancement simulations.
-- M0.6a guest auth + idempotent, versioned command pipeline using temporary in-memory persistence.
-
-## Completed on this branch
-- Complete first MVP content slice: 4 families / 24 classes, 4 dungeons, 12 enemy families, 32 items, 15 materials.
-- One data-driven ULT + passive definition for every class.
-- Four original dungeon bosses.
-- Six-wave composition for every dungeon, with boss on wave 6.
-- Validators for class trees, skill/class references, effect/target side consistency, enemy/boss dungeon ownership, contiguous waves and final-boss placement.
-- `tools/sim` derives sample team and encounters from `@idle/game-data` rather than duplicated constants.
-- `docs/M0_CONTENT_SLICE.md` documents counts and originality rules.
+## Completed here
+- Preserved legacy `simulateWave` v1 unchanged, including its existing golden replay hash.
+- Added versioned `simulateWaveV2` with deterministic MP:
+  - +10 MP at the start of each own action.
+  - +5 MP when hit by a damaging action.
+  - ULT automatically fires at 100 MP and resets actor MP to 0.
+- Added data-driven ULT effects: single/AoE damage, single/AoE healing and party shielding.
+- Added data-driven passive bonuses for HP / attack / defense / speed.
+- Shield absorbs damage before HP while still counting as a hit for MP.
+- Added deterministic lowest-HP-ratio targeting and seeded basic-attack targeting.
+- V2 replay event/hash format includes action, skill, HP, shield and MP state.
+- `tools/sim` now consumes class ULT/passive config from `@idle/game-data` and simulates with v2.
+- Battle simulation summary now reports average ULT actions.
 
 ## Verification status
-Runtime verification remains pending until the root lockfile is regenerated in a checkout with package-registry access.
+Runtime package installation remains blocked in this environment. V1 remains the regression baseline; v2 has dedicated golden/replay tests but they still need to run after the root lockfile is regenerated.
 
-## Next work on this branch
-1. Add a versioned battle-rules adapter that turns class skills into combat actions.
-2. Add MP gain and automatic ULT use while preserving deterministic replay.
-3. Simulate complete six-wave dungeon runs, not only one-wave encounters.
-4. Tune config after runtime tests are available.
-
-## Parallel infrastructure work
-M0.6b PostgreSQL/Drizzle persistence should be a separate stacked branch to avoid mixing content and persistence changes.
+## Next work
+1. Add persistent wave state so a six-wave dungeon run carries HP/MP/shield forward.
+2. Build `simulateDungeonRunV2` using configured wave/boss data.
+3. Add reward rolls from dungeon config using the same seeded RNG lineage.
+4. Run 10k simulations per dungeon and tune class/enemy numbers.
