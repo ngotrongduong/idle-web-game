@@ -1,0 +1,74 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #f5ead7;
+  background: #17130f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #2a2118, #17130f 55%);
+}
+
+button {
+  font: inherit;
+}
+
+.shell {
+  width: min(100%, 430px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px 18px 88px;
+}
+
+.hero {
+  padding: 24px 4px;
+}
+
+.eyebrow {
+  color: #d9b56d;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+h1 {
+  margin: 8px 0;
+  font-size: 2rem;
+}
+
+p {
+  color: #cbbda9;
+  line-height: 1.55;
+}
+
+.card {
+  border: 1px solid #5a4935;
+  border-radius: 16px;
+  padding: 18px;
+  background: #211a14;
+}
+
+.tabs {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, 430px);
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid #4c3d2d;
+  background: #1d1712;
+}
+
+.tabs button {
+  border: 0;
+  padding: 14px 4px;
+  color: #e7d9c5;
+  background: transparent;
+  font-size: 0.72rem;
+}
