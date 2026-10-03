@@ -152,15 +152,16 @@ function selectTarget(
   actor: RuntimeUnit,
   targets: RuntimeUnit[],
   rng: SeededRng,
+  targeting: TargetingMode | undefined = actor.targeting,
 ): RuntimeUnit {
-  if (actor.targeting === "lowest_hp") {
+  if (targeting === "lowest_hp") {
     return [...targets].sort(
       (left, right) =>
         left.currentHp - right.currentHp || compareIds(left, right),
     )[0]!;
   }
 
-  if (actor.targeting === "highest_attack") {
+  if (targeting === "highest_attack") {
     return [...targets].sort(
       (left, right) =>
         right.attack - left.attack || compareIds(left, right),
@@ -344,19 +345,23 @@ export function simulateWave(input: {
 
       if (canUseUltimate && ultimateKind === "heal") {
         const alliesOnActorSide = actor.side === "ally" ? allies : enemies;
-        const originalTargeting = actor.targeting;
-        actor.targeting = actor.ultimateTargeting ?? "lowest_hp";
-        target = selectTarget(actor, living(alliesOnActorSide), rng);
-        actor.targeting = originalTargeting;
+        target = selectTarget(
+          actor,
+          living(alliesOnActorSide),
+          rng,
+          actor.ultimateTargeting ?? "lowest_hp",
+        );
         healing = calculateHealing(actor, target, powerBps);
         target.currentHp = Math.min(target.hp, target.currentHp + healing);
       } else {
-        const originalTargeting = actor.targeting;
-        if (canUseUltimate && actor.ultimateTargeting) {
-          actor.targeting = actor.ultimateTargeting;
-        }
-        target = selectTarget(actor, opponentTargets, rng);
-        actor.targeting = originalTargeting;
+        target = selectTarget(
+          actor,
+          opponentTargets,
+          rng,
+          canUseUltimate
+            ? (actor.ultimateTargeting ?? actor.targeting)
+            : actor.targeting,
+        );
         const damageResult = calculateDamage(
           actor,
           target,
