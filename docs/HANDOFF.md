@@ -15,24 +15,22 @@ This branch is stacked on `chatgpt/m0-foundation` / PR #2. Keep content work sep
 - M0.6a guest auth + idempotent, versioned command pipeline using temporary in-memory persistence.
 
 ## Completed on this branch
-- Expanded M0.3 into the first complete MVP content slice.
-- 4 original class families with 24 T1–T3 classes.
-- 4 dungeons and 12 enemy families.
-- 32 craftable equipment items and 15 materials.
-- Added class-parent and enemy-dungeon cross-reference validation.
-- Added explicit MVP shape validation for required counts and class-tier structure.
-- Added `docs/M0_CONTENT_SLICE.md`.
-- Removed duplicated hard-coded dungeon encounter data from `tools/sim`; battle simulation now derives the four encounters and enemies directly from `@idle/game-data`.
-- The sample simulation team is also derived from four T3 classes in game-data.
+- Complete first MVP content slice: 4 families / 24 classes, 4 dungeons, 12 enemy families, 32 items, 15 materials.
+- One data-driven ULT + passive definition for every class.
+- Four original dungeon bosses.
+- Six-wave composition for every dungeon, with boss on wave 6.
+- Validators for class trees, skill/class references, effect/target side consistency, enemy/boss dungeon ownership, contiguous waves and final-boss placement.
+- `tools/sim` derives sample team and encounters from `@idle/game-data` rather than duplicated constants.
+- `docs/M0_CONTENT_SLICE.md` documents counts and originality rules.
 
 ## Verification status
 Runtime verification remains pending until the root lockfile is regenerated in a checkout with package-registry access.
 
 ## Next work on this branch
-1. Add skills/ULT/passive config for the 24 classes.
-2. Add dungeon wave composition and boss definitions.
-3. Extend `simulateWave` to consume those skill definitions under a versioned battle ruleset.
-4. Run simulations and tune numbers after package installation is available.
+1. Add a versioned battle-rules adapter that turns class skills into combat actions.
+2. Add MP gain and automatic ULT use while preserving deterministic replay.
+3. Simulate complete six-wave dungeon runs, not only one-wave encounters.
+4. Tune config after runtime tests are available.
 
 ## Parallel infrastructure work
 M0.6b PostgreSQL/Drizzle persistence should be a separate stacked branch to avoid mixing content and persistence changes.

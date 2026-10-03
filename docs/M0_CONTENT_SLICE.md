@@ -28,3 +28,19 @@ This file records the first original data slice used to validate the M0 data pip
 4. Ember Ridge — recommended level 30.
 
 The values are seed data for simulation, not final balance. All balance changes should be made in config and rechecked with `tools/sim`.
+
+## Class skills
+Every MVP class now has one configured ULT and one passive stat bonus. Effects are deliberately represented as data (`damage_single`, `damage_aoe`, `heal_single`, `heal_aoe`, `shield_allies`) so battle behavior can be versioned without hard-coding individual class IDs.
+
+## Waves and bosses
+Each dungeon has six configured waves:
+- waves 1–5 reference enemy families from that dungeon;
+- wave 6 references exactly one original boss;
+- validators reject cross-dungeon enemy/boss references and non-contiguous wave numbering.
+
+Bosses:
+- Bamboo Grove: Thornhide Boar.
+- Misty Riverbank: Fogjaw Tortoise.
+- Sunken Shrine: Bellkeeper Colossus.
+- Ember Ridge: Cinderhorn Ram.
+

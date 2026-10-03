@@ -1169,5 +1169,527 @@
       "defense": 58,
       "speed": 8
     }
+  ],
+  "skills": [
+    {
+      "classId": "vanguard_recruit",
+      "ultId": "shield_rush",
+      "nameVi": "Khiên Xung",
+      "nameEn": "Shield Rush",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 14000,
+      "passiveStat": "defense",
+      "passiveBonusBps": 500
+    },
+    {
+      "classId": "iron_guard",
+      "ultId": "iron_wall",
+      "nameVi": "Tường Sắt",
+      "nameEn": "Iron Wall",
+      "effect": "shield_allies",
+      "target": "all_allies",
+      "powerBps": 8000,
+      "passiveStat": "defense",
+      "passiveBonusBps": 800
+    },
+    {
+      "classId": "blade_guard",
+      "ultId": "crosscut",
+      "nameVi": "Song Trảm",
+      "nameEn": "Crosscut",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 18000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 800
+    },
+    {
+      "classId": "bastion_keeper",
+      "ultId": "fortress_oath",
+      "nameVi": "Lời Thề Pháo Đài",
+      "nameEn": "Fortress Oath",
+      "effect": "shield_allies",
+      "target": "all_allies",
+      "powerBps": 13000,
+      "passiveStat": "defense",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "oakbreaker",
+      "ultId": "timberfall",
+      "nameVi": "Mộc Đổ",
+      "nameEn": "Timberfall",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 23000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "duelist_captain",
+      "ultId": "tempo_break",
+      "nameVi": "Phá Nhịp",
+      "nameEn": "Tempo Break",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 25000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 1000
+    },
+    {
+      "classId": "trail_archer",
+      "ultId": "marked_shot",
+      "nameVi": "Phát Bắn Đánh Dấu",
+      "nameEn": "Marked Shot",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 15000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 500
+    },
+    {
+      "classId": "wind_scout",
+      "ultId": "gale_fan",
+      "nameVi": "Quạt Cuồng Phong",
+      "nameEn": "Gale Fan",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 10000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 700
+    },
+    {
+      "classId": "reed_hunter",
+      "ultId": "hooked_arrow",
+      "nameVi": "Mũi Tên Móc",
+      "nameEn": "Hooked Arrow",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 19000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 700
+    },
+    {
+      "classId": "gale_marksman",
+      "ultId": "sky_splitter",
+      "nameVi": "Xé Trời",
+      "nameEn": "Sky Splitter",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 26000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "thorn_tracker",
+      "ultId": "briar_rain",
+      "nameVi": "Mưa Gai",
+      "nameEn": "Briar Rain",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 15000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 1000
+    },
+    {
+      "classId": "falcon_eye",
+      "ultId": "horizon_pierce",
+      "nameVi": "Xuyên Chân Trời",
+      "nameEn": "Horizon Pierce",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 28000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "spark_apprentice",
+      "ultId": "arc_spark",
+      "nameVi": "Hồ Quang",
+      "nameEn": "Arc Spark",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 9000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 500
+    },
+    {
+      "classId": "mist_weaver",
+      "ultId": "veil_burst",
+      "nameVi": "Bùng Màn Sương",
+      "nameEn": "Veil Burst",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 12000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 500
+    },
+    {
+      "classId": "ember_scholar",
+      "ultId": "ember_orb",
+      "nameVi": "Cầu Hồng Than",
+      "nameEn": "Ember Orb",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 20000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 800
+    },
+    {
+      "classId": "tide_oracle",
+      "ultId": "tidal_sigil",
+      "nameVi": "Ấn Thủy Triều",
+      "nameEn": "Tidal Sigil",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 16000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 1000
+    },
+    {
+      "classId": "cinder_sage",
+      "ultId": "furnace_star",
+      "nameVi": "Tinh Lò Rèn",
+      "nameEn": "Furnace Star",
+      "effect": "damage_single",
+      "target": "lowest_hp_enemy",
+      "powerBps": 30000,
+      "passiveStat": "attack",
+      "passiveBonusBps": 1400
+    },
+    {
+      "classId": "echo_magus",
+      "ultId": "resonance_wave",
+      "nameVi": "Sóng Cộng Hưởng",
+      "nameEn": "Resonance Wave",
+      "effect": "damage_aoe",
+      "target": "all_enemies",
+      "powerBps": 18000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 900
+    },
+    {
+      "classId": "field_aide",
+      "ultId": "field_remedy",
+      "nameVi": "Cứu Trị Dã Ngoại",
+      "nameEn": "Field Remedy",
+      "effect": "heal_single",
+      "target": "lowest_hp_ally",
+      "powerBps": 14000,
+      "passiveStat": "hp",
+      "passiveBonusBps": 500
+    },
+    {
+      "classId": "herb_keeper",
+      "ultId": "green_tonic",
+      "nameVi": "Dược Xanh",
+      "nameEn": "Green Tonic",
+      "effect": "heal_aoe",
+      "target": "all_allies",
+      "powerBps": 9000,
+      "passiveStat": "hp",
+      "passiveBonusBps": 800
+    },
+    {
+      "classId": "ward_singer",
+      "ultId": "ward_chorus",
+      "nameVi": "Hợp Xướng Kết Giới",
+      "nameEn": "Ward Chorus",
+      "effect": "shield_allies",
+      "target": "all_allies",
+      "powerBps": 9000,
+      "passiveStat": "defense",
+      "passiveBonusBps": 700
+    },
+    {
+      "classId": "moon_mender",
+      "ultId": "moonwell",
+      "nameVi": "Giếng Trăng",
+      "nameEn": "Moonwell",
+      "effect": "heal_aoe",
+      "target": "all_allies",
+      "powerBps": 15000,
+      "passiveStat": "hp",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "spirit_warden",
+      "ultId": "spirit_aegis",
+      "nameVi": "Linh Thuẫn",
+      "nameEn": "Spirit Aegis",
+      "effect": "shield_allies",
+      "target": "all_allies",
+      "powerBps": 14000,
+      "passiveStat": "defense",
+      "passiveBonusBps": 1200
+    },
+    {
+      "classId": "sun_chantor",
+      "ultId": "dawn_hymn",
+      "nameVi": "Thánh Ca Bình Minh",
+      "nameEn": "Dawn Hymn",
+      "effect": "heal_aoe",
+      "target": "all_allies",
+      "powerBps": 13000,
+      "passiveStat": "speed",
+      "passiveBonusBps": 800
+    }
+  ],
+  "bosses": [
+    {
+      "id": "thornhide_boar",
+      "nameVi": "Lợn Rừng Giáp Gai",
+      "nameEn": "Thornhide Boar",
+      "dungeonId": "bamboo_grove",
+      "hp": 480,
+      "attack": 48,
+      "defense": 26,
+      "speed": 9
+    },
+    {
+      "id": "fogjaw_tortoise",
+      "nameVi": "Rùa Hàm Sương",
+      "nameEn": "Fogjaw Tortoise",
+      "dungeonId": "misty_riverbank",
+      "hp": 850,
+      "attack": 72,
+      "defense": 48,
+      "speed": 8
+    },
+    {
+      "id": "bellkeeper_colossus",
+      "nameVi": "Khổng Lồ Giữ Chuông",
+      "nameEn": "Bellkeeper Colossus",
+      "dungeonId": "sunken_shrine",
+      "hp": 1300,
+      "attack": 98,
+      "defense": 72,
+      "speed": 9
+    },
+    {
+      "id": "cinderhorn_ram",
+      "nameVi": "Cừu Sừng Hồng Than",
+      "nameEn": "Cinderhorn Ram",
+      "dungeonId": "ember_ridge",
+      "hp": 1900,
+      "attack": 132,
+      "defense": 88,
+      "speed": 13
+    }
+  ],
+  "waves": [
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 1,
+      "enemyIds": [
+        "reedling",
+        "mudhopper"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 2,
+      "enemyIds": [
+        "reedling",
+        "dew_sprite"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 3,
+      "enemyIds": [
+        "mudhopper",
+        "dew_sprite"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 4,
+      "enemyIds": [
+        "reedling",
+        "mudhopper",
+        "dew_sprite"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 5,
+      "enemyIds": [
+        "dew_sprite",
+        "mudhopper",
+        "dew_sprite"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "waveIndex": 6,
+      "enemyIds": [],
+      "bossId": "thornhide_boar"
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 1,
+      "enemyIds": [
+        "mist_crab",
+        "river_wisp"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 2,
+      "enemyIds": [
+        "river_wisp",
+        "shellback"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 3,
+      "enemyIds": [
+        "mist_crab",
+        "shellback"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 4,
+      "enemyIds": [
+        "mist_crab",
+        "river_wisp",
+        "shellback"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 5,
+      "enemyIds": [
+        "river_wisp",
+        "river_wisp",
+        "shellback"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "waveIndex": 6,
+      "enemyIds": [],
+      "bossId": "fogjaw_tortoise"
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 1,
+      "enemyIds": [
+        "shrine_sentinel",
+        "echo_moth"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 2,
+      "enemyIds": [
+        "echo_moth",
+        "moss_golem"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 3,
+      "enemyIds": [
+        "shrine_sentinel",
+        "moss_golem"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 4,
+      "enemyIds": [
+        "shrine_sentinel",
+        "echo_moth",
+        "moss_golem"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 5,
+      "enemyIds": [
+        "echo_moth",
+        "echo_moth",
+        "moss_golem"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "waveIndex": 6,
+      "enemyIds": [],
+      "bossId": "bellkeeper_colossus"
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 1,
+      "enemyIds": [
+        "ember_hound",
+        "cinder_wing"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 2,
+      "enemyIds": [
+        "cinder_wing",
+        "basalt_turtle"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 3,
+      "enemyIds": [
+        "ember_hound",
+        "basalt_turtle"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 4,
+      "enemyIds": [
+        "ember_hound",
+        "cinder_wing",
+        "basalt_turtle"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 5,
+      "enemyIds": [
+        "cinder_wing",
+        "cinder_wing",
+        "basalt_turtle"
+      ],
+      "bossId": null
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "waveIndex": 6,
+      "enemyIds": [],
+      "bossId": "cinderhorn_ram"
+    }
   ]
 }

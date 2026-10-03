@@ -1,0 +1,5 @@
+id,name_vi,name_en,dungeon_id,hp,attack,defense,speed
+thornhide_boar,Lợn Rừng Giáp Gai,Thornhide Boar,bamboo_grove,480,48,26,9
+fogjaw_tortoise,Rùa Hàm Sương,Fogjaw Tortoise,misty_riverbank,850,72,48,8
+bellkeeper_colossus,Khổng Lồ Giữ Chuông,Bellkeeper Colossus,sunken_shrine,1300,98,72,9
+cinderhorn_ram,Cừu Sừng Hồng Than,Cinderhorn Ram,ember_ridge,1900,132,88,13

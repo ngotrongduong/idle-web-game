@@ -1,0 +1,25 @@
+class_id,ult_id,name_vi,name_en,effect,target,power_bps,passive_stat,passive_bonus_bps
+vanguard_recruit,shield_rush,Khiên Xung,Shield Rush,damage_single,lowest_hp_enemy,14000,defense,500
+iron_guard,iron_wall,Tường Sắt,Iron Wall,shield_allies,all_allies,8000,defense,800
+blade_guard,crosscut,Song Trảm,Crosscut,damage_single,lowest_hp_enemy,18000,attack,800
+bastion_keeper,fortress_oath,Lời Thề Pháo Đài,Fortress Oath,shield_allies,all_allies,13000,defense,1200
+oakbreaker,timberfall,Mộc Đổ,Timberfall,damage_single,lowest_hp_enemy,23000,attack,1200
+duelist_captain,tempo_break,Phá Nhịp,Tempo Break,damage_single,lowest_hp_enemy,25000,speed,1000
+trail_archer,marked_shot,Phát Bắn Đánh Dấu,Marked Shot,damage_single,lowest_hp_enemy,15000,attack,500
+wind_scout,gale_fan,Quạt Cuồng Phong,Gale Fan,damage_aoe,all_enemies,10000,speed,700
+reed_hunter,hooked_arrow,Mũi Tên Móc,Hooked Arrow,damage_single,lowest_hp_enemy,19000,attack,700
+gale_marksman,sky_splitter,Xé Trời,Sky Splitter,damage_single,lowest_hp_enemy,26000,attack,1200
+thorn_tracker,briar_rain,Mưa Gai,Briar Rain,damage_aoe,all_enemies,15000,attack,1000
+falcon_eye,horizon_pierce,Xuyên Chân Trời,Horizon Pierce,damage_single,lowest_hp_enemy,28000,speed,1200
+spark_apprentice,arc_spark,Hồ Quang,Arc Spark,damage_aoe,all_enemies,9000,attack,500
+mist_weaver,veil_burst,Bùng Màn Sương,Veil Burst,damage_aoe,all_enemies,12000,speed,500
+ember_scholar,ember_orb,Cầu Hồng Than,Ember Orb,damage_single,lowest_hp_enemy,20000,attack,800
+tide_oracle,tidal_sigil,Ấn Thủy Triều,Tidal Sigil,damage_aoe,all_enemies,16000,attack,1000
+cinder_sage,furnace_star,Tinh Lò Rèn,Furnace Star,damage_single,lowest_hp_enemy,30000,attack,1400
+echo_magus,resonance_wave,Sóng Cộng Hưởng,Resonance Wave,damage_aoe,all_enemies,18000,speed,900
+field_aide,field_remedy,Cứu Trị Dã Ngoại,Field Remedy,heal_single,lowest_hp_ally,14000,hp,500
+herb_keeper,green_tonic,Dược Xanh,Green Tonic,heal_aoe,all_allies,9000,hp,800
+ward_singer,ward_chorus,Hợp Xướng Kết Giới,Ward Chorus,shield_allies,all_allies,9000,defense,700
+moon_mender,moonwell,Giếng Trăng,Moonwell,heal_aoe,all_allies,15000,hp,1200
+spirit_warden,spirit_aegis,Linh Thuẫn,Spirit Aegis,shield_allies,all_allies,14000,defense,1200
+sun_chantor,dawn_hymn,Thánh Ca Bình Minh,Dawn Hymn,heal_aoe,all_allies,13000,speed,800
