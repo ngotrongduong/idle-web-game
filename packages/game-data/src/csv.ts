@@ -4,6 +4,9 @@ export type CsvSources = {
   materials: string;
   items: string;
   dungeons: string;
+  classFamilies: string;
+  classes: string;
+  enemies: string;
 };
 
 export function parseCsv(input: string): Record<string, string>[] {
@@ -85,6 +88,11 @@ function requireValue(
   return value;
 }
 
+function optionalValue(row: Record<string, string>, key: string): string | null {
+  const value = row[key]?.trim();
+  return value ? value : null;
+}
+
 function parseIntField(
   row: Record<string, string>,
   key: string,
@@ -150,11 +158,63 @@ export function loadGameDataFromCsv(
       nameEn: requireValue(row, "name_en", context),
       recommendedLevel: parseIntField(row, "recommended_level", context),
       waveCount: parseIntField(row, "wave_count", context),
-      lootMaterialIds: parseList(
-        requireValue(row, "loot_material_ids", context),
-      ),
+      lootMaterialIds: parseList(requireValue(row, "loot_material_ids", context)),
     };
   });
 
-  return validateGameData({ version, materials, items, dungeons });
+  const classFamilies = parseCsv(sources.classFamilies).map((row, index) => {
+    const context = `class families row ${index + 2}`;
+    return {
+      id: requireValue(row, "id", context),
+      nameVi: requireValue(row, "name_vi", context),
+      nameEn: requireValue(row, "name_en", context),
+      archetype: requireValue(row, "archetype", context),
+      damageType: requireValue(row, "damage_type", context),
+      advantageFamilyId: requireValue(row, "advantage_family_id", context),
+    };
+  });
+
+  const classes = parseCsv(sources.classes).map((row, index) => {
+    const context = `classes row ${index + 2}`;
+    return {
+      id: requireValue(row, "id", context),
+      nameVi: requireValue(row, "name_vi", context),
+      nameEn: requireValue(row, "name_en", context),
+      familyId: requireValue(row, "family_id", context),
+      tier: parseIntField(row, "tier", context),
+      parentClassId: optionalValue(row, "parent_class_id"),
+      role: requireValue(row, "role", context),
+      baseHp: parseIntField(row, "base_hp", context),
+      baseAttack: parseIntField(row, "base_attack", context),
+      baseDefense: parseIntField(row, "base_defense", context),
+      baseSpeed: parseIntField(row, "base_speed", context),
+    };
+  });
+
+  const enemies = parseCsv(sources.enemies).map((row, index) => {
+    const context = `enemies row ${index + 2}`;
+    return {
+      id: requireValue(row, "id", context),
+      nameVi: requireValue(row, "name_vi", context),
+      nameEn: requireValue(row, "name_en", context),
+      dungeonId: requireValue(row, "dungeon_id", context),
+      rank: requireValue(row, "rank", context),
+      hp: parseIntField(row, "hp", context),
+      attack: parseIntField(row, "attack", context),
+      defense: parseIntField(row, "defense", context),
+      speed: parseIntField(row, "speed", context),
+      rewardGold: parseIntField(row, "reward_gold", context),
+      rewardExp: parseIntField(row, "reward_exp", context),
+    };
+  });
+
+  return validateGameData({
+    version,
+    materials,
+    items,
+    dungeons,
+    classFamilies,
+    classes,
+    enemies,
+  });
 }

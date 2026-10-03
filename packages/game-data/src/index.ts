@@ -3,8 +3,11 @@ import { validateGameData } from "./schema";
 
 export { loadGameDataFromCsv, parseCsv, type CsvSources } from "./csv";
 export {
+  ClassFamilySchema,
   DungeonSchema,
+  EnemySchema,
   GameDataSchema,
+  HeroClassSchema,
   ItemSchema,
   MaterialSchema,
   RecipeIngredientSchema,

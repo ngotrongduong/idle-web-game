@@ -8,17 +8,39 @@ import {
 
 describe("game-data pipeline", () => {
   it("parses quoted CSV fields", () => {
-    expect(parseCsv('id,name\nx,"A, B"')).toEqual([
-      { id: "x", name: "A, B" },
-    ]);
+    expect(parseCsv('id,name\nx,"A, B"')).toEqual([{ id: "x", name: "A, B" }]);
   });
 
-  it("loads and validates committed MVP content slice", () => {
-    expect(foundationGameData.version).toBe("m0.3-content-v1");
+  it("loads the complete first MVP content slice", () => {
+    expect(foundationGameData.version).toBe("m0.3-content-v2");
     expect(foundationGameData.materials).toHaveLength(15);
     expect(foundationGameData.items).toHaveLength(30);
     expect(foundationGameData.dungeons).toHaveLength(4);
-    expect(foundationGameData.dungeons.every((entry) => entry.waveCount === 6)).toBe(true);
+    expect(foundationGameData.classFamilies).toHaveLength(4);
+    expect(foundationGameData.classes).toHaveLength(24);
+    expect(foundationGameData.enemies).toHaveLength(16);
+  });
+
+  it("matches the planned 1/2/3 class progression per family", () => {
+    for (const family of foundationGameData.classFamilies) {
+      const familyClasses = foundationGameData.classes.filter(
+        (entry) => entry.familyId === family.id,
+      );
+      expect(familyClasses.filter((entry) => entry.tier === 1)).toHaveLength(1);
+      expect(familyClasses.filter((entry) => entry.tier === 2)).toHaveLength(2);
+      expect(familyClasses.filter((entry) => entry.tier === 3)).toHaveLength(3);
+    }
+  });
+
+  it("gives every dungeon normal enemies, an elite and exactly one boss", () => {
+    for (const dungeon of foundationGameData.dungeons) {
+      const dungeonEnemies = foundationGameData.enemies.filter(
+        (entry) => entry.dungeonId === dungeon.id,
+      );
+      expect(dungeonEnemies.filter((entry) => entry.rank === "normal").length).toBeGreaterThanOrEqual(2);
+      expect(dungeonEnemies.filter((entry) => entry.rank === "elite")).toHaveLength(1);
+      expect(dungeonEnemies.filter((entry) => entry.rank === "boss")).toHaveLength(1);
+    }
   });
 
   it("covers all four equipment slots", () => {
@@ -26,10 +48,30 @@ describe("game-data pipeline", () => {
     expect(slots).toEqual(new Set(["weapon", "helmet", "armor", "accessory"]));
   });
 
-  it("gives every dungeon at least three material drops", () => {
-    expect(
-      foundationGameData.dungeons.every((entry) => entry.lootMaterialIds.length >= 3),
-    ).toBe(true);
+  it("rejects a missing class parent", () => {
+    const tierTwo = foundationGameData.classes.find((entry) => entry.tier === 2)!;
+    const invalid = {
+      ...foundationGameData,
+      classes: foundationGameData.classes.map((entry) =>
+        entry.id === tierTwo.id
+          ? { ...entry, parentClassId: "missing_parent" }
+          : entry,
+      ),
+    };
+    expect(() => validateGameData(invalid)).toThrow("references missing parent missing_parent");
+  });
+
+  it("rejects an enemy assigned to an unknown dungeon", () => {
+    const invalid = {
+      ...foundationGameData,
+      enemies: [
+        { ...foundationGameData.enemies[0]!, dungeonId: "missing_dungeon" },
+        ...foundationGameData.enemies.slice(1),
+      ],
+    };
+    expect(() => validateGameData(invalid)).toThrow(
+      "references missing dungeon missing_dungeon",
+    );
   });
 
   it("rejects a missing recipe material reference", () => {
@@ -53,10 +95,16 @@ describe("game-data pipeline", () => {
       loadGameDataFromCsv({
         materials: "id,name_vi,name_en\na,A,A",
         items:
-          "id,name_vi,name_en,slot,attack,defense,recipe\ni,I,I,weapon,1,0,missing:1",
+          "id,name_vi,name_en,slot,attack,defense,recipe\ni,I,I,weapon,1,0,a:1",
         dungeons:
           "id,name_vi,name_en,recommended_level,wave_count,loot_material_ids\nd,D,D,1,6,a",
+        classFamilies:
+          "id,name_vi,name_en,archetype,damage_type,advantage_family_id\nf,F,F,frontline,physical,missing",
+        classes:
+          "id,name_vi,name_en,family_id,tier,parent_class_id,role,base_hp,base_attack,base_defense,base_speed\nc,C,C,f,1,,tank,10,2,1,1",
+        enemies:
+          "id,name_vi,name_en,dungeon_id,rank,hp,attack,defense,speed,reward_gold,reward_exp\ne,E,E,d,boss,10,2,1,1,1,1",
       }),
-    ).toThrow("references missing material missing");
+    ).toThrow("references missing advantage family missing");
   });
 });
