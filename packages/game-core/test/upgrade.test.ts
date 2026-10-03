@@ -14,15 +14,16 @@ describe("upgrade model", () => {
   });
 
   it("never falls below the +5 safe level", () => {
-    const alwaysFailAtSix = new SeededRng(1);
+    const failAtSix = new SeededRng(4);
     const result = resolveUpgradeAttempt(
       { level: 5, pityFailures: 0 },
-      alwaysFailAtSix,
+      failAtSix,
     );
 
-    if (!result.success) {
-      expect(result.afterLevel).toBe(5);
-    }
+    expect(result.success).toBe(false);
+    expect(result.targetLevel).toBe(6);
+    expect(result.afterLevel).toBe(5);
+    expect(result.pityFailures).toBe(1);
   });
 
   it("has a stable seeded +10 journey", () => {
