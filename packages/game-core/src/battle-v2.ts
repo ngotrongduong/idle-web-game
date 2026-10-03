@@ -194,7 +194,9 @@ function toRuntime(
 }
 
 function compareIds(left: RuntimeUnitV2, right: RuntimeUnitV2): number {
-  return left.id.localeCompare(right.id);
+  if (left.id < right.id) return -1;
+  if (left.id > right.id) return 1;
+  return 0;
 }
 
 function living(units: RuntimeUnitV2[]): RuntimeUnitV2[] {
@@ -522,8 +524,6 @@ export function simulateWaveV2(input: {
           events,
           rng,
           rules,
-          allies,
-          enemies,
         });
       }
 
