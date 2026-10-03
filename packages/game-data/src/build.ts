@@ -14,7 +14,7 @@ const [materials, items, dungeons] = await Promise.all([
 
 const gameData = loadGameDataFromCsv(
   { materials, items, dungeons },
-  "m0.3",
+  "m0.3-content-v1",
 );
 
 const outputDir = resolve(root, "generated");

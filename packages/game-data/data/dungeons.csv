@@ -1,3 +1,5 @@
 id,name_vi,name_en,recommended_level,wave_count,loot_material_ids
-bamboo_grove,Rừng Tre,Bamboo Grove,1,6,bamboo_fiber|slime_gel
-misty_riverbank,Bờ Sông Sương,Misty Riverbank,10,6,river_stone|slime_gel
+bamboo_grove,Rừng Tre,Bamboo Grove,1,6,bamboo_fiber|slime_gel|river_stone
+misty_riverbank,Bờ Sông Sương,Misty Riverbank,10,6,reed_thread|mist_pearl|driftwood_core|river_stone
+sunken_shrine,Miếu Chìm,Sunken Shrine,20,6,sunken_clay|lotus_silk|shrine_fragment|tide_crystal
+ember_ridge,Sườn Núi Than Hồng,Ember Ridge,30,6,ember_ore|ash_hide|fireglass|ridge_herb|obsidian_shard

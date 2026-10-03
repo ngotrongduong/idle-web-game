@@ -1,5 +1,5 @@
 {
-  "version": "m0.3",
+  "version": "m0.3-content-v1",
   "materials": [
     {
       "id": "bamboo_fiber",
@@ -15,6 +15,66 @@
       "id": "river_stone",
       "nameVi": "Đá Suối",
       "nameEn": "River Stone"
+    },
+    {
+      "id": "reed_thread",
+      "nameVi": "Sợi Lau",
+      "nameEn": "Reed Thread"
+    },
+    {
+      "id": "mist_pearl",
+      "nameVi": "Ngọc Sương",
+      "nameEn": "Mist Pearl"
+    },
+    {
+      "id": "driftwood_core",
+      "nameVi": "Lõi Gỗ Trôi",
+      "nameEn": "Driftwood Core"
+    },
+    {
+      "id": "sunken_clay",
+      "nameVi": "Đất Sét Chìm",
+      "nameEn": "Sunken Clay"
+    },
+    {
+      "id": "lotus_silk",
+      "nameVi": "Tơ Sen",
+      "nameEn": "Lotus Silk"
+    },
+    {
+      "id": "shrine_fragment",
+      "nameVi": "Mảnh Miếu Cổ",
+      "nameEn": "Shrine Fragment"
+    },
+    {
+      "id": "tide_crystal",
+      "nameVi": "Tinh Thể Triều",
+      "nameEn": "Tide Crystal"
+    },
+    {
+      "id": "ember_ore",
+      "nameVi": "Quặng Than Hồng",
+      "nameEn": "Ember Ore"
+    },
+    {
+      "id": "ash_hide",
+      "nameVi": "Da Tro",
+      "nameEn": "Ash Hide"
+    },
+    {
+      "id": "fireglass",
+      "nameVi": "Thủy Tinh Lửa",
+      "nameEn": "Fireglass"
+    },
+    {
+      "id": "ridge_herb",
+      "nameVi": "Thảo Mộc Sườn Núi",
+      "nameEn": "Ridge Herb"
+    },
+    {
+      "id": "obsidian_shard",
+      "nameVi": "Mảnh Hắc Diện",
+      "nameEn": "Obsidian Shard"
     }
   ],
   "items": [
@@ -53,6 +113,542 @@
           "qty": 1
         }
       ]
+    },
+    {
+      "id": "riverstone_cap",
+      "nameVi": "Mũ Đá Suối",
+      "nameEn": "Riverstone Cap",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 7,
+      "recipe": [
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        },
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "gel_charm",
+      "nameVi": "Bùa Gel Trong",
+      "nameEn": "Clear Gel Charm",
+      "slot": "accessory",
+      "attack": 3,
+      "defense": 3,
+      "recipe": [
+        {
+          "materialId": "slime_gel",
+          "qty": 2
+        },
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "bamboo_spear",
+      "nameVi": "Thương Tre",
+      "nameEn": "Bamboo Spear",
+      "slot": "weapon",
+      "attack": 16,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 4
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "reed_guard",
+      "nameVi": "Giáp Lau Sậy",
+      "nameEn": "Reed Guard",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 13,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 3
+        },
+        {
+          "materialId": "slime_gel",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "mistveil_hood",
+      "nameVi": "Mũ Trùm Sương",
+      "nameEn": "Mistveil Hood",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 10,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 2
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "driftwood_token",
+      "nameVi": "Bùa Lõi Gỗ Trôi",
+      "nameEn": "Driftwood Token",
+      "slot": "accessory",
+      "attack": 5,
+      "defense": 4,
+      "recipe": [
+        {
+          "materialId": "driftwood_core",
+          "qty": 2
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "riverhook_blade",
+      "nameVi": "Đao Móc Bờ Sông",
+      "nameEn": "Riverhook Blade",
+      "slot": "weapon",
+      "attack": 22,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "driftwood_core",
+          "qty": 2
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "mistwoven_coat",
+      "nameVi": "Áo Dệt Sương",
+      "nameEn": "Mistwoven Coat",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 18,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 3
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "pearlguard_helm",
+      "nameVi": "Mũ Hộ Ngọc Sương",
+      "nameEn": "Pearlguard Helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 15,
+      "recipe": [
+        {
+          "materialId": "mist_pearl",
+          "qty": 2
+        },
+        {
+          "materialId": "driftwood_core",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "river_echo_charm",
+      "nameVi": "Bùa Vọng Sông",
+      "nameEn": "River Echo Charm",
+      "slot": "accessory",
+      "attack": 7,
+      "defense": 6,
+      "recipe": [
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        },
+        {
+          "materialId": "reed_thread",
+          "qty": 2
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "claybound_mace",
+      "nameVi": "Chùy Đất Chìm",
+      "nameEn": "Claybound Mace",
+      "slot": "weapon",
+      "attack": 30,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "sunken_clay",
+          "qty": 3
+        },
+        {
+          "materialId": "shrine_fragment",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "lotus_scale_mail",
+      "nameVi": "Giáp Vảy Sen",
+      "nameEn": "Lotus Scale Mail",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 25,
+      "recipe": [
+        {
+          "materialId": "lotus_silk",
+          "qty": 3
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "shrinekeeper_crown",
+      "nameVi": "Mão Giữ Miếu",
+      "nameEn": "Shrinekeeper Crown",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 20,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "tideglass_talisman",
+      "nameVi": "Bùa Thủy Tinh Triều",
+      "nameEn": "Tideglass Talisman",
+      "slot": "accessory",
+      "attack": 10,
+      "defense": 9,
+      "recipe": [
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "sunken_halberd",
+      "nameVi": "Kích Miếu Chìm",
+      "nameEn": "Sunken Halberd",
+      "slot": "weapon",
+      "attack": 36,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "lotus_warden_plate",
+      "nameVi": "Giáp Hộ Sen",
+      "nameEn": "Lotus Warden Plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 31,
+      "recipe": [
+        {
+          "materialId": "lotus_silk",
+          "qty": 4
+        },
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "tidewatch_helm",
+      "nameVi": "Mũ Canh Triều",
+      "nameEn": "Tidewatch Helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 26,
+      "recipe": [
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "shrine_echo_relic",
+      "nameVi": "Thánh Tích Vọng Miếu",
+      "nameEn": "Shrine Echo Relic",
+      "slot": "accessory",
+      "attack": 13,
+      "defense": 12,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "tide_crystal",
+          "qty": 1
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "emberedge",
+      "nameVi": "Lưỡi Than Hồng",
+      "nameEn": "Emberedge",
+      "slot": "weapon",
+      "attack": 44,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "ashhide_cuirass",
+      "nameVi": "Giáp Da Tro",
+      "nameEn": "Ashhide Cuirass",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 38,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 3
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "ridgewalker_helm",
+      "nameVi": "Mũ Lữ Khách Sườn Núi",
+      "nameEn": "Ridgewalker Helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 31,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "fireglass_pendant",
+      "nameVi": "Mặt Dây Thủy Tinh Lửa",
+      "nameEn": "Fireglass Pendant",
+      "slot": "accessory",
+      "attack": 16,
+      "defense": 14,
+      "recipe": [
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "obsidian_glaive",
+      "nameVi": "Đao Hắc Diện",
+      "nameEn": "Obsidian Glaive",
+      "slot": "weapon",
+      "attack": 52,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "emberwarden_plate",
+      "nameVi": "Giáp Hộ Than Hồng",
+      "nameEn": "Emberwarden Plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 45,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 3
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "obsidian_circlet",
+      "nameVi": "Vòng Trán Hắc Diện",
+      "nameEn": "Obsidian Circlet",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 37,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "ridgeheart_relic",
+      "nameVi": "Thánh Tích Tâm Núi",
+      "nameEn": "Ridgeheart Relic",
+      "slot": "accessory",
+      "attack": 20,
+      "defense": 17,
+      "recipe": [
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "vanguard_blade",
+      "nameVi": "Kiếm Tiền Phong",
+      "nameEn": "Vanguard Blade",
+      "slot": "weapon",
+      "attack": 58,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "mountain_oath_plate",
+      "nameVi": "Giáp Thệ Núi",
+      "nameEn": "Mountain Oath Plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 50,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 4
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        }
+      ]
     }
   ],
   "dungeons": [
@@ -64,7 +660,8 @@
       "waveCount": 6,
       "lootMaterialIds": [
         "bamboo_fiber",
-        "slime_gel"
+        "slime_gel",
+        "river_stone"
       ]
     },
     {
@@ -74,8 +671,37 @@
       "recommendedLevel": 10,
       "waveCount": 6,
       "lootMaterialIds": [
-        "river_stone",
-        "slime_gel"
+        "reed_thread",
+        "mist_pearl",
+        "driftwood_core",
+        "river_stone"
+      ]
+    },
+    {
+      "id": "sunken_shrine",
+      "nameVi": "Miếu Chìm",
+      "nameEn": "Sunken Shrine",
+      "recommendedLevel": 20,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "sunken_clay",
+        "lotus_silk",
+        "shrine_fragment",
+        "tide_crystal"
+      ]
+    },
+    {
+      "id": "ember_ridge",
+      "nameVi": "Sườn Núi Than Hồng",
+      "nameEn": "Ember Ridge",
+      "recommendedLevel": 30,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "ember_ore",
+        "ash_hide",
+        "fireglass",
+        "ridge_herb",
+        "obsidian_shard"
       ]
     }
   ]

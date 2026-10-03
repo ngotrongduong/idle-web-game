@@ -13,10 +13,23 @@ describe("game-data pipeline", () => {
     ]);
   });
 
-  it("loads and validates committed generated data", () => {
-    expect(foundationGameData.version).toBe("m0.3");
-    expect(foundationGameData.materials.length).toBe(3);
-    expect(foundationGameData.dungeons[0]?.waveCount).toBe(6);
+  it("loads and validates committed MVP content slice", () => {
+    expect(foundationGameData.version).toBe("m0.3-content-v1");
+    expect(foundationGameData.materials).toHaveLength(15);
+    expect(foundationGameData.items).toHaveLength(30);
+    expect(foundationGameData.dungeons).toHaveLength(4);
+    expect(foundationGameData.dungeons.every((entry) => entry.waveCount === 6)).toBe(true);
+  });
+
+  it("covers all four equipment slots", () => {
+    const slots = new Set(foundationGameData.items.map((entry) => entry.slot));
+    expect(slots).toEqual(new Set(["weapon", "helmet", "armor", "accessory"]));
+  });
+
+  it("gives every dungeon at least three material drops", () => {
+    expect(
+      foundationGameData.dungeons.every((entry) => entry.lootMaterialIds.length >= 3),
+    ).toBe(true);
   });
 
   it("rejects a missing recipe material reference", () => {
