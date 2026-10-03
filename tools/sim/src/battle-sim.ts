@@ -1,5 +1,13 @@
+import { foundationGameData } from "@idle/game-data";
 import { simulateWave } from "@idle/game-core";
 import { SAMPLE_ENCOUNTERS } from "./scenarios";
+
+const FAMILY_ADVANTAGE = Object.fromEntries(
+  foundationGameData.classFamilies.map((family) => [
+    family.id,
+    family.advantageFamilyId,
+  ]),
+);
 import { mean, percentile } from "./stats";
 
 export type BattleSimulationSummary = {
@@ -48,6 +56,7 @@ export function runBattleSimulation(input: {
         allies: encounter.allies,
         enemies: encounter.enemies,
         seed: seedBase + encounterIndex * 1_000_000 + run,
+        rules: { familyAdvantage: FAMILY_ADVANTAGE },
       });
 
       turns.push(result.turns);

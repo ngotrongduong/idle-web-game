@@ -83,6 +83,115 @@ describe("game-core foundation", () => {
     expect(battle.hash).toBe("c080875a");
   });
 
+  it("keeps the legacy golden hash when optional battle features are unused", () => {
+    const battle = simulateWave({
+      seed: 123456,
+      allies: [
+        { id: "warrior", hp: 180, attack: 42, defense: 28, speed: 12, critBps: 1000 },
+        { id: "mage", hp: 110, attack: 55, defense: 12, speed: 15, critBps: 1400 },
+      ],
+      enemies: [
+        { id: "slime_a", hp: 95, attack: 25, defense: 10, speed: 8, critBps: 500 },
+        { id: "slime_b", hp: 105, attack: 27, defense: 12, speed: 9, critBps: 500 },
+      ],
+    });
+    expect(battle.hash).toBe("c080875a");
+  });
+
+  it("uses an ultimate when MP is full", () => {
+    const battle = simulateWave({
+      seed: 1,
+      allies: [{
+        id: "caster",
+        hp: 100,
+        attack: 40,
+        defense: 10,
+        speed: 20,
+        critBps: 0,
+        ultimatePowerBps: 20_000,
+        startingMp: 100,
+      }],
+      enemies: [{ id: "dummy", hp: 500, attack: 1, defense: 0, speed: 1, critBps: 0 }],
+      rules: {
+        maxTurns: 1,
+        varianceMinBps: 10_000,
+        varianceMaxBps: 10_000,
+        defaultCritBps: 0,
+      },
+    });
+
+    expect(battle.events[0]?.action).toBe("ultimate");
+    expect(battle.events[0]?.damage).toBe(80);
+  });
+
+  it("supports deterministic role-aware targeting", () => {
+    const battle = simulateWave({
+      seed: 99,
+      allies: [{
+        id: "hunter",
+        hp: 100,
+        attack: 30,
+        defense: 10,
+        speed: 20,
+        critBps: 0,
+        targeting: "lowest_hp",
+      }],
+      enemies: [
+        { id: "healthy", hp: 100, attack: 1, defense: 0, speed: 1, critBps: 0 },
+        { id: "wounded", hp: 20, attack: 1, defense: 0, speed: 1, critBps: 0 },
+      ],
+      rules: {
+        maxTurns: 1,
+        varianceMinBps: 10_000,
+        varianceMaxBps: 10_000,
+        defaultCritBps: 0,
+      },
+    });
+
+    expect(battle.events[0]?.targetId).toBe("wounded");
+  });
+
+  it("applies family advantage without ambient randomness", () => {
+    const baseInput = {
+      seed: 7,
+      allies: [{
+        id: "a",
+        hp: 100,
+        attack: 50,
+        defense: 10,
+        speed: 20,
+        critBps: 0,
+        familyId: "alpha",
+      }],
+      enemies: [{
+        id: "b",
+        hp: 500,
+        attack: 1,
+        defense: 0,
+        speed: 1,
+        critBps: 0,
+        familyId: "beta",
+      }],
+      rules: {
+        maxTurns: 1,
+        varianceMinBps: 10_000,
+        varianceMaxBps: 10_000,
+        defaultCritBps: 0,
+      },
+    } as const;
+
+    const neutral = simulateWave(baseInput);
+    const advantaged = simulateWave({
+      ...baseInput,
+      rules: {
+        ...baseInput.rules,
+        familyAdvantage: { alpha: "beta" },
+      },
+    });
+
+    expect(advantaged.events[0]!.damage).toBeGreaterThan(neutral.events[0]!.damage);
+  });
+
   it("replays identically for the same seed", () => {
     const input = {
       seed: 77,

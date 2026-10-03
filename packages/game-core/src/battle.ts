@@ -1,6 +1,9 @@
 import { fnv1a32 } from "./hash.js";
 import { SeededRng } from "./rng.js";
 
+export type TargetingMode = "random" | "lowest_hp" | "highest_attack";
+export type BattleAction = "basic" | "ultimate";
+
 export type Combatant = {
   id: string;
   hp: number;
@@ -8,6 +11,10 @@ export type Combatant = {
   defense: number;
   speed: number;
   critBps?: number;
+  familyId?: string;
+  targeting?: TargetingMode;
+  ultimatePowerBps?: number;
+  startingMp?: number;
 };
 
 export type BattleRules = {
@@ -17,6 +24,12 @@ export type BattleRules = {
   varianceMaxBps: number;
   defaultCritBps: number;
   critMultiplierBps: number;
+  mpMax: number;
+  mpPerAction: number;
+  mpOnHit: number;
+  familyAdvantage: Record<string, string>;
+  advantageMultiplierBps: number;
+  disadvantageMultiplierBps: number;
 };
 
 export type BattleEvent = {
@@ -26,6 +39,7 @@ export type BattleEvent = {
   damage: number;
   critical: boolean;
   targetHp: number;
+  action: BattleAction;
 };
 
 export type BattleResult = {
@@ -44,10 +58,17 @@ export const DEFAULT_BATTLE_RULES: BattleRules = {
   varianceMaxBps: 11_000,
   defaultCritBps: 1_000,
   critMultiplierBps: 20_000,
+  mpMax: 100,
+  mpPerAction: 10,
+  mpOnHit: 5,
+  familyAdvantage: {},
+  advantageMultiplierBps: 12_000,
+  disadvantageMultiplierBps: 8_500,
 };
 
 type RuntimeUnit = Combatant & {
   currentHp: number;
+  currentMp: number;
   side: "ally" | "enemy";
 };
 
@@ -69,11 +90,20 @@ function validateCombatant(unit: Combatant): void {
   assertPositiveInt(unit.attack, `${unit.id}.attack`);
   assertNonNegativeInt(unit.defense, `${unit.id}.defense`);
   assertNonNegativeInt(unit.speed, `${unit.id}.speed`);
+
   if (unit.critBps !== undefined) {
     assertNonNegativeInt(unit.critBps, `${unit.id}.critBps`);
     if (unit.critBps > BPS) {
       throw new Error(`${unit.id}.critBps must be <= ${BPS}`);
     }
+  }
+
+  if (unit.ultimatePowerBps !== undefined) {
+    assertPositiveInt(unit.ultimatePowerBps, `${unit.id}.ultimatePowerBps`);
+  }
+
+  if (unit.startingMp !== undefined) {
+    assertNonNegativeInt(unit.startingMp, `${unit.id}.startingMp`);
   }
 }
 
@@ -85,11 +115,24 @@ function validateRules(rules: BattleRules): void {
   if (rules.varianceMaxBps < rules.varianceMinBps) {
     throw new Error("varianceMaxBps must be >= varianceMinBps");
   }
+
   assertNonNegativeInt(rules.defaultCritBps, "rules.defaultCritBps");
   if (rules.defaultCritBps > BPS) {
     throw new Error(`defaultCritBps must be <= ${BPS}`);
   }
+
   assertPositiveInt(rules.critMultiplierBps, "rules.critMultiplierBps");
+  assertPositiveInt(rules.mpMax, "rules.mpMax");
+  assertNonNegativeInt(rules.mpPerAction, "rules.mpPerAction");
+  assertNonNegativeInt(rules.mpOnHit, "rules.mpOnHit");
+  assertPositiveInt(
+    rules.advantageMultiplierBps,
+    "rules.advantageMultiplierBps",
+  );
+  assertPositiveInt(
+    rules.disadvantageMultiplierBps,
+    "rules.disadvantageMultiplierBps",
+  );
 }
 
 function compareIds(left: RuntimeUnit, right: RuntimeUnit): number {
@@ -102,11 +145,53 @@ function living(units: RuntimeUnit[]): RuntimeUnit[] {
   return units.filter((unit) => unit.currentHp > 0);
 }
 
+function selectTarget(
+  actor: RuntimeUnit,
+  targets: RuntimeUnit[],
+  rng: SeededRng,
+): RuntimeUnit {
+  if (actor.targeting === "lowest_hp") {
+    return [...targets].sort(
+      (left, right) =>
+        left.currentHp - right.currentHp || compareIds(left, right),
+    )[0]!;
+  }
+
+  if (actor.targeting === "highest_attack") {
+    return [...targets].sort(
+      (left, right) =>
+        right.attack - left.attack || compareIds(left, right),
+    )[0]!;
+  }
+
+  const stableTargets = [...targets].sort(compareIds);
+  return stableTargets[rng.nextInt(stableTargets.length)]!;
+}
+
+function familyMultiplierBps(
+  attacker: RuntimeUnit,
+  defender: RuntimeUnit,
+  rules: BattleRules,
+): number {
+  if (!attacker.familyId || !defender.familyId) return BPS;
+
+  if (rules.familyAdvantage[attacker.familyId] === defender.familyId) {
+    return rules.advantageMultiplierBps;
+  }
+
+  if (rules.familyAdvantage[defender.familyId] === attacker.familyId) {
+    return rules.disadvantageMultiplierBps;
+  }
+
+  return BPS;
+}
+
 function calculateDamage(
   attacker: RuntimeUnit,
   defender: RuntimeUnit,
   rng: SeededRng,
   rules: BattleRules,
+  powerBps: number,
 ): { damage: number; critical: boolean } {
   const base = Math.max(
     1,
@@ -116,12 +201,12 @@ function calculateDamage(
     ),
   );
 
-  const varianceRange =
-    rules.varianceMaxBps - rules.varianceMinBps + 1;
-  const varianceBps =
-    rules.varianceMinBps + rng.nextInt(varianceRange);
+  const varianceRange = rules.varianceMaxBps - rules.varianceMinBps + 1;
+  const varianceBps = rules.varianceMinBps + rng.nextInt(varianceRange);
 
   let damage = Math.max(1, Math.floor((base * varianceBps) / BPS));
+  damage = Math.max(1, Math.floor((damage * powerBps) / BPS));
+
   const critical =
     rng.nextInt(BPS) < (attacker.critBps ?? rules.defaultCritBps);
 
@@ -131,6 +216,13 @@ function calculateDamage(
       Math.floor((damage * rules.critMultiplierBps) / BPS),
     );
   }
+
+  damage = Math.max(
+    1,
+    Math.floor(
+      (damage * familyMultiplierBps(attacker, defender, rules)) / BPS,
+    ),
+  );
 
   return { damage, critical };
 }
@@ -187,15 +279,23 @@ export function simulateWave(input: {
   };
   validateRules(rules);
 
+  for (const unit of [...input.allies, ...input.enemies]) {
+    if ((unit.startingMp ?? 0) > rules.mpMax) {
+      throw new Error(`${unit.id}.startingMp must be <= rules.mpMax`);
+    }
+  }
+
   const rng = new SeededRng(input.seed);
   const allies: RuntimeUnit[] = input.allies.map((unit) => ({
     ...unit,
     currentHp: unit.hp,
+    currentMp: unit.startingMp ?? 0,
     side: "ally",
   }));
   const enemies: RuntimeUnit[] = input.enemies.map((unit) => ({
     ...unit,
     currentHp: unit.hp,
+    currentMp: unit.startingMp ?? 0,
     side: "enemy",
   }));
 
@@ -216,18 +316,38 @@ export function simulateWave(input: {
       if (actor.currentHp <= 0) continue;
 
       const opponents = actor.side === "ally" ? enemies : allies;
-      const targets = living(opponents).sort(compareIds);
+      const targets = living(opponents);
       if (targets.length === 0) break;
 
-      const target = targets[rng.nextInt(targets.length)]!;
+      const target = selectTarget(actor, targets, rng);
+      const canUseUltimate =
+        actor.ultimatePowerBps !== undefined && actor.currentMp >= rules.mpMax;
+      const action: BattleAction = canUseUltimate ? "ultimate" : "basic";
+      const powerBps = canUseUltimate ? actor.ultimatePowerBps! : BPS;
+
       const { damage, critical } = calculateDamage(
         actor,
         target,
         rng,
         rules,
+        powerBps,
       );
 
       target.currentHp = Math.max(0, target.currentHp - damage);
+
+      if (actor.ultimatePowerBps !== undefined) {
+        actor.currentMp = canUseUltimate
+          ? 0
+          : Math.min(rules.mpMax, actor.currentMp + rules.mpPerAction);
+      }
+
+      if (target.ultimatePowerBps !== undefined) {
+        target.currentMp = Math.min(
+          rules.mpMax,
+          target.currentMp + rules.mpOnHit,
+        );
+      }
+
       turns += 1;
       events.push({
         turn: turns,
@@ -236,6 +356,7 @@ export function simulateWave(input: {
         damage,
         critical,
         targetHp: target.currentHp,
+        action,
       });
 
       if (living(allies).length === 0 || living(enemies).length === 0) {

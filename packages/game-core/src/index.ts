@@ -4,10 +4,12 @@ export {
   DEFAULT_BATTLE_RULES,
   scaleStat,
   simulateWave,
+  type BattleAction,
   type BattleEvent,
   type BattleResult,
   type BattleRules,
   type Combatant,
+  type TargetingMode,
 } from "./battle.js";
 export {
   HALL_MAX_LEVEL,
