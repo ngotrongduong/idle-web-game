@@ -6,6 +6,10 @@ import {
 } from "@idle/game-core";
 import { foundationGameData } from "@idle/game-data";
 import { runBattleSimulation } from "../src/battle-sim";
+import {
+  runDungeonSimulation,
+  SAMPLE_DUNGEONS,
+} from "../src/dungeon-sim";
 import { SAMPLE_ENCOUNTERS, SAMPLE_TEAM } from "../src/scenarios";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
@@ -60,6 +64,25 @@ describe("sim tools", () => {
     expect(
       summaries.every(
         (summary) => summary.wins + summary.losses + summary.draws === 10,
+      ),
+    ).toBe(true);
+  });
+
+  it("builds and simulates all four configured six-wave dungeons", () => {
+    expect(SAMPLE_DUNGEONS).toHaveLength(4);
+    expect(SAMPLE_DUNGEONS.every((dungeon) => dungeon.waves.length === 6)).toBe(
+      true,
+    );
+
+    const summaries = runDungeonSimulation({ runs: 3, seedBase: 1 });
+    expect(summaries).toHaveLength(4);
+    expect(
+      summaries.every(
+        (summary) =>
+          summary.completions >= 0 &&
+          summary.completions <= summary.runs &&
+          summary.averageWavesCleared >= 0 &&
+          summary.averageWavesCleared <= 6,
       ),
     ).toBe(true);
   });

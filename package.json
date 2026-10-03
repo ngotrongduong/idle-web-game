@@ -15,7 +15,8 @@
     "inspect:capture": "pnpm --filter @idle/inspect capture",
     "inspect:analyze": "pnpm --filter @idle/inspect analyze",
     "inspect:extract": "pnpm --filter @idle/inspect extract",
-    "inspect:test": "pnpm --filter @idle/inspect test"
+    "inspect:test": "pnpm --filter @idle/inspect test",
+    "sim:dungeon": "pnpm --filter @idle/sim sim:dungeon"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

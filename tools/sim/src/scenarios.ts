@@ -1,17 +1,16 @@
 import type {
-  Combatant,
   CombatantV2,
   CombatSkill,
 } from "@idle/game-core";
 import { foundationGameData } from "@idle/game-data";
 
-function toCombatant(input: {
+export function toCombatant(input: {
   id: string;
   hp: number;
   attack: number;
   defense: number;
   speed: number;
-}): Combatant {
+}): CombatantV2 {
   return {
     id: input.id,
     hp: input.hp,

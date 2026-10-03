@@ -17,12 +17,19 @@ export {
   type BattleActionV2,
   type BattleEventV2,
   type BattleResultV2,
+  type BattleUnitStateV2,
   type CombatantV2,
   type CombatPassive,
   type CombatSkill,
   type CombatSkillEffect,
   type CombatSkillTarget,
 } from "./battle-v2";
+export {
+  simulateDungeonRunV2,
+  type DungeonRunResultV2,
+  type DungeonWaveResultV2,
+  type DungeonWaveV2,
+} from "./dungeon-v2";
 export {
   HALL_MAX_LEVEL,
   HALL_UPGRADE_GOLD_COST,

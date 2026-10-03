@@ -61,12 +61,21 @@ export type BattleEventV2 = {
   targetMp: number;
 };
 
+export type BattleUnitStateV2 = {
+  id: string;
+  currentHp: number;
+  mp: number;
+  shield: number;
+};
+
 export type BattleResultV2 = {
   rulesVersion: "v2";
   result: "win" | "lose" | "draw";
   turns: number;
   events: BattleEventV2[];
   hash: string;
+  finalAllies: BattleUnitStateV2[];
+  finalEnemies: BattleUnitStateV2[];
 };
 
 type RuntimeUnitV2 = {
@@ -201,6 +210,54 @@ function compareIds(left: RuntimeUnitV2, right: RuntimeUnitV2): number {
 
 function living(units: RuntimeUnitV2[]): RuntimeUnitV2[] {
   return units.filter((unit) => unit.currentHp > 0);
+}
+
+function snapshotUnit(unit: RuntimeUnitV2): BattleUnitStateV2 {
+  return {
+    id: unit.id,
+    currentHp: unit.currentHp,
+    mp: unit.mp,
+    shield: unit.shield,
+  };
+}
+
+function restoreInitialState(
+  units: RuntimeUnitV2[],
+  states: BattleUnitStateV2[],
+): void {
+  if (states.length !== units.length) {
+    throw new Error("initialAllies must contain one state for every ally");
+  }
+
+  const byId = new Map(units.map((unit) => [unit.id, unit]));
+  const seen = new Set<string>();
+
+  for (const state of states) {
+    if (seen.has(state.id)) {
+      throw new Error(`Duplicate initial ally state: ${state.id}`);
+    }
+    seen.add(state.id);
+
+    const unit = byId.get(state.id);
+    if (!unit) {
+      throw new Error(`Unknown initial ally state: ${state.id}`);
+    }
+
+    assertNonNegativeInt(state.currentHp, `${state.id}.currentHp`);
+    assertNonNegativeInt(state.mp, `${state.id}.mp`);
+    assertNonNegativeInt(state.shield, `${state.id}.shield`);
+
+    if (state.currentHp > unit.maxHp) {
+      throw new Error(`${state.id}.currentHp exceeds max HP`);
+    }
+    if (state.mp > MP_MAX) {
+      throw new Error(`${state.id}.mp exceeds ${MP_MAX}`);
+    }
+
+    unit.currentHp = state.currentHp;
+    unit.mp = state.mp;
+    unit.shield = state.shield;
+  }
 }
 
 function compareLowestHpRatio(
@@ -456,6 +513,7 @@ export function simulateWaveV2(input: {
   enemies: CombatantV2[];
   seed: number;
   rules?: Partial<BattleRules>;
+  initialAllies?: BattleUnitStateV2[];
 }): BattleResultV2 {
   if (input.allies.length === 0 || input.enemies.length === 0) {
     throw new Error("simulateWaveV2 requires at least one ally and one enemy");
@@ -478,6 +536,10 @@ export function simulateWaveV2(input: {
   const rng = new SeededRng(input.seed);
   const allies = input.allies.map((unit) => toRuntime(unit, "ally"));
   const enemies = input.enemies.map((unit) => toRuntime(unit, "enemy"));
+  if (input.initialAllies) {
+    restoreInitialState(allies, input.initialAllies);
+  }
+
   const events: BattleEventV2[] = [];
   let turns = 0;
 
@@ -548,5 +610,7 @@ export function simulateWaveV2(input: {
     turns,
     events,
     hash: hashBattleV2(result, turns, events),
+    finalAllies: allies.map(snapshotUnit),
+    finalEnemies: enemies.map(snapshotUnit),
   };
 }

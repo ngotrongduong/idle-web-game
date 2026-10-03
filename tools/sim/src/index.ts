@@ -1,4 +1,5 @@
 import { runBattleSimulation } from "./battle-sim";
+import { runDungeonSimulation } from "./dungeon-sim";
 import { runUpgradeSimulation } from "./upgrade-sim";
 
 function readNumberArg(name: string, fallback: number): number {
@@ -29,6 +30,13 @@ if (command === "battle") {
     encounterId: readStringArg("encounter"),
   });
   console.log(JSON.stringify(summary, null, 2));
+} else if (command === "dungeon") {
+  const summary = runDungeonSimulation({
+    runs: readNumberArg("runs", 10_000),
+    seedBase: readNumberArg("seed", 1),
+    dungeonId: readStringArg("dungeon"),
+  });
+  console.log(JSON.stringify(summary, null, 2));
 } else if (command === "upgrade") {
   const summary = runUpgradeSimulation({
     runs: readNumberArg("runs", 20_000),
@@ -40,7 +48,8 @@ if (command === "battle") {
   console.log(
     [
       "Usage:",
-      "  pnpm sim:battle -- --runs 10000 [--encounter dungeon_1] [--seed 1]",
+      "  pnpm sim:battle -- --runs 10000 [--encounter bamboo_grove] [--seed 1]",
+      "  pnpm sim:dungeon -- --runs 10000 [--dungeon bamboo_grove] [--seed 1]",
       "  pnpm sim:upgrade -- --runs 20000 [--target 10] [--seed 1]",
     ].join("\n"),
   );
