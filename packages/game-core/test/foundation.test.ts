@@ -178,7 +178,7 @@ describe("game-core foundation", () => {
         varianceMaxBps: 10_000,
         defaultCritBps: 0,
       },
-    } as const;
+    };
 
     const neutral = simulateWave(baseInput);
     const advantaged = simulateWave({
