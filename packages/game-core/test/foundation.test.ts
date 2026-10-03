@@ -11,8 +11,8 @@ import {
 } from "../src/index";
 
 describe("game-core foundation", () => {
-  it("exports the command-ready milestone version", () => {
-    expect(GAME_CORE_VERSION).toBe("m0.6a-command-ready");
+  it("exports the battle-v2 milestone version", () => {
+    expect(GAME_CORE_VERSION).toBe("m0-battle-v2");
   });
 
   it("keeps integer values inside bounds", () => {
