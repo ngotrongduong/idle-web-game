@@ -6,7 +6,27 @@ export type StoredCommandOutcome = {
   body: unknown;
 };
 
-export class InMemoryGameStore {
+export interface GameStore {
+  createGuest(sessionHash: string): Promise<FoundationPlayerState>;
+  findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined>;
+  getPlayer(playerId: string): Promise<FoundationPlayerState | undefined>;
+  setPlayer(player: FoundationPlayerState): Promise<void>;
+  getCommandOutcome(
+    playerId: string,
+    cmdId: string,
+  ): Promise<StoredCommandOutcome | undefined>;
+  setCommandOutcome(
+    playerId: string,
+    cmdId: string,
+    outcome: StoredCommandOutcome,
+  ): Promise<void>;
+  withPlayerLock<T>(
+    playerId: string,
+    task: () => Promise<T>,
+  ): Promise<T>;
+}
+
+export class InMemoryGameStore implements GameStore {
   private readonly players = new Map<string, FoundationPlayerState>();
   private readonly sessions = new Map<string, string>();
   private readonly commandOutcomes = new Map<
@@ -15,7 +35,7 @@ export class InMemoryGameStore {
   >();
   private readonly lockTails = new Map<string, Promise<void>>();
 
-  createGuest(sessionHash: string): FoundationPlayerState {
+  async createGuest(sessionHash: string): Promise<FoundationPlayerState> {
     const player: FoundationPlayerState = {
       id: randomUUID(),
       version: 0,
@@ -28,31 +48,35 @@ export class InMemoryGameStore {
     return { ...player };
   }
 
-  findPlayerIdBySessionHash(sessionHash: string): string | undefined {
+  async findPlayerIdBySessionHash(
+    sessionHash: string,
+  ): Promise<string | undefined> {
     return this.sessions.get(sessionHash);
   }
 
-  getPlayer(playerId: string): FoundationPlayerState | undefined {
+  async getPlayer(
+    playerId: string,
+  ): Promise<FoundationPlayerState | undefined> {
     const player = this.players.get(playerId);
     return player ? { ...player } : undefined;
   }
 
-  setPlayer(player: FoundationPlayerState): void {
+  async setPlayer(player: FoundationPlayerState): Promise<void> {
     this.players.set(player.id, { ...player });
   }
 
-  getCommandOutcome(
+  async getCommandOutcome(
     playerId: string,
     cmdId: string,
-  ): StoredCommandOutcome | undefined {
+  ): Promise<StoredCommandOutcome | undefined> {
     return this.commandOutcomes.get(playerId)?.get(cmdId);
   }
 
-  setCommandOutcome(
+  async setCommandOutcome(
     playerId: string,
     cmdId: string,
     outcome: StoredCommandOutcome,
-  ): void {
+  ): Promise<void> {
     let outcomes = this.commandOutcomes.get(playerId);
     if (!outcomes) {
       outcomes = new Map();
@@ -63,7 +87,7 @@ export class InMemoryGameStore {
 
   async withPlayerLock<T>(
     playerId: string,
-    task: () => Promise<T> | T,
+    task: () => Promise<T>,
   ): Promise<T> {
     const previous = this.lockTails.get(playerId) ?? Promise.resolve();
 

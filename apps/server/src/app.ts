@@ -22,6 +22,7 @@ import {
 } from "./session.js";
 import {
   InMemoryGameStore,
+  type GameStore,
   type StoredCommandOutcome,
 } from "./store.js";
 
@@ -38,10 +39,10 @@ function apiError(
   });
 }
 
-function authenticate(
+async function authenticate(
   request: FastifyRequest,
-  store: InMemoryGameStore,
-): string | undefined {
+  store: GameStore,
+): Promise<string | undefined> {
   const token = readCookie(request, SESSION_COOKIE);
   if (!token) return undefined;
   return store.findPlayerIdBySessionHash(hashSessionToken(token));
@@ -51,7 +52,7 @@ function sendStored(reply: FastifyReply, outcome: StoredCommandOutcome) {
   return reply.code(outcome.statusCode).send(outcome.body);
 }
 
-export function buildServer(options?: { store?: InMemoryGameStore }) {
+export function buildServer(options?: { store?: GameStore }) {
   const app = Fastify({ logger: false });
   const store = options?.store ?? new InMemoryGameStore();
 
@@ -65,7 +66,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
 
   app.post("/api/v1/auth/guest", async (_request, reply) => {
     const token = createSessionToken();
-    const state = store.createGuest(hashSessionToken(token));
+    const state = await store.createGuest(hashSessionToken(token));
 
     reply.header("set-cookie", sessionCookieHeader(token));
     return GuestAuthResponseSchema.parse({
@@ -75,14 +76,14 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
   });
 
   app.get("/api/v1/state", async (request, reply) => {
-    const playerId = authenticate(request, store);
+    const playerId = await authenticate(request, store);
     if (!playerId) {
       return reply
         .code(401)
         .send(apiError("UNAUTHORIZED", "A valid session is required"));
     }
 
-    const state = store.getPlayer(playerId);
+    const state = await store.getPlayer(playerId);
     if (!state) {
       return reply
         .code(404)
@@ -93,7 +94,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
   });
 
   app.post("/api/v1/cmd", async (request, reply) => {
-    const playerId = authenticate(request, store);
+    const playerId = await authenticate(request, store);
     if (!playerId) {
       return reply
         .code(401)
@@ -108,17 +109,17 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
     }
 
     const envelope = parsed.data;
-    const outcome = await store.withPlayerLock(playerId, () => {
-      const cached = store.getCommandOutcome(playerId, envelope.cmdId);
+    const outcome = await store.withPlayerLock(playerId, async () => {
+      const cached = await store.getCommandOutcome(playerId, envelope.cmdId);
       if (cached) return cached;
 
-      const state = store.getPlayer(playerId);
+      const state = await store.getPlayer(playerId);
       if (!state) {
         const missing: StoredCommandOutcome = {
           statusCode: 404,
           body: apiError("NOT_FOUND", "Player state was not found"),
         };
-        store.setCommandOutcome(playerId, envelope.cmdId, missing);
+        await store.setCommandOutcome(playerId, envelope.cmdId, missing);
         return missing;
       }
 
@@ -131,7 +132,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
             state.version,
           ),
         };
-        store.setCommandOutcome(playerId, envelope.cmdId, conflict);
+        await store.setCommandOutcome(playerId, envelope.cmdId, conflict);
         return conflict;
       }
 
@@ -141,7 +142,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
             statusCode: 409,
             body: apiError("MAX_LEVEL", "Hall is already at maximum level"),
           };
-          store.setCommandOutcome(playerId, envelope.cmdId, maxed);
+          await store.setCommandOutcome(playerId, envelope.cmdId, maxed);
           return maxed;
         }
 
@@ -154,7 +155,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
               "Not enough gold to upgrade the hall",
             ),
           };
-          store.setCommandOutcome(
+          await store.setCommandOutcome(
             playerId,
             envelope.cmdId,
             insufficient,
@@ -169,7 +170,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
           gold: state.gold - goldCost,
           hallLevel: state.hallLevel + 1,
         };
-        store.setPlayer(nextState);
+        await store.setPlayer(nextState);
 
         const success = CommandSuccessSchema.parse({
           ok: true,
@@ -192,7 +193,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
           statusCode: 200,
           body: success,
         };
-        store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
         return stored;
       }
 
@@ -200,7 +201,7 @@ export function buildServer(options?: { store?: InMemoryGameStore }) {
         statusCode: 400,
         body: apiError("INVALID_COMMAND", "Unsupported command"),
       };
-      store.setCommandOutcome(playerId, envelope.cmdId, unreachable);
+      await store.setCommandOutcome(playerId, envelope.cmdId, unreachable);
       return unreachable;
     });
 
