@@ -1,5 +1,5 @@
-export { fnv1a32 } from "./hash";
-export { SeededRng } from "./rng";
+export { fnv1a32 } from "./hash.js";
+export { SeededRng } from "./rng.js";
 export {
   DEFAULT_BATTLE_RULES,
   scaleStat,
@@ -8,12 +8,12 @@ export {
   type BattleResult,
   type BattleRules,
   type Combatant,
-} from "./battle";
+} from "./battle.js";
 export {
   HALL_MAX_LEVEL,
   HALL_UPGRADE_GOLD_COST,
   hallUpgradeGoldCost,
-} from "./economy";
+} from "./economy.js";
 export {
   getUpgradeSuccessBps,
   resolveUpgradeAttempt,
@@ -24,7 +24,7 @@ export {
   UPGRADE_SUCCESS_BPS,
   type UpgradeAttemptResult,
   type UpgradeState,
-} from "./upgrade";
+} from "./upgrade.js";
 
 export const GAME_CORE_VERSION = "m0.6a-command-ready";
 
