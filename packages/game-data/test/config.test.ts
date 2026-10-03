@@ -12,7 +12,7 @@ describe("game-data pipeline", () => {
   });
 
   it("loads the complete first MVP content slice", () => {
-    expect(foundationGameData.version).toBe("m0.3-content-v2");
+    expect(foundationGameData.version).toBe("m0.3-content-v3");
     expect(foundationGameData.materials).toHaveLength(15);
     expect(foundationGameData.items).toHaveLength(30);
     expect(foundationGameData.dungeons).toHaveLength(4);
@@ -30,6 +30,22 @@ describe("game-data pipeline", () => {
       expect(familyClasses.filter((entry) => entry.tier === 2)).toHaveLength(2);
       expect(familyClasses.filter((entry) => entry.tier === 3)).toHaveLength(3);
     }
+  });
+
+  it("defines explicit deterministic ultimate behavior for every class", () => {
+    expect(
+      foundationGameData.classes.every(
+        (entry) =>
+          entry.ultimatePowerBps > 0 &&
+          ["damage", "heal"].includes(entry.ultimateKind),
+      ),
+    ).toBe(true);
+
+    const supports = foundationGameData.classes.filter(
+      (entry) => entry.role === "support",
+    );
+    expect(supports.length).toBeGreaterThan(0);
+    expect(supports.every((entry) => entry.ultimateKind === "heal")).toBe(true);
   });
 
   it("gives every dungeon normal enemies, an elite and exactly one boss", () => {
@@ -101,7 +117,7 @@ describe("game-data pipeline", () => {
         classFamilies:
           "id,name_vi,name_en,archetype,damage_type,advantage_family_id\nf,F,F,frontline,physical,missing",
         classes:
-          "id,name_vi,name_en,family_id,tier,parent_class_id,role,base_hp,base_attack,base_defense,base_speed\nc,C,C,f,1,,tank,10,2,1,1",
+          "id,name_vi,name_en,family_id,tier,parent_class_id,role,base_hp,base_attack,base_defense,base_speed,targeting,ultimate_kind,ultimate_targeting,ultimate_power_bps\nc,C,C,f,1,,tank,10,2,1,1,random,damage,highest_attack,13000",
         enemies:
           "id,name_vi,name_en,dungeon_id,rank,hp,attack,defense,speed,reward_gold,reward_exp\ne,E,E,d,boss,10,2,1,1,1,1",
       }),

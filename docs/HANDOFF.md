@@ -16,8 +16,8 @@ M0 — Nền móng.
 - `apps/web`: React 19 + Vite mobile-first placeholder shell.
 - `apps/server`: Fastify server foundation.
 - M0.2 partial: GitHub Actions CI with frozen lockfile, typecheck, test and build.
-- M0.3: CSV → JSON pipeline, Zod validation and cross-reference checks; original MVP slice now includes 4 class families, 24 T1–T3 classes, 4 dungeons, 16 enemies, 15 materials and 30 craftable items.
-- M0.4: seeded RNG, integer/BPS combat math, deterministic `simulateWave`, replay hash and golden test; optional MP/ULT, role-aware targeting and class-family counter multipliers preserve the legacy golden hash when unused.
+- M0.3: CSV → JSON pipeline, Zod validation and cross-reference checks; original MVP slice includes 4 class families, 24 T1–T3 classes with explicit targeting/ULT metadata, 4 dungeons, 16 enemies, 15 materials and 30 craftable items.
+- M0.4: seeded RNG, integer/BPS combat math, deterministic `simulateWave`, replay hash and golden test; MP/ULT supports deterministic damage or healing, role-aware targeting and class-family counters while preserving the legacy golden hash when optional features are unused.
 - M0.5: enhancement model with +5 safety floor and pity; battle/enhancement Monte Carlo tools. Battle scenarios now derive progression teams, dungeon waves and gold/EXP rewards from validated game-data instead of hard-coded encounters.
 - M0.6a: guest session + HttpOnly cookie, intent-only `/api/v1/cmd`, expected-version checks, per-player async lock, idempotent `cmdId`, and first `upgrade_hall` command.
 

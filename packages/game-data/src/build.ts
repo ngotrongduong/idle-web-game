@@ -18,7 +18,7 @@ const [materials, items, dungeons, classFamilies, classes, enemies] =
 
 const gameData = loadGameDataFromCsv(
   { materials, items, dungeons, classFamilies, classes, enemies },
-  "m0.3-content-v2",
+  "m0.3-content-v3",
 );
 
 const outputDir = resolve(root, "generated");

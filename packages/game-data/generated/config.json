@@ -1,5 +1,5 @@
 {
-  "version": "m0.3-content-v2",
+  "version": "m0.3-content-v3",
   "materials": [
     {
       "id": "bamboo_fiber",
@@ -751,7 +751,11 @@
       "baseHp": 210,
       "baseAttack": 34,
       "baseDefense": 32,
-      "baseSpeed": 9
+      "baseSpeed": 9,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500
     },
     {
       "id": "iron_guard",
@@ -764,7 +768,11 @@
       "baseHp": 280,
       "baseAttack": 42,
       "baseDefense": 46,
-      "baseSpeed": 8
+      "baseSpeed": 8,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500
     },
     {
       "id": "blade_runner",
@@ -777,7 +785,11 @@
       "baseHp": 220,
       "baseAttack": 58,
       "baseDefense": 26,
-      "baseSpeed": 13
+      "baseSpeed": 13,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "bastion_captain",
@@ -790,7 +802,11 @@
       "baseHp": 365,
       "baseAttack": 52,
       "baseDefense": 64,
-      "baseSpeed": 8
+      "baseSpeed": 8,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500
     },
     {
       "id": "banner_knight",
@@ -803,7 +819,11 @@
       "baseHp": 315,
       "baseAttack": 61,
       "baseDefense": 49,
-      "baseSpeed": 10
+      "baseSpeed": 10,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "oathblade",
@@ -816,7 +836,11 @@
       "baseHp": 270,
       "baseAttack": 76,
       "baseDefense": 34,
-      "baseSpeed": 14
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "trail_archer",
@@ -829,7 +853,11 @@
       "baseHp": 150,
       "baseAttack": 48,
       "baseDefense": 15,
-      "baseSpeed": 15
+      "baseSpeed": 15,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "gale_marksman",
@@ -842,7 +870,11 @@
       "baseHp": 185,
       "baseAttack": 66,
       "baseDefense": 19,
-      "baseSpeed": 17
+      "baseSpeed": 17,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "thorn_stalker",
@@ -855,7 +887,11 @@
       "baseHp": 205,
       "baseAttack": 59,
       "baseDefense": 24,
-      "baseSpeed": 16
+      "baseSpeed": 16,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "sky_piercer",
@@ -868,7 +904,11 @@
       "baseHp": 220,
       "baseAttack": 88,
       "baseDefense": 24,
-      "baseSpeed": 19
+      "baseSpeed": 19,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "farshot_ranger",
@@ -881,7 +921,11 @@
       "baseHp": 245,
       "baseAttack": 80,
       "baseDefense": 28,
-      "baseSpeed": 18
+      "baseSpeed": 18,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "briar_hunter",
@@ -894,7 +938,11 @@
       "baseHp": 275,
       "baseAttack": 73,
       "baseDefense": 35,
-      "baseSpeed": 17
+      "baseSpeed": 17,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "spark_adept",
@@ -907,7 +955,11 @@
       "baseHp": 135,
       "baseAttack": 54,
       "baseDefense": 12,
-      "baseSpeed": 13
+      "baseSpeed": 13,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "flame_weaver",
@@ -920,7 +972,11 @@
       "baseHp": 165,
       "baseAttack": 75,
       "baseDefense": 16,
-      "baseSpeed": 14
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "storm_scribe",
@@ -933,7 +989,11 @@
       "baseHp": 180,
       "baseAttack": 69,
       "baseDefense": 20,
-      "baseSpeed": 15
+      "baseSpeed": 15,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "cinder_oracle",
@@ -946,7 +1006,11 @@
       "baseHp": 205,
       "baseAttack": 99,
       "baseDefense": 21,
-      "baseSpeed": 15
+      "baseSpeed": 15,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "glassfire_magus",
@@ -959,7 +1023,11 @@
       "baseHp": 225,
       "baseAttack": 92,
       "baseDefense": 25,
-      "baseSpeed": 14
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000
     },
     {
       "id": "thunder_calligrapher",
@@ -972,7 +1040,11 @@
       "baseHp": 240,
       "baseAttack": 84,
       "baseDefense": 30,
-      "baseSpeed": 16
+      "baseSpeed": 16,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "dawn_acolyte",
@@ -985,7 +1057,11 @@
       "baseHp": 165,
       "baseAttack": 35,
       "baseDefense": 18,
-      "baseSpeed": 11
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000
     },
     {
       "id": "light_keeper",
@@ -998,7 +1074,11 @@
       "baseHp": 220,
       "baseAttack": 43,
       "baseDefense": 28,
-      "baseSpeed": 11
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000
     },
     {
       "id": "spirit_mender",
@@ -1011,7 +1091,11 @@
       "baseHp": 195,
       "baseAttack": 49,
       "baseDefense": 22,
-      "baseSpeed": 13
+      "baseSpeed": 13,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000
     },
     {
       "id": "sunward_sage",
@@ -1024,7 +1108,11 @@
       "baseHp": 285,
       "baseAttack": 54,
       "baseDefense": 40,
-      "baseSpeed": 11
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000
     },
     {
       "id": "lantern_guide",
@@ -1037,7 +1125,11 @@
       "baseHp": 260,
       "baseAttack": 62,
       "baseDefense": 34,
-      "baseSpeed": 12
+      "baseSpeed": 12,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500
     },
     {
       "id": "soulweaver",
@@ -1050,7 +1142,11 @@
       "baseHp": 235,
       "baseAttack": 68,
       "baseDefense": 29,
-      "baseSpeed": 14
+      "baseSpeed": 14,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000
     }
   ],
   "enemies": [

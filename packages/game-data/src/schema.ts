@@ -52,6 +52,10 @@ export const HeroClassSchema = z
     baseAttack: z.number().int().positive(),
     baseDefense: z.number().int().nonnegative(),
     baseSpeed: z.number().int().nonnegative(),
+    targeting: z.enum(["random", "lowest_hp", "highest_attack"]),
+    ultimateKind: z.enum(["damage", "heal"]),
+    ultimateTargeting: z.enum(["random", "lowest_hp", "highest_attack"]),
+    ultimatePowerBps: z.number().int().positive(),
   })
   .and(LocalizedNameSchema);
 

@@ -63,20 +63,10 @@ export function buildProgressionTeam(
       speed: heroClass.baseSpeed,
       critBps: family.archetype === "ranged" ? 1_500 : 1_000,
       familyId: family.id,
-      targeting:
-        heroClass.role === "damage"
-          ? "lowest_hp"
-          : heroClass.role === "tank"
-            ? "random"
-            : "highest_attack",
-      ultimatePowerBps:
-        heroClass.role === "damage"
-          ? 16_000
-          : heroClass.role === "tank"
-            ? 13_500
-            : heroClass.role === "support"
-              ? 12_000
-              : 14_500,
+      targeting: heroClass.targeting,
+      ultimatePowerBps: heroClass.ultimatePowerBps,
+      ultimateKind: heroClass.ultimateKind,
+      ultimateTargeting: heroClass.ultimateTargeting,
     };
   });
 }

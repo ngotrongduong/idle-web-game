@@ -124,6 +124,56 @@ describe("game-core foundation", () => {
     expect(battle.events[0]?.damage).toBe(80);
   });
 
+  it("supports deterministic healing ultimates", () => {
+    const battle = simulateWave({
+      seed: 3,
+      allies: [
+        {
+          id: "healer",
+          hp: 100,
+          attack: 30,
+          defense: 10,
+          speed: 20,
+          critBps: 0,
+          ultimatePowerBps: 20_000,
+          ultimateKind: "heal",
+          ultimateTargeting: "lowest_hp",
+          startingMp: 100,
+        },
+        {
+          id: "wounded_ally",
+          hp: 100,
+          attack: 10,
+          defense: 10,
+          speed: 5,
+          critBps: 0,
+        },
+      ],
+      enemies: [
+        {
+          id: "fast_enemy",
+          hp: 500,
+          attack: 40,
+          defense: 0,
+          speed: 30,
+          critBps: 0,
+          targeting: "lowest_hp",
+        },
+      ],
+      rules: {
+        maxTurns: 2,
+        varianceMinBps: 10_000,
+        varianceMaxBps: 10_000,
+        defaultCritBps: 0,
+      },
+    });
+
+    const healEvent = battle.events.find((event) => event.action === "ultimate");
+    expect(healEvent?.actorId).toBe("healer");
+    expect(healEvent?.damage).toBe(0);
+    expect(healEvent?.healing).toBeGreaterThan(0);
+  });
+
   it("supports deterministic role-aware targeting", () => {
     const battle = simulateWave({
       seed: 99,

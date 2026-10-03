@@ -14,6 +14,8 @@ export type Combatant = {
   familyId?: string;
   targeting?: TargetingMode;
   ultimatePowerBps?: number;
+  ultimateKind?: "damage" | "heal";
+  ultimateTargeting?: TargetingMode;
   startingMp?: number;
 };
 
@@ -37,6 +39,7 @@ export type BattleEvent = {
   actorId: string;
   targetId: string;
   damage: number;
+  healing: number;
   critical: boolean;
   targetHp: number;
   action: BattleAction;
@@ -166,6 +169,15 @@ function selectTarget(
 
   const stableTargets = [...targets].sort(compareIds);
   return stableTargets[rng.nextInt(stableTargets.length)]!;
+}
+
+function calculateHealing(
+  healer: RuntimeUnit,
+  target: RuntimeUnit,
+  powerBps: number,
+): number {
+  const raw = Math.max(1, Math.floor((healer.attack * powerBps) / BPS));
+  return Math.min(raw, Math.max(0, target.hp - target.currentHp));
 }
 
 function familyMultiplierBps(
@@ -316,24 +328,46 @@ export function simulateWave(input: {
       if (actor.currentHp <= 0) continue;
 
       const opponents = actor.side === "ally" ? enemies : allies;
-      const targets = living(opponents);
-      if (targets.length === 0) break;
+      const opponentTargets = living(opponents);
+      if (opponentTargets.length === 0) break;
 
-      const target = selectTarget(actor, targets, rng);
       const canUseUltimate =
         actor.ultimatePowerBps !== undefined && actor.currentMp >= rules.mpMax;
       const action: BattleAction = canUseUltimate ? "ultimate" : "basic";
+      const ultimateKind = actor.ultimateKind ?? "damage";
       const powerBps = canUseUltimate ? actor.ultimatePowerBps! : BPS;
 
-      const { damage, critical } = calculateDamage(
-        actor,
-        target,
-        rng,
-        rules,
-        powerBps,
-      );
+      let target: RuntimeUnit;
+      let damage = 0;
+      let healing = 0;
+      let critical = false;
 
-      target.currentHp = Math.max(0, target.currentHp - damage);
+      if (canUseUltimate && ultimateKind === "heal") {
+        const alliesOnActorSide = actor.side === "ally" ? allies : enemies;
+        const originalTargeting = actor.targeting;
+        actor.targeting = actor.ultimateTargeting ?? "lowest_hp";
+        target = selectTarget(actor, living(alliesOnActorSide), rng);
+        actor.targeting = originalTargeting;
+        healing = calculateHealing(actor, target, powerBps);
+        target.currentHp = Math.min(target.hp, target.currentHp + healing);
+      } else {
+        const originalTargeting = actor.targeting;
+        if (canUseUltimate && actor.ultimateTargeting) {
+          actor.targeting = actor.ultimateTargeting;
+        }
+        target = selectTarget(actor, opponentTargets, rng);
+        actor.targeting = originalTargeting;
+        const damageResult = calculateDamage(
+          actor,
+          target,
+          rng,
+          rules,
+          powerBps,
+        );
+        damage = damageResult.damage;
+        critical = damageResult.critical;
+        target.currentHp = Math.max(0, target.currentHp - damage);
+      }
 
       if (actor.ultimatePowerBps !== undefined) {
         actor.currentMp = canUseUltimate
@@ -341,7 +375,7 @@ export function simulateWave(input: {
           : Math.min(rules.mpMax, actor.currentMp + rules.mpPerAction);
       }
 
-      if (target.ultimatePowerBps !== undefined) {
+      if (damage > 0 && target.ultimatePowerBps !== undefined) {
         target.currentMp = Math.min(
           rules.mpMax,
           target.currentMp + rules.mpOnHit,
@@ -354,6 +388,7 @@ export function simulateWave(input: {
         actorId: actor.id,
         targetId: target.id,
         damage,
+        healing,
         critical,
         targetHp: target.currentHp,
         action,

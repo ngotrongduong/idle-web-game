@@ -188,6 +188,10 @@ export function loadGameDataFromCsv(
       baseAttack: parseIntField(row, "base_attack", context),
       baseDefense: parseIntField(row, "base_defense", context),
       baseSpeed: parseIntField(row, "base_speed", context),
+      targeting: requireValue(row, "targeting", context),
+      ultimateKind: requireValue(row, "ultimate_kind", context),
+      ultimateTargeting: requireValue(row, "ultimate_targeting", context),
+      ultimatePowerBps: parseIntField(row, "ultimate_power_bps", context),
     };
   });
 
