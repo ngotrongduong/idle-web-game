@@ -23,10 +23,11 @@ function readStringArg(name: string): string | undefined {
 const command = process.argv[2];
 
 if (command === "battle") {
+  const encounterId = readStringArg("encounter");
   const summary = runBattleSimulation({
     runs: readNumberArg("runs", 10_000),
     seedBase: readNumberArg("seed", 1),
-    encounterId: readStringArg("encounter"),
+    ...(encounterId === undefined ? {} : { encounterId }),
   });
   console.log(JSON.stringify(summary, null, 2));
 } else if (command === "upgrade") {
