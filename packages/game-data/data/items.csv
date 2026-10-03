@@ -1,0 +1,3 @@
+id,name_vi,name_en,slot,attack,defense,recipe
+bamboo_training_sword,Kiếm Tre Tập Luyện,Bamboo Training Sword,weapon,12,0,bamboo_fiber:3|river_stone:1
+woven_guard,Giáp Đan Sơ Khai,Woven Guard,armor,0,10,bamboo_fiber:2|slime_gel:1

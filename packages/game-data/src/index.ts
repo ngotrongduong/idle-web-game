@@ -1,15 +1,15 @@
-import { z } from "zod";
+import generatedConfig from "../generated/config.json";
+import { validateGameData } from "./schema";
 
-export const GameConfigSchema = z.object({
-  version: z.string().min(1),
-  starterGold: z.number().int().nonnegative(),
-  offlineCapHours: z.number().int().positive(),
-});
+export { loadGameDataFromCsv, parseCsv, type CsvSources } from "./csv";
+export {
+  DungeonSchema,
+  GameDataSchema,
+  ItemSchema,
+  MaterialSchema,
+  RecipeIngredientSchema,
+  validateGameData,
+  type GameData,
+} from "./schema";
 
-export type GameConfig = z.infer<typeof GameConfigSchema>;
-
-export const foundationConfig = GameConfigSchema.parse({
-  version: "m0",
-  starterGold: 100,
-  offlineCapHours: 8,
-});
+export const foundationGameData = validateGameData(generatedConfig);

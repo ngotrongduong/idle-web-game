@@ -1,0 +1,82 @@
+{
+  "version": "m0.3",
+  "materials": [
+    {
+      "id": "bamboo_fiber",
+      "nameVi": "Sợi Tre",
+      "nameEn": "Bamboo Fiber"
+    },
+    {
+      "id": "slime_gel",
+      "nameVi": "Gel Nhầy",
+      "nameEn": "Slime Gel"
+    },
+    {
+      "id": "river_stone",
+      "nameVi": "Đá Suối",
+      "nameEn": "River Stone"
+    }
+  ],
+  "items": [
+    {
+      "id": "bamboo_training_sword",
+      "nameVi": "Kiếm Tre Tập Luyện",
+      "nameEn": "Bamboo Training Sword",
+      "slot": "weapon",
+      "attack": 12,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 3
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "woven_guard",
+      "nameVi": "Giáp Đan Sơ Khai",
+      "nameEn": "Woven Guard",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 10,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 2
+        },
+        {
+          "materialId": "slime_gel",
+          "qty": 1
+        }
+      ]
+    }
+  ],
+  "dungeons": [
+    {
+      "id": "bamboo_grove",
+      "nameVi": "Rừng Tre",
+      "nameEn": "Bamboo Grove",
+      "recommendedLevel": 1,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "bamboo_fiber",
+        "slime_gel"
+      ]
+    },
+    {
+      "id": "misty_riverbank",
+      "nameVi": "Bờ Sông Sương",
+      "nameEn": "Misty Riverbank",
+      "recommendedLevel": 10,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "river_stone",
+        "slime_gel"
+      ]
+    }
+  ]
+}

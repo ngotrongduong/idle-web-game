@@ -8,22 +8,35 @@ M0 — Nền móng.
 
 ## Completed in this branch
 - M0.1 monorepo workspace paths: `apps/*`, `packages/*`, `tools/*`.
-- `apps/web`: React 19 + Vite shell, mobile-first placeholder UI.
+- `apps/web`: React 19 + Vite mobile-first placeholder shell.
 - `apps/server`: Fastify server with `GET /health`.
 - Shared packages: `game-core`, `game-data`, `api-contract`, `i18n`.
-- `tools/sim`: scaffold wired to `game-core`.
+- `tools/sim`: scaffold wired to the deterministic `game-core`.
 - Root scripts: `pnpm dev`, `pnpm test`, `pnpm typecheck`, `pnpm build`.
-- Small smoke/unit tests for each new workspace.
+- M0.2 partial: GitHub Actions CI workflow added.
+- M0.3 implementation: CSV parser, CSV → JSON build, Zod schemas, unique-ID and cross-reference validation, starter original data.
+- M0.4 implementation: seeded Mulberry32-style RNG, integer/BPS stat and damage math, deterministic `simulateWave`, compact FNV-1a replay hash, golden test, source guard against ambient random calls.
 
-## Next work
-1. Regenerate and commit `pnpm-lock.yaml` after `pnpm install`.
-2. Verify `pnpm test`, `pnpm typecheck`, and `pnpm build` locally/CI.
-3. M0.2: add ESLint + Prettier and GitHub Actions.
-4. M0.3: implement CSV → JSON game-data build + Zod cross-reference validation.
-5. M0.4: deterministic seeded RNG + battle formulas + `simulateWave` + golden tests.
+## Verification status
+Runtime verification is still pending because the current `pnpm-lock.yaml` only contains the pre-existing inspect-tool dependencies. The GitHub connector commits did not trigger an Actions run, and the current execution container cannot reach github.com to install packages. Do not mark M0.1–M0.4 fully verified until a real checkout runs the commands below.
+
+## Required verification
+1. Run `pnpm install --no-frozen-lockfile` once and commit the refreshed `pnpm-lock.yaml`.
+2. Run `pnpm typecheck`.
+3. Run `pnpm test`.
+4. Run `pnpm build`.
+5. After the lockfile is committed, change CI install to `pnpm install --frozen-lockfile`.
+
+## Next implementation work
+1. Finish M0.2: ESLint + Prettier; enforce no ambient random in `packages/game-core`; keep CI green.
+2. Expand M0.3 data to the first complete MVP config slice (4 families T1–T3, 4 dungeons, enemies, ~30 items, ~15 materials).
+3. Expand M0.4 battle engine with MP/ULT, targeting roles, counters and battle rewards while preserving golden hashes.
+4. M0.5: CLI simulations for battle and enhancement distributions.
+5. M0.6: Fastify command pipeline, guest session, Drizzle schema/migrations, player locking and idempotency.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
-- Do not copy third-party names, art, lore, UI, or source code from the reference game.
+- Do not copy third-party names, art, lore, UI, source code, or data tables from the reference game.
 - Game logic remains server-authoritative and deterministic.
-- Do not use `Math.random()` inside `packages/game-core` once M0.4 starts.
+- `packages/game-core` must not use ambient random calls.
+- Prefer integer or basis-point math inside battle simulation.
