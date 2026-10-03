@@ -7,8 +7,8 @@
 M0 — Nền móng.
 
 ## Verified status
-- GitHub Actions CI run #39 passed on commit `19ddf190e812d07ee0bb847879f9593eed74fa62`.
-- Frozen lockfile install, typecheck, tests and build are therefore verified at that commit.
+- GitHub Actions CI run #55 passed on commit `03169a0b9ca4d563d74f5101fc758784d67b298f`.
+- Frozen lockfile install, typecheck, tests and build are verified for the current gameplay/code changes through that commit.
 - Keep PR #2 draft while M0 work continues; do not merge partial DB/staging work.
 
 ## Completed in this branch
