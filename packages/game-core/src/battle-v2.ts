@@ -2,9 +2,9 @@ import {
   DEFAULT_BATTLE_RULES,
   type BattleRules,
   type Combatant,
-} from "./battle";
-import { fnv1a32 } from "./hash";
-import { SeededRng } from "./rng";
+} from "./battle.js";
+import { fnv1a32 } from "./hash.js";
+import { SeededRng } from "./rng.js";
 
 const BPS = 10_000;
 export const MP_MAX = 100;

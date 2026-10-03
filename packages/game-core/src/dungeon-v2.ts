@@ -3,10 +3,10 @@ import {
   type BattleResultV2,
   type BattleUnitStateV2,
   type CombatantV2,
-} from "./battle-v2";
-import type { BattleRules } from "./battle";
-import { fnv1a32 } from "./hash";
-import { SeededRng } from "./rng";
+} from "./battle-v2.js";
+import type { BattleRules } from "./battle.js";
+import { fnv1a32 } from "./hash.js";
+import { SeededRng } from "./rng.js";
 
 export type DungeonWaveV2 = {
   id: string;

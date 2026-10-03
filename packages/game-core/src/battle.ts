@@ -1,5 +1,5 @@
-import { fnv1a32 } from "./hash";
-import { SeededRng } from "./rng";
+import { fnv1a32 } from "./hash.js";
+import { SeededRng } from "./rng.js";
 
 export type Combatant = {
   id: string;

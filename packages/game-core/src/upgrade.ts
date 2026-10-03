@@ -1,4 +1,4 @@
-import { SeededRng } from "./rng";
+import { SeededRng } from "./rng.js";
 
 export const UPGRADE_SUCCESS_BPS = [
   10_000,
