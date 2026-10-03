@@ -221,13 +221,17 @@ export function validateGameData(input: unknown): GameData {
         `Skill ${skill.ultId} references missing class ${skill.classId}`,
       );
     }
-    const enemyEffect =
-      skill.effect === "damage_single" || skill.effect === "damage_aoe";
-    const enemyTarget =
-      skill.target === "lowest_hp_enemy" || skill.target === "all_enemies";
-    if (enemyEffect !== enemyTarget) {
+    const expectedTarget = {
+      damage_single: "lowest_hp_enemy",
+      damage_aoe: "all_enemies",
+      heal_single: "lowest_hp_ally",
+      heal_aoe: "all_allies",
+      shield_allies: "all_allies",
+    } as const;
+
+    if (skill.target !== expectedTarget[skill.effect]) {
       throw new Error(
-        `Skill ${skill.ultId} effect/target sides do not match`,
+        `Skill ${skill.ultId} target ${skill.target} does not match effect ${skill.effect}`,
       );
     }
   }
