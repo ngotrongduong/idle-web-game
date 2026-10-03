@@ -1,0 +1,7090 @@
+{
+  "generatedAt": "2026-10-03T13:42:49.180Z",
+  "source": "research/fworldgm/raw/tables-src",
+  "tables": [
+    {
+      "id": "metro-exports.json#$.module_1008.CELL_SPRITES",
+      "file": "metro-exports.json",
+      "path": "$.module_1008.CELL_SPRITES",
+      "format": "map",
+      "rows": 448,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 448,
+          "distinct": 448,
+          "samples": [
+            "\"CungThu_0_0\"",
+            "\"CungThu_0_1\"",
+            "\"CungThu_0_2\"",
+            "\"CungThu_0_3\""
+          ]
+        },
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 448,
+          "distinct": 448,
+          "samples": [
+            "\"/assets/assets/char_cells/CungThu_0_0.671b88b856c12e33b57f1… (+16 ký tự)",
+            "\"/assets/assets/char_cells/CungThu_0_1.97f7e4d793f8572bba428… (+16 ký tự)",
+            "\"/assets/assets/char_cells/CungThu_0_2.2887dccc5993dafdbd961… (+16 ký tự)",
+            "\"/assets/assets/char_cells/CungThu_0_3.fc0017e47b624de9d0ff8… (+16 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 448,
+          "distinct": 35,
+          "samples": [
+            "122",
+            "120",
+            "129",
+            "112"
+          ],
+          "min": 112,
+          "max": 183,
+          "mean": 137.174
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 448,
+          "distinct": 31,
+          "samples": [
+            "137",
+            "141",
+            "139",
+            "138"
+          ],
+          "min": 111,
+          "max": 172,
+          "mean": 148.857
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 448,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "CungThu_0_0",
+          "uri": "/assets/assets/char_cells/CungThu_0_0.671b88b856c12e33b57f168e33974991.png",
+          "width": 122,
+          "height": 137,
+          "toString": "[function]"
+        },
+        {
+          "__key": "CungThu_0_1",
+          "uri": "/assets/assets/char_cells/CungThu_0_1.97f7e4d793f8572bba428cb6c9f8e55f.png",
+          "width": 120,
+          "height": 137,
+          "toString": "[function]"
+        },
+        {
+          "__key": "CungThu_0_2",
+          "uri": "/assets/assets/char_cells/CungThu_0_2.2887dccc5993dafdbd9618d9b8f91df2.png",
+          "width": 129,
+          "height": 137,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_444.ITEMS",
+      "file": "metro-exports.json",
+      "path": "$.module_444.ITEMS",
+      "format": "array",
+      "rows": 323,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 323,
+          "samples": [
+            "\"w_wooden_sword\"",
+            "\"w_iron_sword\"",
+            "\"w_oak_staff\"",
+            "\"w_runed_staff\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 323,
+          "samples": [
+            "\"Wooden Sword\"",
+            "\"Iron Sword\"",
+            "\"Oak Staff\"",
+            "\"Runed Staff\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "slot",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 4,
+          "samples": [
+            "\"weapon\"",
+            "\"helmet\"",
+            "\"armor\"",
+            "\"accessory\""
+          ]
+        },
+        {
+          "name": "rarity",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 6,
+          "samples": [
+            "\"common\"",
+            "\"uncommon\"",
+            "\"rare\"",
+            "\"epic\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "stats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 323,
+          "distinct": 322,
+          "samples": [
+            "{\"atk\":98,\"crit\":1,\"critDmg\":1}",
+            "{\"atk\":105,\"crit\":1}",
+            "{\"matk\":92}",
+            "{\"matk\":83,\"mdef\":9}"
+          ]
+        },
+        {
+          "name": "value",
+          "types": [
+            "number"
+          ],
+          "nonNull": 323,
+          "distinct": 111,
+          "samples": [
+            "10",
+            "35",
+            "12",
+            "40"
+          ],
+          "min": 5,
+          "max": 600,
+          "mean": 216.802
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 323,
+          "samples": [
+            "\"A crude training sword. Better than bare hands.\"",
+            "\"A reliable iron blade.\"",
+            "\"A simple wooden staff attuned to magic.\"",
+            "\"A staff etched with arcane runes. Restores 1 MP each turn.\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "w_wooden_sword",
+          "name": "Wooden Sword",
+          "slot": "weapon",
+          "rarity": "common",
+          "stats": {
+            "atk": 98,
+            "crit": 1,
+            "critDmg": 1
+          },
+          "value": 10,
+          "description": "A crude training sword. Better than bare hands."
+        },
+        {
+          "id": "w_iron_sword",
+          "name": "Iron Sword",
+          "slot": "weapon",
+          "rarity": "uncommon",
+          "stats": {
+            "atk": 105,
+            "crit": 1
+          },
+          "value": 35,
+          "description": "A reliable iron blade."
+        },
+        {
+          "id": "w_oak_staff",
+          "name": "Oak Staff",
+          "slot": "weapon",
+          "rarity": "common",
+          "stats": {
+            "matk": 92
+          },
+          "value": 12,
+          "description": "A simple wooden staff attuned to magic."
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1467.RECIPES",
+      "file": "metro-exports.json",
+      "path": "$.module_1467.RECIPES",
+      "format": "array",
+      "rows": 323,
+      "columns": [
+        {
+          "name": "itemId",
+          "types": [
+            "string"
+          ],
+          "nonNull": 323,
+          "distinct": 323,
+          "samples": [
+            "\"w_wooden_sword\"",
+            "\"w_iron_sword\"",
+            "\"w_oak_staff\"",
+            "\"w_runed_staff\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "materials",
+          "types": [
+            "array"
+          ],
+          "nonNull": 323,
+          "distinct": 239,
+          "samples": [
+            "[{\"materialId\":\"mat_gem_spider_silk\",\"count\":3},{\"materialId… (+76 ký tự)",
+            "[{\"materialId\":\"mat_crystal_bat_scale\",\"count\":5},{\"material… (+37 ký tự)",
+            "[{\"materialId\":\"mat_ghost_essence\",\"count\":4}]",
+            "[{\"materialId\":\"mat_whispering_core\",\"count\":7}]"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "itemId": "w_wooden_sword",
+          "materials": [
+            {
+              "materialId": "mat_gem_spider_silk",
+              "count": 3
+            },
+            {
+              "materialId": "mat_slime_gel",
+              "count": 1
+            },
+            {
+              "materialId": "mat_whispering_core",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "itemId": "w_iron_sword",
+          "materials": [
+            {
+              "materialId": "mat_crystal_bat_scale",
+              "count": 5
+            },
+            {
+              "materialId": "mat_giant_worm_fang",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "itemId": "w_oak_staff",
+          "materials": [
+            {
+              "materialId": "mat_ghost_essence",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_447.ITEM_SPRITES",
+      "file": "metro-exports.json",
+      "path": "$.module_447.ITEM_SPRITES",
+      "format": "map",
+      "rows": 317,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 317,
+          "distinct": 317,
+          "samples": [
+            "\"w_wooden_sword\"",
+            "\"w_iron_sword\"",
+            "\"w_bronze_sword\"",
+            "\"w_silver_sword\""
+          ]
+        },
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 317,
+          "distinct": 317,
+          "samples": [
+            "\"/assets/assets/sprites/items/w_wooden_sword.c047e8cb9013628… (+22 ký tự)",
+            "\"/assets/assets/sprites/items/w_iron_sword.024b9dc31a3b919bd… (+20 ký tự)",
+            "\"/assets/assets/sprites/items/w_bronze_sword.b988232b371623f… (+22 ký tự)",
+            "\"/assets/assets/sprites/items/w_silver_sword.8d003fc66b87944… (+22 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 317,
+          "distinct": 28,
+          "samples": [
+            "154",
+            "155",
+            "152",
+            "157"
+          ],
+          "min": 83,
+          "max": 226,
+          "mean": 153.968
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 317,
+          "distinct": 27,
+          "samples": [
+            "151",
+            "150",
+            "154",
+            "159"
+          ],
+          "min": 141,
+          "max": 308,
+          "mean": 167.117
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 317,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "w_wooden_sword",
+          "uri": "/assets/assets/sprites/items/w_wooden_sword.c047e8cb90136285f120e53a386b4e78.png",
+          "width": 154,
+          "height": 151,
+          "toString": "[function]"
+        },
+        {
+          "__key": "w_iron_sword",
+          "uri": "/assets/assets/sprites/items/w_iron_sword.024b9dc31a3b919bd66d9ae3eadb6d38.png",
+          "width": 155,
+          "height": 151,
+          "toString": "[function]"
+        },
+        {
+          "__key": "w_bronze_sword",
+          "uri": "/assets/assets/sprites/items/w_bronze_sword.b988232b371623f660f9d125338ab8d9.png",
+          "width": 155,
+          "height": 151,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_440.CLASSES",
+      "file": "metro-exports.json",
+      "path": "$.module_440.CLASSES",
+      "format": "array",
+      "rows": 288,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "\"kiem_si\"",
+            "\"cung_thu\"",
+            "\"sat_thu\"",
+            "\"phap_su\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "\"Kiếm Sĩ\"",
+            "\"Cung Thủ\"",
+            "\"Sát Thủ\"",
+            "\"Pháp Sư\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "\"Swordfighter\"",
+            "\"Archer\"",
+            "\"Assassin\"",
+            "\"Mage\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "tier",
+          "types": [
+            "number"
+          ],
+          "nonNull": 288,
+          "distinct": 8,
+          "samples": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "hint": "cấp độ",
+          "min": 1,
+          "max": 8,
+          "mean": 5.667
+        },
+        {
+          "name": "levelToAdvance",
+          "types": [
+            "number"
+          ],
+          "nonNull": 224,
+          "distinct": 7,
+          "samples": [
+            "5",
+            "10",
+            "15",
+            "20"
+          ],
+          "hint": "cấp độ",
+          "min": 5,
+          "max": 35,
+          "mean": 25
+        },
+        {
+          "name": "baseStats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 288,
+          "distinct": 168,
+          "samples": [
+            "{\"hp\":120,\"mp\":100,\"atk\":14,\"def\":10,\"matk\":6,\"mdef\":7,\"spd\"… (+33 ký tự)",
+            "{\"hp\":90,\"mp\":100,\"atk\":16,\"def\":6,\"matk\":6,\"mdef\":6,\"spd\":1… (+33 ký tự)",
+            "{\"hp\":85,\"mp\":100,\"atk\":15,\"def\":5,\"matk\":6,\"mdef\":5,\"spd\":1… (+33 ký tự)",
+            "{\"hp\":80,\"mp\":100,\"atk\":6,\"def\":5,\"matk\":18,\"mdef\":8,\"spd\":9… (+31 ký tự)"
+          ]
+        },
+        {
+          "name": "growth",
+          "types": [
+            "object"
+          ],
+          "nonNull": 288,
+          "distinct": 149,
+          "samples": [
+            "{\"hp\":18,\"mp\":0,\"atk\":3,\"def\":2,\"matk\":1,\"mdef\":1,\"spd\":1,\"c… (+27 ký tự)",
+            "{\"hp\":13,\"mp\":0,\"atk\":4,\"def\":1,\"matk\":1,\"mdef\":1,\"spd\":2,\"c… (+27 ký tự)",
+            "{\"hp\":11,\"mp\":0,\"atk\":3,\"def\":1,\"matk\":1,\"mdef\":1,\"spd\":2,\"c… (+27 ký tự)",
+            "{\"hp\":12,\"mp\":0,\"atk\":1,\"def\":1,\"matk\":5,\"mdef\":2,\"spd\":1,\"c… (+27 ký tự)"
+          ]
+        },
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "{\"id\":\"kiem_si_attack\",\"name\":\"Kiếm Khí\",\"nameEn\":\"Sword Aur… (+143 ký tự)",
+            "{\"id\":\"cung_thu_attack\",\"name\":\"Tiễn Tiêu\",\"nameEn\":\"Quick S… (+146 ký tự)",
+            "{\"id\":\"sat_thu_attack\",\"name\":\"Ám Thích\",\"nameEn\":\"Backstab\"… (+157 ký tự)",
+            "{\"id\":\"phap_su_attack\",\"name\":\"Ma Đạn\",\"nameEn\":\"Mana Bolt\",… (+133 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "{\"id\":\"kiem_si_ult\",\"name\":\"Kiếm Khai Sơn\",\"nameEn\":\"Mountai… (+227 ký tự)",
+            "{\"id\":\"cung_thu_ult\",\"name\":\"Vạn Tiễn Trận\",\"nameEn\":\"Arrow … (+203 ký tự)",
+            "{\"id\":\"sat_thu_ult\",\"name\":\"Ảnh Sát\",\"nameEn\":\"Shadow Kill\",… (+289 ký tự)",
+            "{\"id\":\"phap_su_ult\",\"name\":\"Ma Năng Bộc Phá\",\"nameEn\":\"Mana … (+331 ký tự)"
+          ]
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "\"Kiếm sĩ cân bằng. Sát thương vật lý cận chiến ổn định.\"",
+            "\"Cung thủ nhanh nhẹn. SPD và CRIT cao, sát thương tầm xa.\"",
+            "\"Sát thủ lén lút. SPD và CRIT cao nhất, mong manh nhưng chí … (+6 ký tự)",
+            "\"Pháp sư. Sát thương phép mạnh nhưng cực kỳ mong manh.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "descriptionEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "\"Balanced swordfighter. Stable physical melee damage.\"",
+            "\"Agile archer. High SPD and CRIT, ranged damage.\"",
+            "\"Stealthy assassin. Highest SPD and CRIT, fragile but deadly… (+2 ký tự)",
+            "\"Mage. Powerful magic damage but extremely fragile.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "color",
+          "types": [
+            "string"
+          ],
+          "nonNull": 288,
+          "distinct": 26,
+          "samples": [
+            "\"#da3633\"",
+            "\"#2ea043\"",
+            "\"#8957e5\"",
+            "\"#db6d28\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "passive",
+          "types": [
+            "object"
+          ],
+          "nonNull": 288,
+          "distinct": 288,
+          "samples": [
+            "{\"name\":\"Kiếm Ý\",\"nameEn\":\"Sword Intent\",\"description\":\"+10%… (+103 ký tự)",
+            "{\"name\":\"Tinh Xạ\",\"nameEn\":\"Precise Shot\",\"description\":\"+6.… (+229 ký tự)",
+            "{\"name\":\"Ảnh Sát\",\"nameEn\":\"Shadow Kill\",\"description\":\"+5% … (+273 ký tự)",
+            "{\"name\":\"Pháp Lực\",\"nameEn\":\"Arcane Power\",\"description\":\"+1… (+148 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "kiem_si",
+          "name": "Kiếm Sĩ",
+          "nameEn": "Swordfighter",
+          "tier": 1,
+          "levelToAdvance": 5,
+          "baseStats": {
+            "hp": 120,
+            "mp": 100,
+            "atk": 14,
+            "def": 10,
+            "matk": 6,
+            "mdef": 7,
+            "spd": 8,
+            "crit": 5,
+            "critDmg": 50,
+            "int": 0
+          },
+          "growth": {
+            "hp": 18,
+            "mp": 0,
+            "atk": 3,
+            "def": 2,
+            "matk": 1,
+            "mdef": 1,
+            "spd": 1,
+            "crit": 0,
+            "critDmg": 0,
+            "int": 0
+          },
+          "attack": {
+            "id": "kiem_si_attack",
+            "name": "Kiếm Khí",
+            "nameEn": "Sword Aura",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Đường kiếm khí gây 100% ATK.",
+            "descriptionEn": "Sword aura deals 100% ATK."
+          },
+          "ultimate": {
+            "id": "kiem_si_ult",
+            "name": "Kiếm Khai Sơn",
+            "nameEn": "Mountain Splitter",
+            "description": "Đòn chém khai sơn 100% ATK toàn địch.",
+            "descriptionEn": "Mountain-splitting slash 100% ATK to all enemies.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1,
+                "target": "enemyAll",
+                "hits": 1
+              }
+            ]
+          },
+          "description": "Kiếm sĩ cân bằng. Sát thương vật lý cận chiến ổn định.",
+          "descriptionEn": "Balanced swordfighter. Stable physical melee damage.",
+          "color": "#da3633",
+          "passive": {
+            "name": "Kiếm Ý",
+            "nameEn": "Sword Intent",
+            "description": "+10% sát thương vật lý",
+            "descriptionEn": "+10% physical damage",
+            "bonuses": [
+              {
+                "stat": "physDmg",
+                "percent": 10
+              }
+            ]
+          }
+        },
+        {
+          "id": "cung_thu",
+          "name": "Cung Thủ",
+          "nameEn": "Archer",
+          "tier": 1,
+          "levelToAdvance": 5,
+          "baseStats": {
+            "hp": 90,
+            "mp": 100,
+            "atk": 16,
+            "def": 6,
+            "matk": 6,
+            "mdef": 6,
+            "spd": 12,
+            "crit": 12,
+            "critDmg": 60,
+            "int": 0
+          },
+          "growth": {
+            "hp": 13,
+            "mp": 0,
+            "atk": 4,
+            "def": 1,
+            "matk": 1,
+            "mdef": 1,
+            "spd": 2,
+            "crit": 1,
+            "critDmg": 2,
+            "int": 0
+          },
+          "attack": {
+            "id": "cung_thu_attack",
+            "name": "Tiễn Tiêu",
+            "nameEn": "Quick Shot",
+            "range": "ranged",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Bắn tên nhanh gây 100% ATK.",
+            "descriptionEn": "Quick arrow deals 100% ATK."
+          },
+          "ultimate": {
+            "id": "cung_thu_ult",
+            "name": "Vạn Tiễn Trận",
+            "nameEn": "Arrow Storm",
+            "description": "Đòn mưa tên 100% ATK toàn địch.",
+            "descriptionEn": "Arrow storm 100% ATK to all enemies.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1,
+                "target": "enemyAll",
+                "hits": 1
+              }
+            ]
+          },
+          "description": "Cung thủ nhanh nhẹn. SPD và CRIT cao, sát thương tầm xa.",
+          "descriptionEn": "Agile archer. High SPD and CRIT, ranged damage.",
+          "color": "#2ea043",
+          "passive": {
+            "name": "Tinh Xạ",
+            "nameEn": "Precise Shot",
+            "description": "+6.25% sát thương vật lý, +10% chính xác, +4.38% SPD",
+            "descriptionEn": "+6.25% physical damage, +10% accuracy, +4.38% SPD",
+            "bonuses": [
+              {
+                "stat": "physDmg",
+                "percent": 6.25
+              },
+              {
+                "stat": "accuracy",
+                "percent": 10
+              },
+              {
+                "stat": "spd",
+                "percent": 4.375
+              }
+            ]
+          }
+        },
+        {
+          "id": "sat_thu",
+          "name": "Sát Thủ",
+          "nameEn": "Assassin",
+          "tier": 1,
+          "levelToAdvance": 5,
+          "baseStats": {
+            "hp": 85,
+            "mp": 100,
+            "atk": 15,
+            "def": 5,
+            "matk": 6,
+            "mdef": 5,
+            "spd": 14,
+            "crit": 18,
+            "critDmg": 70,
+            "int": 0
+          },
+          "growth": {
+            "hp": 11,
+            "mp": 0,
+            "atk": 3,
+            "def": 1,
+            "matk": 1,
+            "mdef": 1,
+            "spd": 2,
+            "crit": 2,
+            "critDmg": 3,
+            "int": 0
+          },
+          "attack": {
+            "id": "sat_thu_attack",
+            "name": "Ám Thích",
+            "nameEn": "Backstab",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Đâm lén gây 100% ATK, chí mạng cao.",
+            "descriptionEn": "Backstab deals 100% ATK, high crit."
+          },
+          "ultimate": {
+            "id": "sat_thu_ult",
+            "name": "Ảnh Sát",
+            "nameEn": "Shadow Kill",
+            "description": "Đòn ám sát 150% ATK, tăng SPD 30% trong 3 lượt.",
+            "descriptionEn": "Shadow strike 150% ATK, +30% SPD for 3 turns.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "buff",
+                "stat": "spd",
+                "power": 30,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          },
+          "description": "Sát thủ lén lút. SPD và CRIT cao nhất, mong manh nhưng chí mạng.",
+          "descriptionEn": "Stealthy assassin. Highest SPD and CRIT, fragile but deadly.",
+          "color": "#8957e5",
+          "passive": {
+            "name": "Ảnh Sát",
+            "nameEn": "Shadow Kill",
+            "description": "+5% sát thương vật lý, +5% né tránh, Ưu tiên tấn công kẻ địch ít HP nhất",
+            "descriptionEn": "+5% physical damage, +5% dodge, Prioritizes attacking the lowest-HP enemy",
+            "bonuses": [
+              {
+                "stat": "physDmg",
+                "percent": 5
+              },
+              {
+                "stat": "dodge",
+                "percent": 5
+              },
+              {
+                "stat": "focusLowestHp",
+                "percent": 100
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_447.ENEMY_SPRITES",
+      "file": "metro-exports.json",
+      "path": "$.module_447.ENEMY_SPRITES",
+      "format": "map",
+      "rows": 136,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 136,
+          "distinct": 136,
+          "samples": [
+            "\"slime_jr\"",
+            "\"venom_slime\"",
+            "\"slime_king\"",
+            "\"slime_emperor\""
+          ]
+        },
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 136,
+          "distinct": 136,
+          "samples": [
+            "\"/assets/assets/sprites/enemies/slime_jr.0396894a79e9145115f… (+18 ký tự)",
+            "\"/assets/assets/sprites/enemies/venom_slime.3a798d05e129e416… (+21 ký tự)",
+            "\"/assets/assets/sprites/enemies/slime_king.089f751e123e47e2e… (+20 ký tự)",
+            "\"/assets/assets/sprites/enemies/slime_emperor.4bcf53ec96a4e3… (+23 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 136,
+          "distinct": 33,
+          "samples": [
+            "310",
+            "308",
+            "309",
+            "307"
+          ],
+          "min": 202,
+          "max": 384,
+          "mean": 289.125
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 136,
+          "distinct": 37,
+          "samples": [
+            "312",
+            "309",
+            "310",
+            "308"
+          ],
+          "min": 306,
+          "max": 504,
+          "mean": 346.941
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 136,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "slime_jr",
+          "uri": "/assets/assets/sprites/enemies/slime_jr.0396894a79e9145115fe1126727f0ead.png",
+          "width": 310,
+          "height": 312,
+          "toString": "[function]"
+        },
+        {
+          "__key": "venom_slime",
+          "uri": "/assets/assets/sprites/enemies/venom_slime.3a798d05e129e416dcab7861ca5f7b86.png",
+          "width": 308,
+          "height": 309,
+          "toString": "[function]"
+        },
+        {
+          "__key": "slime_king",
+          "uri": "/assets/assets/sprites/enemies/slime_king.089f751e123e47e2ef28fb25a058b488.png",
+          "width": 308,
+          "height": 310,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1468.CRAFTING_MATERIALS",
+      "file": "metro-exports.json",
+      "path": "$.module_1468.CRAFTING_MATERIALS",
+      "format": "array",
+      "rows": 95,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 95,
+          "samples": [
+            "\"mat_slime_gel\"",
+            "\"mat_bat_wing\"",
+            "\"mat_giant_worm_fang\"",
+            "\"mat_ghost_essence\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 95,
+          "samples": [
+            "\"Dịch Nhầy Slime\"",
+            "\"Cánh Dơi\"",
+            "\"Nanh Giun Khổng Lồ\"",
+            "\"Tinh Chất Ma\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 95,
+          "samples": [
+            "\"Slime Gel\"",
+            "\"Bat Wing\"",
+            "\"Giant Worm Fang\"",
+            "\"Ghost Essence\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "tier",
+          "types": [
+            "number"
+          ],
+          "nonNull": 95,
+          "distinct": 10,
+          "samples": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "hint": "cấp độ",
+          "min": 0,
+          "max": 9,
+          "mean": 2.474
+        },
+        {
+          "name": "rarity",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 6,
+          "samples": [
+            "\"common\"",
+            "\"uncommon\"",
+            "\"rare\"",
+            "\"epic\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "value",
+          "types": [
+            "number"
+          ],
+          "nonNull": 95,
+          "distinct": 48,
+          "samples": [
+            "5",
+            "7",
+            "15",
+            "20"
+          ],
+          "min": 1,
+          "max": 656100,
+          "mean": 10782.632
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 83,
+          "samples": [
+            "\"Dịch nhầy trong suốt của Slime, mềm dẻo và dễ kết hợp. Thườ… (+38 ký tự)",
+            "\"Đôi cánh mỏng của dơi trong rừng. Nhẹ và bền, thích hợp làm… (+32 ký tự)",
+            "\"Chiếc nanh sắc bén của Giun khổng lồ. Có thể mài thành lưỡi… (+25 ký tự)",
+            "\"Tinh chất lạnh lẽo còn sót lại từ những linh hồn lang thang… (+55 ký tự)"
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "source",
+          "types": [
+            "string"
+          ],
+          "nonNull": 95,
+          "distinct": 15,
+          "samples": [
+            "\"dungeon_1\"",
+            "\"dungeon_2\"",
+            "\"dungeon_3\"",
+            "\"dungeon_4\""
+          ]
+        },
+        {
+          "name": "special",
+          "types": [
+            "boolean"
+          ],
+          "nonNull": 55,
+          "distinct": 1,
+          "samples": [
+            "true"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "mat_slime_gel",
+          "name": "Dịch Nhầy Slime",
+          "nameEn": "Slime Gel",
+          "tier": 1,
+          "rarity": "common",
+          "value": 5,
+          "description": "Dịch nhầy trong suốt của Slime, mềm dẻo và dễ kết hợp. Thường dùng để chế tạo vật phẩm cấp thấp.",
+          "source": "dungeon_1"
+        },
+        {
+          "id": "mat_bat_wing",
+          "name": "Cánh Dơi",
+          "nameEn": "Bat Wing",
+          "tier": 1,
+          "rarity": "common",
+          "value": 7,
+          "description": "Đôi cánh mỏng của dơi trong rừng. Nhẹ và bền, thích hợp làm vật liệu cho giáp và phụ kiện.",
+          "source": "dungeon_1"
+        },
+        {
+          "id": "mat_giant_worm_fang",
+          "name": "Nanh Giun Khổng Lồ",
+          "nameEn": "Giant Worm Fang",
+          "tier": 1,
+          "rarity": "uncommon",
+          "value": 15,
+          "description": "Chiếc nanh sắc bén của Giun khổng lồ. Có thể mài thành lưỡi dao hoặc gia cố vũ khí.",
+          "source": "dungeon_1"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1494.FAMILY_MAP",
+      "file": "metro-exports.json",
+      "path": "$.module_1494.FAMILY_MAP",
+      "format": "map",
+      "rows": 32,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 32,
+          "distinct": 32,
+          "samples": [
+            "\"slime_jr\"",
+            "\"cave_bat\"",
+            "\"giant_worm\"",
+            "\"wraith\""
+          ]
+        },
+        {
+          "name": "normal",
+          "types": [
+            "string"
+          ],
+          "nonNull": 32,
+          "distinct": 1,
+          "samples": [
+            "\"[circular]\""
+          ]
+        },
+        {
+          "name": "elite",
+          "types": [
+            "object"
+          ],
+          "nonNull": 32,
+          "distinct": 32,
+          "samples": [
+            "{\"id\":\"venom_slime\",\"name\":\"Venom Slime\",\"level\":2,\"stats\":{… (+191 ký tự)",
+            "{\"id\":\"vampire_bat\",\"name\":\"Vampire Bat\",\"level\":3,\"stats\":{… (+192 ký tự)",
+            "{\"id\":\"sand_worm\",\"name\":\"Sand Worm\",\"level\":6,\"stats\":{\"hp\"… (+194 ký tự)",
+            "{\"id\":\"wraith_knight\",\"name\":\"Wraith Knight\",\"level\":8,\"stat… (+203 ký tự)"
+          ]
+        },
+        {
+          "name": "leader",
+          "types": [
+            "object"
+          ],
+          "nonNull": 32,
+          "distinct": 32,
+          "samples": [
+            "{\"id\":\"slime_king\",\"name\":\"Slime King\",\"level\":3,\"stats\":{\"h… (+194 ký tự)",
+            "{\"id\":\"bat_swarm_lord\",\"name\":\"Bat Swarm Lord\",\"level\":4,\"st… (+205 ký tự)",
+            "{\"id\":\"death_worm\",\"name\":\"Death Worm\",\"level\":7,\"stats\":{\"h… (+200 ký tự)",
+            "{\"id\":\"wraith_lord\",\"name\":\"Wraith Lord\",\"level\":9,\"stats\":{… (+202 ký tự)"
+          ]
+        },
+        {
+          "name": "boss",
+          "types": [
+            "object"
+          ],
+          "nonNull": 32,
+          "distinct": 32,
+          "samples": [
+            "{\"id\":\"slime_emperor\",\"name\":\"Slime Emperor\",\"level\":4,\"stat… (+200 ký tự)",
+            "{\"id\":\"bat_queen\",\"name\":\"Bat Queen\",\"level\":5,\"stats\":{\"hp\"… (+194 ký tự)",
+            "{\"id\":\"devourer_worm\",\"name\":\"Devourer Worm\",\"level\":8,\"stat… (+206 ký tự)",
+            "{\"id\":\"wraith_king\",\"name\":\"Wraith King\",\"level\":10,\"stats\":… (+203 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "slime_jr",
+          "normal": "[circular]",
+          "elite": {
+            "id": "venom_slime",
+            "name": "Venom Slime",
+            "level": 2,
+            "stats": {
+              "hp": 48,
+              "mp": 0,
+              "atk": 11,
+              "def": 3,
+              "matk": 6,
+              "mdef": 3,
+              "spd": 8,
+              "crit": 3,
+              "critDmg": 80,
+              "int": 0
+            },
+            "goldReward": [
+              11,
+              20
+            ],
+            "xpReward": [
+              40,
+              64
+            ],
+            "lootTable": "[circular]",
+            "tier": "elite",
+            "familyId": "slime_jr"
+          },
+          "leader": {
+            "id": "slime_king",
+            "name": "Slime King",
+            "level": 3,
+            "stats": {
+              "hp": 75,
+              "mp": 0,
+              "atk": 18,
+              "def": 5,
+              "matk": 10,
+              "mdef": 5,
+              "spd": 13,
+              "crit": 5,
+              "critDmg": 125,
+              "int": 0
+            },
+            "goldReward": [
+              16,
+              28
+            ],
+            "xpReward": [
+              80,
+              128
+            ],
+            "lootTable": "[circular]",
+            "tier": "leader",
+            "familyId": "slime_jr"
+          },
+          "boss": {
+            "id": "slime_emperor",
+            "name": "Slime Emperor",
+            "level": 4,
+            "stats": {
+              "hp": 120,
+              "mp": 0,
+              "atk": 28,
+              "def": 8,
+              "matk": 16,
+              "mdef": 8,
+              "spd": 20,
+              "crit": 8,
+              "critDmg": 200,
+              "int": 0
+            },
+            "goldReward": [
+              24,
+              42
+            ],
+            "xpReward": [
+              160,
+              256
+            ],
+            "lootTable": "[circular]",
+            "tier": "boss",
+            "familyId": "slime_jr"
+          }
+        },
+        {
+          "__key": "cave_bat",
+          "normal": "[circular]",
+          "elite": {
+            "id": "vampire_bat",
+            "name": "Vampire Bat",
+            "level": 3,
+            "stats": {
+              "hp": 72,
+              "mp": 0,
+              "atk": 16,
+              "def": 5,
+              "matk": 8,
+              "mdef": 3,
+              "spd": 14,
+              "crit": 6,
+              "critDmg": 80,
+              "int": 0
+            },
+            "goldReward": [
+              17,
+              28
+            ],
+            "xpReward": [
+              56,
+              90
+            ],
+            "lootTable": "[circular]",
+            "tier": "elite",
+            "familyId": "cave_bat"
+          },
+          "leader": {
+            "id": "bat_swarm_lord",
+            "name": "Bat Swarm Lord",
+            "level": 4,
+            "stats": {
+              "hp": 113,
+              "mp": 0,
+              "atk": 25,
+              "def": 8,
+              "matk": 13,
+              "mdef": 5,
+              "spd": 23,
+              "crit": 10,
+              "critDmg": 125,
+              "int": 0
+            },
+            "goldReward": [
+              24,
+              40
+            ],
+            "xpReward": [
+              112,
+              180
+            ],
+            "lootTable": "[circular]",
+            "tier": "leader",
+            "familyId": "cave_bat"
+          },
+          "boss": {
+            "id": "bat_queen",
+            "name": "Bat Queen",
+            "level": 5,
+            "stats": {
+              "hp": 180,
+              "mp": 0,
+              "atk": 40,
+              "def": 12,
+              "matk": 20,
+              "mdef": 8,
+              "spd": 36,
+              "crit": 16,
+              "critDmg": 200,
+              "int": 0
+            },
+            "goldReward": [
+              36,
+              60
+            ],
+            "xpReward": [
+              224,
+              360
+            ],
+            "lootTable": "[circular]",
+            "tier": "boss",
+            "familyId": "cave_bat"
+          }
+        },
+        {
+          "__key": "giant_worm",
+          "normal": "[circular]",
+          "elite": {
+            "id": "sand_worm",
+            "name": "Sand Worm",
+            "level": 6,
+            "stats": {
+              "hp": 144,
+              "mp": 0,
+              "atk": 26,
+              "def": 11,
+              "matk": 10,
+              "mdef": 6,
+              "spd": 11,
+              "crit": 5,
+              "critDmg": 80,
+              "int": 0
+            },
+            "goldReward": [
+              31,
+              50
+            ],
+            "xpReward": [
+              98,
+              146
+            ],
+            "lootTable": "[circular]",
+            "tier": "elite",
+            "familyId": "giant_worm"
+          },
+          "leader": {
+            "id": "death_worm",
+            "name": "Death Worm",
+            "level": 7,
+            "stats": {
+              "hp": 225,
+              "mp": 0,
+              "atk": 40,
+              "def": 18,
+              "matk": 15,
+              "mdef": 10,
+              "spd": 18,
+              "crit": 8,
+              "critDmg": 125,
+              "int": 0
+            },
+            "goldReward": [
+              44,
+              72
+            ],
+            "xpReward": [
+              196,
+              292
+            ],
+            "lootTable": "[circular]",
+            "tier": "leader",
+            "familyId": "giant_worm"
+          },
+          "boss": {
+            "id": "devourer_worm",
+            "name": "Devourer Worm",
+            "level": 8,
+            "stats": {
+              "hp": 360,
+              "mp": 0,
+              "atk": 64,
+              "def": 28,
+              "matk": 24,
+              "mdef": 16,
+              "spd": 28,
+              "crit": 12,
+              "critDmg": 200,
+              "int": 0
+            },
+            "goldReward": [
+              66,
+              108
+            ],
+            "xpReward": [
+              392,
+              584
+            ],
+            "lootTable": "[circular]",
+            "tier": "boss",
+            "familyId": "giant_worm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1479.FORMATIONS",
+      "file": "metro-exports.json",
+      "path": "$.module_1479.FORMATIONS",
+      "format": "array",
+      "rows": 31,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "\"du_kich\"",
+            "\"san_dau_nguoi\"",
+            "\"thanh_ho\"",
+            "\"hoa_lien\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "\"Du Kích\"",
+            "\"Săn Đầu Người\"",
+            "\"Thánh Hộ\"",
+            "\"Hỏa Liên\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "\"Guerrilla\"",
+            "\"Headhunters\"",
+            "\"Holy Ward\"",
+            "\"Fire Lotus\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "members",
+          "types": [
+            "array"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "[[\"cung_thu\",0],[\"sat_thu\",0]]",
+            "[[\"cung_thu\",4],[\"sat_thu\",2]]",
+            "[[\"kiem_si\",6],[\"phap_su\",4]]",
+            "[[\"phap_su\",1],[\"dao_si\",2]]"
+          ]
+        },
+        {
+          "name": "bonus",
+          "types": [
+            "array"
+          ],
+          "nonNull": 31,
+          "distinct": 29,
+          "samples": [
+            "[{\"stat\":\"spd\",\"percent\":8},{\"stat\":\"startMp\",\"percent\":10}]",
+            "[{\"stat\":\"crit\",\"percent\":10},{\"stat\":\"startMp\",\"percent\":10… (+2 ký tự)",
+            "[{\"stat\":\"mdef\",\"percent\":10},{\"stat\":\"startMp\",\"percent\":10… (+2 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":10},{\"stat\":\"startMp\",\"percent\":10… (+2 ký tự)"
+          ]
+        },
+        {
+          "name": "bonusText",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 29,
+          "samples": [
+            "\"+8% SPD thành viên trận · hồi 10 MP đầu trận\"",
+            "\"+10% CRIT thành viên trận · hồi 10 MP đầu trận\"",
+            "\"+10% MDEF thành viên trận · hồi 10 MP đầu trận\"",
+            "\"+10% MATK thành viên trận · hồi 10 MP đầu trận\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonusTextEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 29,
+          "samples": [
+            "\"+8% SPD for formation members · +10 MP at battle start\"",
+            "\"+10% CRIT for formation members · +10 MP at battle start\"",
+            "\"+10% MDEF for formation members · +10 MP at battle start\"",
+            "\"+10% MATK for formation members · +10 MP at battle start\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "why",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "\"Cung thủ do thám + sát thủ đánh lén — đội hình cơ động, ra … (+11 ký tự)",
+            "\"Sát thủ độc ảnh dẫn đường, lính bắn tỉa kết liễu — cả hai đ… (+21 ký tự)",
+            "\"Thánh kỵ sĩ + quang pháp sư — hào quang thánh che chở cả độ… (+16 ký tự)",
+            "\"Hỏa pháp + hỏa tu — hai ngọn lửa cộng hưởng, ma lực thành v… (+19 ký tự)"
+          ]
+        },
+        {
+          "name": "whyEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 31,
+          "distinct": 31,
+          "samples": [
+            "\"Scout archer + ambush assassin — a mobile squad that strike… (+9 ký tự)",
+            "\"Poison shade leads, sniper finishes — both wait for the kil… (+11 ký tự)",
+            "\"Paladin + light mage — holy radiance shields the team from … (+7 ký tự)",
+            "\"Fire mage + flame daoist — resonating flames surge the team… (+10 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "du_kich",
+          "name": "Du Kích",
+          "nameEn": "Guerrilla",
+          "members": [
+            [
+              "cung_thu",
+              0
+            ],
+            [
+              "sat_thu",
+              0
+            ]
+          ],
+          "bonus": [
+            {
+              "stat": "spd",
+              "percent": 8
+            },
+            {
+              "stat": "startMp",
+              "percent": 10
+            }
+          ],
+          "bonusText": "+8% SPD thành viên trận · hồi 10 MP đầu trận",
+          "bonusTextEn": "+8% SPD for formation members · +10 MP at battle start",
+          "why": "Cung thủ do thám + sát thủ đánh lén — đội hình cơ động, ra tay trước.",
+          "whyEn": "Scout archer + ambush assassin — a mobile squad that strikes first."
+        },
+        {
+          "id": "san_dau_nguoi",
+          "name": "Săn Đầu Người",
+          "nameEn": "Headhunters",
+          "members": [
+            [
+              "cung_thu",
+              4
+            ],
+            [
+              "sat_thu",
+              2
+            ]
+          ],
+          "bonus": [
+            {
+              "stat": "crit",
+              "percent": 10
+            },
+            {
+              "stat": "startMp",
+              "percent": 10
+            }
+          ],
+          "bonusText": "+10% CRIT thành viên trận · hồi 10 MP đầu trận",
+          "bonusTextEn": "+10% CRIT for formation members · +10 MP at battle start",
+          "why": "Sát thủ độc ảnh dẫn đường, lính bắn tỉa kết liễu — cả hai đều chờ đòn chí mạng.",
+          "whyEn": "Poison shade leads, sniper finishes — both wait for the killing blow."
+        },
+        {
+          "id": "thanh_ho",
+          "name": "Thánh Hộ",
+          "nameEn": "Holy Ward",
+          "members": [
+            [
+              "kiem_si",
+              6
+            ],
+            [
+              "phap_su",
+              4
+            ]
+          ],
+          "bonus": [
+            {
+              "stat": "mdef",
+              "percent": 10
+            },
+            {
+              "stat": "startMp",
+              "percent": 10
+            }
+          ],
+          "bonusText": "+10% MDEF thành viên trận · hồi 10 MP đầu trận",
+          "bonusTextEn": "+10% MDEF for formation members · +10 MP at battle start",
+          "why": "Thánh kỵ sĩ + quang pháp sư — hào quang thánh che chở cả đội khỏi ma pháp.",
+          "whyEn": "Paladin + light mage — holy radiance shields the team from magic."
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1481.STAT_INFO",
+      "file": "metro-exports.json",
+      "path": "$.module_1481.STAT_INFO",
+      "format": "map",
+      "rows": 11,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 11,
+          "distinct": 11,
+          "samples": [
+            "\"hp\"",
+            "\"mp\"",
+            "\"atk\"",
+            "\"def\""
+          ]
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 11,
+          "distinct": 11,
+          "samples": [
+            "\"HP — Máu\"",
+            "\"MP — Năng lượng\"",
+            "\"ATK — Tấn công vật lý\"",
+            "\"DEF — Phòng thủ vật lý\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 11,
+          "distinct": 11,
+          "samples": [
+            "\"HP — Health\"",
+            "\"MP — Mana\"",
+            "\"ATK — Physical attack\"",
+            "\"DEF — Physical defense\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "desc",
+          "types": [
+            "string"
+          ],
+          "nonNull": 11,
+          "distinct": 11,
+          "samples": [
+            "\"Lượng sát thương nhân vật chịu được trước khi ngã. Hết HP t… (+54 ký tự)",
+            "\"Tối đa 100. Tích 10 MP mỗi lượt (thêm từ trang bị/tính cách… (+51 ký tự)",
+            "\"Quyết định sát thương các đòn đánh vật lý. Class có đòn đán… (+57 ký tự)",
+            "\"Giảm sát thương vật lý nhận vào theo tỷ lệ (DEF càng cao gi… (+116 ký tự)"
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "descEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 11,
+          "distinct": 11,
+          "samples": [
+            "\"Damage a character can take before falling. At 0 HP in a du… (+42 ký tự)",
+            "\"Max 100. Gains 10 MP per turn (plus gear/personality). At f… (+52 ký tự)",
+            "\"Determines physical attack damage. Classes with physical at… (+44 ký tự)",
+            "\"Reduces physical damage taken by ratio (higher DEF reduces … (+103 ký tự)"
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "hp",
+          "name": "HP — Máu",
+          "nameEn": "HP — Health",
+          "desc": "Lượng sát thương nhân vật chịu được trước khi ngã. Hết HP trong dungeon nhân vật sẽ phải nghỉ dưỡng để hồi phục.",
+          "descEn": "Damage a character can take before falling. At 0 HP in a dungeon the character must rest to recover."
+        },
+        {
+          "__key": "mp",
+          "name": "MP — Năng lượng",
+          "nameEn": "MP — Mana",
+          "desc": "Tối đa 100. Tích 10 MP mỗi lượt (thêm từ trang bị/tính cách). Khi đầy 100 MP nhân vật tự động tung chiêu ULT.",
+          "descEn": "Max 100. Gains 10 MP per turn (plus gear/personality). At full MP the character casts their ULT automatically."
+        },
+        {
+          "__key": "atk",
+          "name": "ATK — Tấn công vật lý",
+          "nameEn": "ATK — Physical attack",
+          "desc": "Quyết định sát thương các đòn đánh vật lý. Class có đòn đánh \"vật lý\" dùng chỉ số này làm nguồn sát thương chính.",
+          "descEn": "Determines physical attack damage. Classes with physical attacks use this as their main damage source."
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.STAR_SHOP_ITEMS",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.STAR_SHOP_ITEMS",
+      "format": "array",
+      "rows": 10,
+      "columns": [
+        {
+          "name": "scrollId",
+          "types": [
+            "string"
+          ],
+          "nonNull": 10,
+          "distinct": 10,
+          "samples": [
+            "\"class_scroll_t4\"",
+            "\"class_scroll_t5\"",
+            "\"class_scroll_t6\"",
+            "\"class_scroll_t7\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "price",
+          "types": [
+            "number"
+          ],
+          "nonNull": 10,
+          "distinct": 9,
+          "samples": [
+            "3",
+            "9",
+            "27",
+            "243"
+          ],
+          "hint": "giá / vàng",
+          "min": 2,
+          "max": 243,
+          "mean": 69.9
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "scrollId": "class_scroll_t4",
+          "price": 3
+        },
+        {
+          "scrollId": "class_scroll_t5",
+          "price": 9
+        },
+        {
+          "scrollId": "class_scroll_t6",
+          "price": 27
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1467.MATERIAL_RECIPES",
+      "file": "metro-exports.json",
+      "path": "$.module_1467.MATERIAL_RECIPES",
+      "format": "array",
+      "rows": 9,
+      "columns": [
+        {
+          "name": "itemId",
+          "types": [
+            "string"
+          ],
+          "nonNull": 9,
+          "distinct": 9,
+          "samples": [
+            "\"mat_divinity\"",
+            "\"mat_ban_nguyen_sinh_menh\"",
+            "\"mat_ban_nguyen_nang_luong\"",
+            "\"mat_ban_nguyen_bong_toi\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "materials",
+          "types": [
+            "array"
+          ],
+          "nonNull": 9,
+          "distinct": 9,
+          "samples": [
+            "[{\"materialId\":\"mat_divinity_shard\",\"count\":15}]",
+            "[{\"materialId\":\"mat_slime_gel\",\"count\":100},{\"materialId\":\"m… (+211 ký tự)",
+            "[{\"materialId\":\"mat_crystal_bat_scale\",\"count\":100},{\"materi… (+243 ký tự)",
+            "[{\"materialId\":\"mat_shadow_wolf_fang\",\"count\":100},{\"materia… (+238 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "itemId": "mat_divinity",
+          "materials": [
+            {
+              "materialId": "mat_divinity_shard",
+              "count": 15
+            }
+          ]
+        },
+        {
+          "itemId": "mat_ban_nguyen_sinh_menh",
+          "materials": [
+            {
+              "materialId": "mat_slime_gel",
+              "count": 100
+            },
+            {
+              "materialId": "mat_bat_wing",
+              "count": 100
+            },
+            {
+              "materialId": "mat_giant_worm_fang",
+              "count": 100
+            },
+            {
+              "materialId": "mat_ghost_essence",
+              "count": 100
+            },
+            {
+              "materialId": "mat_whispering_core",
+              "count": 100
+            },
+            {
+              "materialId": "mat_divinity",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "itemId": "mat_ban_nguyen_nang_luong",
+          "materials": [
+            {
+              "materialId": "mat_crystal_bat_scale",
+              "count": 100
+            },
+            {
+              "materialId": "mat_gem_spider_silk",
+              "count": 100
+            },
+            {
+              "materialId": "mat_stone_golem_fragment",
+              "count": 100
+            },
+            {
+              "materialId": "mat_crystal_golem_heart",
+              "count": 100
+            },
+            {
+              "materialId": "mat_crystal_ghost_essence",
+              "count": 100
+            },
+            {
+              "materialId": "mat_divinity",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.FLIP_CARD_PACKS",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.FLIP_CARD_PACKS",
+      "format": "map",
+      "rows": 9,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 9,
+          "distinct": 9,
+          "samples": [
+            "\"stones5\"",
+            "\"egg1\"",
+            "\"stars100\"",
+            "\"bosschest5\""
+          ]
+        },
+        {
+          "name": "stars",
+          "types": [
+            "number"
+          ],
+          "nonNull": 9,
+          "distinct": 3,
+          "samples": [
+            "0",
+            "100",
+            "200"
+          ],
+          "hint": "phẩm chất / sao",
+          "min": 0,
+          "max": 200,
+          "mean": 33.333
+        },
+        {
+          "name": "mats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 9,
+          "distinct": 8,
+          "samples": [
+            "{\"mat_x2_exp_24h\":5}",
+            "{\"mat_pet_egg\":1}",
+            "{}",
+            "{\"mat_chest_boss_kill\":5}"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "stones5",
+          "stars": 0,
+          "mats": {
+            "mat_x2_exp_24h": 5
+          }
+        },
+        {
+          "__key": "egg1",
+          "stars": 0,
+          "mats": {
+            "mat_pet_egg": 1
+          }
+        },
+        {
+          "__key": "stars100",
+          "stars": 100,
+          "mats": {}
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_383.PET_STAT_META",
+      "file": "metro-exports.json",
+      "path": "$.module_383.PET_STAT_META",
+      "format": "map",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"atk\"",
+            "\"matk\"",
+            "\"def\"",
+            "\"mdef\""
+          ]
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Pet Tấn Công\"",
+            "\"Pet Ma Công\"",
+            "\"Pet Phòng Thủ\"",
+            "\"Pet Ma Thủ\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"ATK Pet\"",
+            "\"MATK Pet\"",
+            "\"DEF Pet\"",
+            "\"MDEF Pet\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "perLevel",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 2,
+          "samples": [
+            "1",
+            "0.5"
+          ],
+          "hint": "cấp độ",
+          "min": 0.5,
+          "max": 1,
+          "mean": 0.938
+        },
+        {
+          "name": "statLabel",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"ATK\"",
+            "\"MATK\"",
+            "\"DEF\"",
+            "\"MDEF\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "atk",
+          "name": "Pet Tấn Công",
+          "nameEn": "ATK Pet",
+          "perLevel": 1,
+          "statLabel": "ATK"
+        },
+        {
+          "__key": "matk",
+          "name": "Pet Ma Công",
+          "nameEn": "MATK Pet",
+          "perLevel": 1,
+          "statLabel": "MATK"
+        },
+        {
+          "__key": "def",
+          "name": "Pet Phòng Thủ",
+          "nameEn": "DEF Pet",
+          "perLevel": 1,
+          "statLabel": "DEF"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_383.PET_EGG_ROLLS",
+      "file": "metro-exports.json",
+      "path": "$.module_383.PET_EGG_ROLLS",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "stat",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"def\"",
+            "\"mdef\"",
+            "\"spd\"",
+            "\"atk\""
+          ]
+        },
+        {
+          "name": "weight",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 4,
+          "samples": [
+            "20",
+            "15",
+            "10",
+            "5"
+          ],
+          "hint": "tỉ lệ / trọng số",
+          "min": 5,
+          "max": 20,
+          "mean": 12.5
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "stat": "def",
+          "weight": 20
+        },
+        {
+          "stat": "mdef",
+          "weight": 20
+        },
+        {
+          "stat": "spd",
+          "weight": 15
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.kiem_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.kiem_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Kiếm Ý\"",
+            "\"Khiên Thuật\"",
+            "\"Thiết Bích\"",
+            "\"Hắc Kiếm\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Sword Intent\"",
+            "\"Shieldcraft\"",
+            "\"Ironwall\"",
+            "\"Dark Blade\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"physDmg\",\"percent\":10}]",
+            "[{\"stat\":\"physDmg\",\"percent\":5},{\"stat\":\"def\",\"percent\":5},{… (+61 ký tự)",
+            "[{\"stat\":\"def\",\"percent\":10},{\"stat\":\"hp\",\"percent\":15},{\"st… (+69 ký tự)",
+            "[{\"stat\":\"spd\",\"percent\":8},{\"stat\":\"atk\",\"percent\":8}]"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Kiếm Ý",
+          "nameEn": "Sword Intent",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 10
+            }
+          ]
+        },
+        {
+          "name": "Khiên Thuật",
+          "nameEn": "Shieldcraft",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 5
+            },
+            {
+              "stat": "def",
+              "percent": 5
+            },
+            {
+              "stat": "taunt",
+              "percent": 6
+            },
+            {
+              "stat": "coverAlly",
+              "percent": 7
+            }
+          ]
+        },
+        {
+          "name": "Thiết Bích",
+          "nameEn": "Ironwall",
+          "bonuses": [
+            {
+              "stat": "def",
+              "percent": 10
+            },
+            {
+              "stat": "hp",
+              "percent": 15
+            },
+            {
+              "stat": "taunt",
+              "percent": 8
+            },
+            {
+              "stat": "ultFirst",
+              "percent": 1,
+              "minTier": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.cung_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.cung_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Tinh Xạ\"",
+            "\"Nỏ Thuật\"",
+            "\"Đấu Súng\"",
+            "\"Xạ Kích\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Precise Shot\"",
+            "\"Crossbow Mastery\"",
+            "\"Quickdraw\"",
+            "\"Marksmanship\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"physDmg\",\"percent\":6.25},{\"stat\":\"accuracy\",\"perce… (+39 ký tự)",
+            "[{\"stat\":\"physDmg\",\"percent\":10},{\"stat\":\"critDmg\",\"percent\"… (+35 ký tự)",
+            "[{\"stat\":\"physDmg\",\"percent\":6.25},{\"stat\":\"crit\",\"percent\":… (+34 ký tự)",
+            "[{\"stat\":\"physDmg\",\"percent\":5},{\"stat\":\"doubleAtk\",\"percent… (+37 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Tinh Xạ",
+          "nameEn": "Precise Shot",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 6.25
+            },
+            {
+              "stat": "accuracy",
+              "percent": 10
+            },
+            {
+              "stat": "spd",
+              "percent": 4.375
+            }
+          ]
+        },
+        {
+          "name": "Nỏ Thuật",
+          "nameEn": "Crossbow Mastery",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 10
+            },
+            {
+              "stat": "critDmg",
+              "percent": 5
+            },
+            {
+              "stat": "spd",
+              "percent": 4.375
+            }
+          ]
+        },
+        {
+          "name": "Đấu Súng",
+          "nameEn": "Quickdraw",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 6.25
+            },
+            {
+              "stat": "crit",
+              "percent": 3.75
+            },
+            {
+              "stat": "spd",
+              "percent": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.sat_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.sat_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Ảnh Sát\"",
+            "\"Đao Pháp\"",
+            "\"Độc Thuật\"",
+            "\"U Hồn Thể\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Shadow Kill\"",
+            "\"Dagger Mastery\"",
+            "\"Venom Art\"",
+            "\"Wraith Form\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"physDmg\",\"percent\":5},{\"stat\":\"dodge\",\"percent\":5}… (+40 ký tự)",
+            "[{\"stat\":\"physDmg\",\"percent\":5},{\"stat\":\"critDmg\",\"percent\":… (+42 ký tự)",
+            "[{\"stat\":\"physDmg\",\"percent\":5},{\"stat\":\"trueAtk\",\"percent\":… (+42 ký tự)",
+            "[{\"stat\":\"dodge\",\"percent\":10},{\"stat\":\"focusLowestHp\",\"perc… (+10 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Ảnh Sát",
+          "nameEn": "Shadow Kill",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 5
+            },
+            {
+              "stat": "dodge",
+              "percent": 5
+            },
+            {
+              "stat": "focusLowestHp",
+              "percent": 100
+            }
+          ]
+        },
+        {
+          "name": "Đao Pháp",
+          "nameEn": "Dagger Mastery",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 5
+            },
+            {
+              "stat": "critDmg",
+              "percent": 5
+            },
+            {
+              "stat": "focusLowestHp",
+              "percent": 100
+            }
+          ]
+        },
+        {
+          "name": "Độc Thuật",
+          "nameEn": "Venom Art",
+          "bonuses": [
+            {
+              "stat": "physDmg",
+              "percent": 5
+            },
+            {
+              "stat": "trueAtk",
+              "percent": 5
+            },
+            {
+              "stat": "focusLowestHp",
+              "percent": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.trieu_hoi",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.trieu_hoi",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Lang Khế\"",
+            "\"Hùng Khế\"",
+            "\"Hổ Khế\"",
+            "\"Phượng Khế\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Wolf Pact\"",
+            "\"Bear Pact\"",
+            "\"Tiger Pact\"",
+            "\"Phoenix Pact\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"mpRegen\",\"percent\":5},{\"stat\":\"magDoubleAtk\",\"perc… (+120 ký tự)",
+            "[{\"stat\":\"magDmg\",\"percent\":5},{\"stat\":\"magDoubleAtk\",\"perce… (+119 ký tự)",
+            "[{\"stat\":\"critDmg\",\"percent\":5},{\"stat\":\"magDoubleAtk\",\"perc… (+120 ký tự)",
+            "[{\"stat\":\"crit\",\"percent\":5},{\"stat\":\"magDoubleAtk\",\"percent… (+117 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Lang Khế",
+          "nameEn": "Wolf Pact",
+          "bonuses": [
+            {
+              "stat": "mpRegen",
+              "percent": 5
+            },
+            {
+              "stat": "magDoubleAtk",
+              "percent": 5
+            },
+            {
+              "stat": "startMp",
+              "percent": 3
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 2
+            },
+            {
+              "stat": "ultMpRefund",
+              "percent": 30,
+              "minTier": 1
+            }
+          ]
+        },
+        {
+          "name": "Hùng Khế",
+          "nameEn": "Bear Pact",
+          "bonuses": [
+            {
+              "stat": "magDmg",
+              "percent": 5
+            },
+            {
+              "stat": "magDoubleAtk",
+              "percent": 5
+            },
+            {
+              "stat": "startMp",
+              "percent": 3
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 2
+            },
+            {
+              "stat": "ultMpRefund",
+              "percent": 30,
+              "minTier": 1
+            }
+          ]
+        },
+        {
+          "name": "Hổ Khế",
+          "nameEn": "Tiger Pact",
+          "bonuses": [
+            {
+              "stat": "critDmg",
+              "percent": 5
+            },
+            {
+              "stat": "magDoubleAtk",
+              "percent": 5
+            },
+            {
+              "stat": "startMp",
+              "percent": 3
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 2
+            },
+            {
+              "stat": "ultMpRefund",
+              "percent": 30,
+              "minTier": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.phap_su",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.phap_su",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Pháp Lực\"",
+            "\"Hỏa Pháp\"",
+            "\"Băng Pháp\"",
+            "\"Thổ Pháp\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Arcane Power\"",
+            "\"Fire Magic\"",
+            "\"Ice Magic\"",
+            "\"Earth Magic\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"matk\",\"percent\":10},{\"stat\":\"startMp\",\"percent\":8}… (+1 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":10},{\"stat\":\"magDoubleAtk\",\"percen… (+38 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":5},{\"stat\":\"mdef\",\"percent\":5},{\"s… (+58 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":5},{\"stat\":\"def\",\"percent\":10},{\"s… (+57 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Pháp Lực",
+          "nameEn": "Arcane Power",
+          "bonuses": [
+            {
+              "stat": "matk",
+              "percent": 10
+            },
+            {
+              "stat": "startMp",
+              "percent": 8
+            }
+          ]
+        },
+        {
+          "name": "Hỏa Pháp",
+          "nameEn": "Fire Magic",
+          "bonuses": [
+            {
+              "stat": "matk",
+              "percent": 10
+            },
+            {
+              "stat": "magDoubleAtk",
+              "percent": 10
+            },
+            {
+              "stat": "startMp",
+              "percent": 4
+            }
+          ]
+        },
+        {
+          "name": "Băng Pháp",
+          "nameEn": "Ice Magic",
+          "bonuses": [
+            {
+              "stat": "matk",
+              "percent": 5
+            },
+            {
+              "stat": "mdef",
+              "percent": 5
+            },
+            {
+              "stat": "freeze",
+              "percent": 5
+            },
+            {
+              "stat": "startMp",
+              "percent": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.cuong_bao",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.cuong_bao",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Man Nộ\"",
+            "\"Rìu Cuồng\"",
+            "\"Song Rìu Cuồng\"",
+            "\"Thiết Giáp Thể\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Savage Fury\"",
+            "\"Axe Fury\"",
+            "\"Dual-Axe Fury\"",
+            "\"Ironclad Body\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"hp\",\"percent\":20}]",
+            "[{\"stat\":\"hp\",\"percent\":12.5},{\"stat\":\"healSelfPerTurn\",\"per… (+12 ký tự)",
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"healSelfPerTurn\",\"perce… (+7 ký tự)",
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"healSelfPerTurn\",\"perce… (+90 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Man Nộ",
+          "nameEn": "Savage Fury",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 20
+            }
+          ]
+        },
+        {
+          "name": "Rìu Cuồng",
+          "nameEn": "Axe Fury",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 12.5
+            },
+            {
+              "stat": "healSelfPerTurn",
+              "percent": 3.75
+            }
+          ]
+        },
+        {
+          "name": "Song Rìu Cuồng",
+          "nameEn": "Dual-Axe Fury",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 10
+            },
+            {
+              "stat": "healSelfPerTurn",
+              "percent": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.dao_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.dao_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Kiếm Tâm\"",
+            "\"Phù Tâm\"",
+            "\"Li Hỏa Công\"",
+            "\"Âm Dương Pháp\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Sword Heart\"",
+            "\"Talisman Heart\"",
+            "\"Flame Art\"",
+            "\"Yin-Yang Art\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"matk\",\"percent\":10},{\"stat\":\"mpPerTurn\",\"percent\":… (+3 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":5},{\"stat\":\"mpPerTurn\",\"percent\":6… (+5 ký tự)",
+            "[{\"stat\":\"mdef\",\"percent\":5},{\"stat\":\"matk\",\"percent\":5},{\"s… (+67 ký tự)",
+            "[{\"stat\":\"matk\",\"percent\":10},{\"stat\":\"magDoubleAtk\",\"percen… (+78 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Kiếm Tâm",
+          "nameEn": "Sword Heart",
+          "bonuses": [
+            {
+              "stat": "matk",
+              "percent": 10
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 3
+            }
+          ]
+        },
+        {
+          "name": "Phù Tâm",
+          "nameEn": "Talisman Heart",
+          "bonuses": [
+            {
+              "stat": "matk",
+              "percent": 5
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 6.25
+            }
+          ]
+        },
+        {
+          "name": "Li Hỏa Công",
+          "nameEn": "Flame Art",
+          "bonuses": [
+            {
+              "stat": "mdef",
+              "percent": 5
+            },
+            {
+              "stat": "matk",
+              "percent": 5
+            },
+            {
+              "stat": "magDoubleAtk",
+              "percent": 10
+            },
+            {
+              "stat": "mpPerTurn",
+              "percent": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.PASSIVE_TEMPLATES.saija",
+      "file": "metro-exports.json",
+      "path": "$.module_441.PASSIVE_TEMPLATES.saija",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Chiến Ý Saiya\"",
+            "\"Siêu Saiya Thể\"",
+            "\"Siêu Saiya 2 Thể\"",
+            "\"Siêu Saiya 3 Thể\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Saiyan Will\"",
+            "\"Super Saiyan Body\"",
+            "\"Super Saiyan 2 Body\"",
+            "\"Super Saiyan 3 Body\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"atk\",\"percent\":5},{\"sta… (+53 ký tự)",
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"atk\",\"percent\":5},{\"sta… (+62 ký tự)",
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"healSelfPerTurn\",\"perce… (+7 ký tự)",
+            "[{\"stat\":\"hp\",\"percent\":10},{\"stat\":\"atk\",\"percent\":5},{\"sta… (+90 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Chiến Ý Saiya",
+          "nameEn": "Saiyan Will",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 10
+            },
+            {
+              "stat": "atk",
+              "percent": 5
+            },
+            {
+              "stat": "matk",
+              "percent": 5
+            },
+            {
+              "stat": "dodge",
+              "percent": 10
+            }
+          ]
+        },
+        {
+          "name": "Siêu Saiya Thể",
+          "nameEn": "Super Saiyan Body",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 10
+            },
+            {
+              "stat": "atk",
+              "percent": 5
+            },
+            {
+              "stat": "matk",
+              "percent": 5
+            },
+            {
+              "stat": "healSelfPerTurn",
+              "percent": 3
+            }
+          ]
+        },
+        {
+          "name": "Siêu Saiya 2 Thể",
+          "nameEn": "Super Saiyan 2 Body",
+          "bonuses": [
+            {
+              "stat": "hp",
+              "percent": 10
+            },
+            {
+              "stat": "healSelfPerTurn",
+              "percent": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.kiem_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.kiem_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Kiếm Sĩ\"",
+            "\"Kỵ Sĩ\"",
+            "\"Thiết Khiên\"",
+            "\"Hắc Kiếm Sĩ\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Swordsman\"",
+            "\"Knight\"",
+            "\"Shieldbearer\"",
+            "\"Dark Swordsman\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Kiếm Sĩ",
+          "nameEn": "Swordsman"
+        },
+        {
+          "name": "Kỵ Sĩ",
+          "nameEn": "Knight"
+        },
+        {
+          "name": "Thiết Khiên",
+          "nameEn": "Shieldbearer"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.cung_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.cung_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Cung Thủ\"",
+            "\"Nỏ Thủ\"",
+            "\"Cao Bồi\"",
+            "\"Xạ Thủ\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Archer\"",
+            "\"Crossbowman\"",
+            "\"Gunslinger\"",
+            "\"Rifleman\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Cung Thủ",
+          "nameEn": "Archer"
+        },
+        {
+          "name": "Nỏ Thủ",
+          "nameEn": "Crossbowman"
+        },
+        {
+          "name": "Cao Bồi",
+          "nameEn": "Gunslinger"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.sat_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.sat_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Sát Thủ\"",
+            "\"Đao Khách\"",
+            "\"Độc Ảnh\"",
+            "\"U Hồn\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Assassin\"",
+            "\"Blademaster\"",
+            "\"Venom Shade\"",
+            "\"Wraith\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Sát Thủ",
+          "nameEn": "Assassin"
+        },
+        {
+          "name": "Đao Khách",
+          "nameEn": "Blademaster"
+        },
+        {
+          "name": "Độc Ảnh",
+          "nameEn": "Venom Shade"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.phap_su",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.phap_su",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Pháp Sư\"",
+            "\"Hỏa Pháp Sư\"",
+            "\"Băng Pháp Sư\"",
+            "\"Thổ Pháp Sư\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Mage\"",
+            "\"Pyromancer\"",
+            "\"Cryomancer\"",
+            "\"Geomancer\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Pháp Sư",
+          "nameEn": "Mage"
+        },
+        {
+          "name": "Hỏa Pháp Sư",
+          "nameEn": "Pyromancer"
+        },
+        {
+          "name": "Băng Pháp Sư",
+          "nameEn": "Cryomancer"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.cuong_bao",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.cuong_bao",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Man Nhân\"",
+            "\"Cuồng Chiến\"",
+            "\"Song Rìu Cuồng\"",
+            "\"Thiết Giáp Cuồng\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Savage\"",
+            "\"Berserker\"",
+            "\"Dual-Axe Berserker\"",
+            "\"Juggernaut\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Man Nhân",
+          "nameEn": "Savage"
+        },
+        {
+          "name": "Cuồng Chiến",
+          "nameEn": "Berserker"
+        },
+        {
+          "name": "Song Rìu Cuồng",
+          "nameEn": "Dual-Axe Berserker"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.trieu_hoi",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.trieu_hoi",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Triệu Lang\"",
+            "\"Triệu Hùng\"",
+            "\"Triệu Hổ\"",
+            "\"Triệu Phượng\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Wolf Caller\"",
+            "\"Bear Caller\"",
+            "\"Tiger Caller\"",
+            "\"Phoenix Caller\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Triệu Lang",
+          "nameEn": "Wolf Caller"
+        },
+        {
+          "name": "Triệu Hùng",
+          "nameEn": "Bear Caller"
+        },
+        {
+          "name": "Triệu Hổ",
+          "nameEn": "Tiger Caller"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.dao_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.dao_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Kiếm Tu\"",
+            "\"Phù Tu\"",
+            "\"Hỏa Tu\"",
+            "\"Âm Dương Tu\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Sword Cultivator\"",
+            "\"Talisman Cultivator\"",
+            "\"Fire Cultivator\"",
+            "\"Yin-Yang Cultivator\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Kiếm Tu",
+          "nameEn": "Sword Cultivator"
+        },
+        {
+          "name": "Phù Tu",
+          "nameEn": "Talisman Cultivator"
+        },
+        {
+          "name": "Hỏa Tu",
+          "nameEn": "Fire Cultivator"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_NAMES.saija",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_NAMES.saija",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Saiya\"",
+            "\"Siêu Saiya\"",
+            "\"Siêu Saiya 2\"",
+            "\"Siêu Saiya 3\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Saiyan\"",
+            "\"Super Saiyan\"",
+            "\"Super Saiyan 2\"",
+            "\"Super Saiyan 3\""
+          ],
+          "hint": "văn bản"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "name": "Saiya",
+          "nameEn": "Saiyan"
+        },
+        {
+          "name": "Siêu Saiya",
+          "nameEn": "Super Saiyan"
+        },
+        {
+          "name": "Siêu Saiya 2",
+          "nameEn": "Super Saiyan 2"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.kiem_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.kiem_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Kiếm Khí\",\"nameEn\":\"Sword Aura\",\"range\":\"melee\",\"da… (+121 ký tự)",
+            "{\"name\":\"Kiếm Khiên\",\"nameEn\":\"Sword & Board\",\"range\":\"melee… (+135 ký tự)",
+            "{\"name\":\"Trọng Kiếm\",\"nameEn\":\"Heavy Blade\",\"range\":\"melee\",… (+120 ký tự)",
+            "{\"name\":\"Hắc Kiếm\",\"nameEn\":\"Dark Blade\",\"range\":\"melee\",\"da… (+117 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Kiếm Khai Sơn\",\"nameEn\":\"Mountain Splitter\",\"descri… (+210 ký tự)",
+            "{\"name\":\"Kỵ Sĩ Xung Phong\",\"nameEn\":\"Knight's Charge\",\"descr… (+292 ký tự)",
+            "{\"name\":\"Phá Thành Trảm\",\"nameEn\":\"Wall Breaker\",\"descriptio… (+373 ký tự)",
+            "{\"name\":\"Hắc Phong Trảm\",\"nameEn\":\"Dark Gale Slash\",\"descrip… (+280 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Kiếm Khí",
+            "nameEn": "Sword Aura",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Đường kiếm khí gây 100% ATK.",
+            "descriptionEn": "Sword aura deals 100% ATK."
+          },
+          "ultimate": {
+            "name": "Kiếm Khai Sơn",
+            "nameEn": "Mountain Splitter",
+            "description": "Đòn chém khai sơn 120% ATK toàn địch.",
+            "descriptionEn": "Mountain-splitting slash 100% ATK to all enemies.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.2,
+                "target": "enemyAll",
+                "hits": 1
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Kiếm Khiên",
+            "nameEn": "Sword & Board",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Kiếm khiên liên kích 100% ATK.",
+            "descriptionEn": "Sword-and-shield strike 100% ATK."
+          },
+          "ultimate": {
+            "name": "Kỵ Sĩ Xung Phong",
+            "nameEn": "Knight's Charge",
+            "description": "Đòn xung phong 120% ATK toàn địch, tăng SPD 25%.",
+            "descriptionEn": "Charging strike 120% ATK to all enemies, +25% SPD.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.2,
+                "target": "enemyAll",
+                "hits": 1
+              },
+              {
+                "kind": "buff",
+                "stat": "spd",
+                "power": 25,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Trọng Kiếm",
+            "nameEn": "Heavy Blade",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Kiếm nặng gây 100% ATK.",
+            "descriptionEn": "Heavy blade deals 100% ATK."
+          },
+          "ultimate": {
+            "name": "Phá Thành Trảm",
+            "nameEn": "Wall Breaker",
+            "description": "Đòn hất tung 150% ATK toàn địch — mỗi địch trúng đòn có 50% bị khiêu khích, lượt sau chỉ tấn công người niệm.",
+            "descriptionEn": "Wall-breaking slash 150% ATK to all enemies — each enemy hit has 50% chance to be taunted and attack only the caster next turn.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.5,
+                "target": "enemyAll",
+                "hits": 1,
+                "tauntChance": 50
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.cung_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.cung_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Tiễn Tiêu\",\"nameEn\":\"Quick Shot\",\"range\":\"ranged\",\"… (+113 ký tự)",
+            "{\"name\":\"Nỏ Tiễn\",\"nameEn\":\"Crossbow Bolt\",\"range\":\"ranged\",… (+115 ký tự)",
+            "{\"name\":\"Súng Lục\",\"nameEn\":\"Six-Shooter\",\"range\":\"ranged\",\"… (+120 ký tự)",
+            "{\"name\":\"Súng Trường\",\"nameEn\":\"Rifle\",\"range\":\"ranged\",\"dam… (+107 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Vạn Tiễn Trận\",\"nameEn\":\"Arrow Storm\",\"description\"… (+185 ký tự)",
+            "{\"name\":\"Xuyên Tâm Nỏ\",\"nameEn\":\"Heartseeker Bolt\",\"descript… (+301 ký tự)",
+            "{\"name\":\"Tử Đấu Súng\",\"nameEn\":\"Deadly Quickdraw\",\"descripti… (+282 ký tự)",
+            "{\"name\":\"Bão Đạn\",\"nameEn\":\"Bullet Storm\",\"description\":\"3 l… (+317 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Tiễn Tiêu",
+            "nameEn": "Quick Shot",
+            "range": "ranged",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Bắn tên nhanh 100% ATK.",
+            "descriptionEn": "Quick arrow 100% ATK."
+          },
+          "ultimate": {
+            "name": "Vạn Tiễn Trận",
+            "nameEn": "Arrow Storm",
+            "description": "Đòn mưa tên 120% ATK toàn địch.",
+            "descriptionEn": "Arrow storm 100% ATK to all enemies.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.2,
+                "target": "enemyAll",
+                "hits": 1
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Nỏ Tiễn",
+            "nameEn": "Crossbow Bolt",
+            "range": "ranged",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Mũi nỏ xuyên 100% ATK.",
+            "descriptionEn": "Piercing bolt 100% ATK."
+          },
+          "ultimate": {
+            "name": "Xuyên Tâm Nỏ",
+            "nameEn": "Heartseeker Bolt",
+            "description": "2 mũi nỏ xuyên tim, mỗi mũi 100% ATK, giảm DEF địch 35%.",
+            "descriptionEn": "2 heart-piercing bolts, each 100% ATK, -35% enemy DEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.2,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 35,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Súng Lục",
+            "nameEn": "Six-Shooter",
+            "range": "ranged",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Súng lục nhanh 100% ATK.",
+            "descriptionEn": "Quick six-shooter 100% ATK."
+          },
+          "ultimate": {
+            "name": "Tử Đấu Súng",
+            "nameEn": "Deadly Quickdraw",
+            "description": "6 phát đấu súng, mỗi phát 80% ATK, tăng CRIT 30%.",
+            "descriptionEn": "4 quickdraw shots, each 62.5% ATK, +30% CRIT.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 0.8,
+                "target": "enemy",
+                "hits": 6
+              },
+              {
+                "kind": "buff",
+                "stat": "crit",
+                "power": 30,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.sat_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.sat_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Ám Thích\",\"nameEn\":\"Backstab\",\"range\":\"melee\",\"dama… (+100 ký tự)",
+            "{\"name\":\"Song Đao\",\"nameEn\":\"Dual Daggers\",\"range\":\"melee\",\"… (+109 ký tự)",
+            "{\"name\":\"Độc Thích\",\"nameEn\":\"Poison Stab\",\"range\":\"melee\",\"… (+109 ký tự)",
+            "{\"name\":\"U Hồn Đao\",\"nameEn\":\"Wraith Blade\",\"range\":\"melee\",… (+111 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Ảnh Sát\",\"nameEn\":\"Shadow Kill\",\"description\":\"Đòn … (+245 ký tự)",
+            "{\"name\":\"Liên Đao Sát\",\"nameEn\":\"Dagger Flurry\",\"description… (+270 ký tự)",
+            "{\"name\":\"Độc Ảnh Sát\",\"nameEn\":\"Venom Shade Strike\",\"descrip… (+371 ký tự)",
+            "{\"name\":\"U Hồn Sát\",\"nameEn\":\"Wraith Strike\",\"description\":\"… (+266 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Ám Thích",
+            "nameEn": "Backstab",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Đâm lén 100% ATK.",
+            "descriptionEn": "Backstab 100% ATK."
+          },
+          "ultimate": {
+            "name": "Ảnh Sát",
+            "nameEn": "Shadow Kill",
+            "description": "Đòn ám sát 150% ATK, tăng SPD 30%.",
+            "descriptionEn": "Shadow strike 150% ATK, +30% SPD.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "buff",
+                "stat": "spd",
+                "power": 30,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Song Đao",
+            "nameEn": "Dual Daggers",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Song đao 100% ATK.",
+            "descriptionEn": "Dual daggers 100% ATK."
+          },
+          "ultimate": {
+            "name": "Liên Đao Sát",
+            "nameEn": "Dagger Flurry",
+            "description": "2 đòn đao, mỗi đòn 100% ATK, tăng CRIT 35%.",
+            "descriptionEn": "2 dagger strikes, each 100% ATK, +35% CRIT.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "buff",
+                "stat": "crit",
+                "power": 35,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Độc Thích",
+            "nameEn": "Poison Stab",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Độc thích 100% ATK.",
+            "descriptionEn": "Poison stab 100% ATK."
+          },
+          "ultimate": {
+            "name": "Độc Ảnh Sát",
+            "nameEn": "Venom Shade Strike",
+            "description": "2 đòn độc ảnh, mỗi đòn 125% ATK, giảm DEF 40%, ATK 25%.",
+            "descriptionEn": "2 venom strikes, each 125% ATK, -40% DEF, -25% ATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.25,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 40,
+                "target": "enemy",
+                "duration": 3
+              },
+              {
+                "kind": "debuff",
+                "stat": "atk",
+                "power": 25,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.phap_su",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.phap_su",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Ma Đạn\",\"nameEn\":\"Mana Bolt\",\"range\":\"ranged\",\"dama… (+101 ký tự)",
+            "{\"name\":\"Cầu Lửa\",\"nameEn\":\"Fireball\",\"range\":\"ranged\",\"dama… (+101 ký tự)",
+            "{\"name\":\"Cầu Băng\",\"nameEn\":\"Ice Ball\",\"range\":\"ranged\",\"dam… (+103 ký tự)",
+            "{\"name\":\"Thạch Đạn\",\"nameEn\":\"Stone Bolt\",\"range\":\"ranged\",\"… (+109 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Ma Năng Bộc Phá\",\"nameEn\":\"Mana Burst\",\"description… (+289 ký tự)",
+            "{\"name\":\"Địa Ngục Hỏa\",\"nameEn\":\"Hellfire\",\"description\":\"2 … (+418 ký tự)",
+            "{\"name\":\"Bão Băng\",\"nameEn\":\"Blizzard\",\"description\":\"Bão bă… (+305 ký tự)",
+            "{\"name\":\"Địa Chấn\",\"nameEn\":\"Earthquake\",\"description\":\"2 đợ… (+355 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Ma Đạn",
+            "nameEn": "Mana Bolt",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Ma đạn 100% MATK.",
+            "descriptionEn": "Mana bolt 100% MATK."
+          },
+          "ultimate": {
+            "name": "Ma Năng Bộc Phá",
+            "nameEn": "Mana Burst",
+            "description": "Đòn ma năng 120% MATK toàn địch, giảm MDEF 25%.",
+            "descriptionEn": "Mana strike 100% MATK to all enemies, -25% MDEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.2,
+                "target": "enemyAll",
+                "hits": 1
+              },
+              {
+                "kind": "debuff",
+                "stat": "mdef",
+                "power": 25,
+                "target": "enemyAll",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Cầu Lửa",
+            "nameEn": "Fireball",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Cầu lửa 100% MATK.",
+            "descriptionEn": "Fireball 100% MATK."
+          },
+          "ultimate": {
+            "name": "Địa Ngục Hỏa",
+            "nameEn": "Hellfire",
+            "description": "2 quả lửa địa ngục toàn địch, mỗi quả 80% MATK, thiêu đốt giảm DEF 30%, MDEF 30%.",
+            "descriptionEn": "2 hellfire balls on all enemies, each 60% MATK, burn -30% DEF, -30% MDEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 0.8,
+                "target": "enemyAll",
+                "hits": 2
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 30,
+                "target": "enemyAll",
+                "duration": 3
+              },
+              {
+                "kind": "debuff",
+                "stat": "mdef",
+                "power": 30,
+                "target": "enemyAll",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Cầu Băng",
+            "nameEn": "Ice Ball",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Cầu băng 100% MATK.",
+            "descriptionEn": "Ice ball 100% MATK."
+          },
+          "ultimate": {
+            "name": "Bão Băng",
+            "nameEn": "Blizzard",
+            "description": "Bão băng 130% MATK toàn địch, đóng băng giảm SPD địch 40%.",
+            "descriptionEn": "Blizzard deals 130% MATK to all enemies, freeze -40% enemy SPD.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.3,
+                "target": "enemyAll",
+                "hits": 1
+              },
+              {
+                "kind": "debuff",
+                "stat": "spd",
+                "power": 40,
+                "target": "enemyAll",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.cuong_bao",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.cuong_bao",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Man Nộ Gậy\",\"nameEn\":\"Savage Club\",\"range\":\"melee\",… (+113 ký tự)",
+            "{\"name\":\"Cuồng Rìu\",\"nameEn\":\"Frenzy Axe\",\"range\":\"melee\",\"d… (+107 ký tự)",
+            "{\"name\":\"Song Cuồng Rìu\",\"nameEn\":\"Twin Fury Axes\",\"range\":\"… (+125 ký tự)",
+            "{\"name\":\"Thiết Giáp Xung\",\"nameEn\":\"Iron Charge\",\"range\":\"me… (+129 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Man Nộ Bộc Phát\",\"nameEn\":\"Savage Fury\",\"descriptio… (+256 ký tự)",
+            "{\"name\":\"Rìu Phá Sơn\",\"nameEn\":\"Mountain-Cleaving Axe\",\"desc… (+288 ký tự)",
+            "{\"name\":\"Song Rìu Phá Giáp\",\"nameEn\":\"Twin-Axe Sunder\",\"desc… (+287 ký tự)",
+            "{\"name\":\"Thiết Huyết Cuồng Chiến\",\"nameEn\":\"Ironblood Rampag… (+291 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Man Nộ Gậy",
+            "nameEn": "Savage Club",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Gậy cuồng nộ 100% ATK.",
+            "descriptionEn": "Savage club 100% ATK."
+          },
+          "ultimate": {
+            "name": "Man Nộ Bộc Phát",
+            "nameEn": "Savage Fury",
+            "description": "Đòn đập man nộ 150% ATK, tăng ATK 40%.",
+            "descriptionEn": "Savage smash 150% ATK, +40% ATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "buff",
+                "stat": "atk",
+                "power": 40,
+                "target": "self",
+                "duration": 2
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Cuồng Rìu",
+            "nameEn": "Frenzy Axe",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Rìu cuồng 100% ATK.",
+            "descriptionEn": "Frenzy axe 100% ATK."
+          },
+          "ultimate": {
+            "name": "Rìu Phá Sơn",
+            "nameEn": "Mountain-Cleaving Axe",
+            "description": "2 đòn rìu phá sơn, mỗi đòn 100% ATK, tăng ATK 45%.",
+            "descriptionEn": "2 cleaving axe strikes, each 100% ATK, +45% ATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "buff",
+                "stat": "atk",
+                "power": 45,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Song Cuồng Rìu",
+            "nameEn": "Twin Fury Axes",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Song rìu cuồng 100% ATK.",
+            "descriptionEn": "Twin fury axes 100% ATK."
+          },
+          "ultimate": {
+            "name": "Song Rìu Phá Giáp",
+            "nameEn": "Twin-Axe Sunder",
+            "description": "Đòn song rìu phá giáp 175% ATK, giảm DEF địch 40%.",
+            "descriptionEn": "Twin-axe sunder 175% ATK, -40% enemy DEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.75,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 40,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.trieu_hoi",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.trieu_hoi",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Lang Tiễn\",\"nameEn\":\"Wolf Bolt\",\"range\":\"ranged\",\"d… (+118 ký tự)",
+            "{\"name\":\"Hùng Trảo\",\"nameEn\":\"Bear Claw\",\"range\":\"ranged\",\"d… (+107 ký tự)",
+            "{\"name\":\"Hỏa Hổ Kích\",\"nameEn\":\"Fire Tiger Strike\",\"range\":\"… (+127 ký tự)",
+            "{\"name\":\"Phượng Vũ\",\"nameEn\":\"Phoenix Wing\",\"range\":\"ranged\"… (+113 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Triệu Hồi Băng Lang\",\"nameEn\":\"Summon Ice Wolf\",\"de… (+292 ký tự)",
+            "{\"name\":\"Triệu Hồi Cự Hùng\",\"nameEn\":\"Summon Great Bear\",\"de… (+308 ký tự)",
+            "{\"name\":\"Triệu Hồi Hỏa Hổ\",\"nameEn\":\"Summon Fire Tiger\",\"des… (+299 ký tự)",
+            "{\"name\":\"Triệu Hồi Phượng Hoàng\",\"nameEn\":\"Summon Phoenix\",\"… (+401 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Lang Tiễn",
+            "nameEn": "Wolf Bolt",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Sói linh kích 100% MATK.",
+            "descriptionEn": "Wolf spirit bolt 100% MATK."
+          },
+          "ultimate": {
+            "name": "Triệu Hồi Băng Lang",
+            "nameEn": "Summon Ice Wolf",
+            "description": "Triệu hồi băng lang gây 150% MATK, giảm DEF 20%.",
+            "descriptionEn": "Summons an ice wolf dealing 150% MATK, -20% DEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 20,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Hùng Trảo",
+            "nameEn": "Bear Claw",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Hùng trảo 100% MATK.",
+            "descriptionEn": "Bear claw 100% MATK."
+          },
+          "ultimate": {
+            "name": "Triệu Hồi Cự Hùng",
+            "nameEn": "Summon Great Bear",
+            "description": "Triệu hồi cự hùng 2 nhát, mỗi nhát 100% MATK, tăng MATK 35%.",
+            "descriptionEn": "Summons a great bear for 2 hits of 100% MATK, +35% MATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "buff",
+                "stat": "matk",
+                "power": 35,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Hỏa Hổ Kích",
+            "nameEn": "Fire Tiger Strike",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Hỏa hổ kích 100% MATK.",
+            "descriptionEn": "Fire tiger strike 100% MATK."
+          },
+          "ultimate": {
+            "name": "Triệu Hồi Hỏa Hổ",
+            "nameEn": "Summon Fire Tiger",
+            "description": "Triệu hồi hỏa hổ 2 đòn, mỗi đòn 125% MATK, hồi toàn đội 70% MATK.",
+            "descriptionEn": "Summons a fire tiger for 2 hits of 125% MATK, heal all 70% MATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.25,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "heal",
+                "power": 70,
+                "target": "allyAll"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.dao_si",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.dao_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Ngự Kiếm\",\"nameEn\":\"Sword Control\",\"range\":\"melee\",… (+112 ký tự)",
+            "{\"name\":\"Phù Chú\",\"nameEn\":\"Talisman Charm\",\"range\":\"ranged\"… (+113 ký tự)",
+            "{\"name\":\"Li Hỏa Chưởng\",\"nameEn\":\"Flame Palm\",\"range\":\"range… (+117 ký tự)",
+            "{\"name\":\"Âm Dương Ấn\",\"nameEn\":\"Yin-Yang Seal\",\"range\":\"mele… (+118 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Vạn Kiếm Triều Tông\",\"nameEn\":\"Myriad Swords Conver… (+314 ký tự)",
+            "{\"name\":\"Vạn Phù Hộ Thể\",\"nameEn\":\"Talisman Ward\",\"descripti… (+305 ký tự)",
+            "{\"name\":\"Li Hỏa Thiêu Thiên\",\"nameEn\":\"Sky-Burning Flame\",\"d… (+302 ký tự)",
+            "{\"name\":\"Âm Dương Nghịch Chuyển\",\"nameEn\":\"Yin-Yang Reversal… (+393 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Ngự Kiếm",
+            "nameEn": "Sword Control",
+            "range": "melee",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Ngự kiếm 100% MATK.",
+            "descriptionEn": "Sword control 100% MATK."
+          },
+          "ultimate": {
+            "name": "Vạn Kiếm Triều Tông",
+            "nameEn": "Myriad Swords Converge",
+            "description": "Vạn kiếm hộ thể hồi toàn đội 80% MATK, phi kiếm gây 150% MATK.",
+            "descriptionEn": "Myriad swords protect allies (heal 80% MATK), flying swords deal 150% MATK.",
+            "effects": [
+              {
+                "kind": "heal",
+                "power": 80,
+                "target": "allyAll"
+              },
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Phù Chú",
+            "nameEn": "Talisman Charm",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Phù chú 100% MATK.",
+            "descriptionEn": "Talisman charm 100% MATK."
+          },
+          "ultimate": {
+            "name": "Vạn Phù Hộ Thể",
+            "nameEn": "Talisman Ward",
+            "description": "Vạn phù hồi toàn đội 120% MATK, phù trấn gây 2 đòn mỗi đòn 100% MATK.",
+            "descriptionEn": "Talisman ward heals all 120% MATK, charm strikes deal 2 hits of 100% MATK.",
+            "effects": [
+              {
+                "kind": "heal",
+                "power": 120,
+                "target": "allyAll"
+              },
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1,
+                "target": "enemy",
+                "hits": 2
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Li Hỏa Chưởng",
+            "nameEn": "Flame Palm",
+            "range": "ranged",
+            "damageType": "magical",
+            "power": 1,
+            "description": "Li hỏa chưởng 100% MATK.",
+            "descriptionEn": "Flame palm 100% MATK."
+          },
+          "ultimate": {
+            "name": "Li Hỏa Thiêu Thiên",
+            "nameEn": "Sky-Burning Flame",
+            "description": "2 đợt li hỏa, mỗi đợt 125% MATK, thiêu đốt giảm MDEF 30%.",
+            "descriptionEn": "2 flame waves, each 125% MATK, burn -30% MDEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "magical",
+                "power": 1.25,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "debuff",
+                "stat": "mdef",
+                "power": 30,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_441.COLUMN_SKILLS.saija",
+      "file": "metro-exports.json",
+      "path": "$.module_441.COLUMN_SKILLS.saija",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "attack",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Khí Công\",\"nameEn\":\"Ki Blast\",\"range\":\"melee\",\"dama… (+101 ký tự)",
+            "{\"name\":\"Siêu Khí Công\",\"nameEn\":\"Super Ki Blast\",\"range\":\"r… (+124 ký tự)",
+            "{\"name\":\"Lôi Đình Kích\",\"nameEn\":\"Thunder Strike\",\"range\":\"m… (+123 ký tự)",
+            "{\"name\":\"Long Quyền\",\"nameEn\":\"Dragon Fist\",\"range\":\"melee\",… (+111 ký tự)"
+          ],
+          "hint": "tấn công"
+        },
+        {
+          "name": "ultimate",
+          "types": [
+            "object"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "{\"name\":\"Kamehameha\",\"nameEn\":\"Kamehameha\",\"description\":\"Só… (+355 ký tự)",
+            "{\"name\":\"Siêu Kamehameha\",\"nameEn\":\"Super Kamehameha\",\"descr… (+281 ký tự)",
+            "{\"name\":\"Bạo Liệt Kamehameha\",\"nameEn\":\"Explosive Kamehameha… (+292 ký tự)",
+            "{\"name\":\"Long Quyền Bộc Phát\",\"nameEn\":\"Dragon Fist Burst\",\"… (+417 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "attack": {
+            "name": "Khí Công",
+            "nameEn": "Ki Blast",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Khí công 100% ATK.",
+            "descriptionEn": "Ki blast 100% ATK."
+          },
+          "ultimate": {
+            "name": "Kamehameha",
+            "nameEn": "Kamehameha",
+            "description": "Sóng Kamehameha 150% ATK, hồi bản thân 50% MATK, tăng DEF bản thân 30%.",
+            "descriptionEn": "Kamehameha wave 150% ATK, heals self 50% MATK, +30% self DEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.5,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "heal",
+                "power": 50,
+                "target": "self"
+              },
+              {
+                "kind": "buff",
+                "stat": "def",
+                "power": 30,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Siêu Khí Công",
+            "nameEn": "Super Ki Blast",
+            "range": "ranged",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Siêu khí công 100% ATK.",
+            "descriptionEn": "Super ki blast 100% ATK."
+          },
+          "ultimate": {
+            "name": "Siêu Kamehameha",
+            "nameEn": "Super Kamehameha",
+            "description": "1 sóng siêu Kamehameha 100% ATK, giảm DEF 35%.",
+            "descriptionEn": "1 super Kamehameha wave 100% ATK, -35% DEF.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1,
+                "target": "enemy",
+                "hits": 1
+              },
+              {
+                "kind": "debuff",
+                "stat": "def",
+                "power": 35,
+                "target": "enemy",
+                "duration": 3
+              }
+            ]
+          }
+        },
+        {
+          "attack": {
+            "name": "Lôi Đình Kích",
+            "nameEn": "Thunder Strike",
+            "range": "melee",
+            "damageType": "physical",
+            "power": 1,
+            "description": "Lôi đình kích 100% ATK.",
+            "descriptionEn": "Thunder strike 100% ATK."
+          },
+          "ultimate": {
+            "name": "Bạo Liệt Kamehameha",
+            "nameEn": "Explosive Kamehameha",
+            "description": "2 sóng bạo liệt, mỗi sóng 125% ATK, tăng ATK 40%.",
+            "descriptionEn": "2 explosive waves, each 125% ATK, +40% ATK.",
+            "effects": [
+              {
+                "kind": "damage",
+                "damageType": "physical",
+                "power": 1.25,
+                "target": "enemy",
+                "hits": 2
+              },
+              {
+                "kind": "buff",
+                "stat": "atk",
+                "power": 40,
+                "target": "self",
+                "duration": 3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_446.PERSONALITIES",
+      "file": "metro-exports.json",
+      "path": "$.module_446.PERSONALITIES",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"dung_cam\"",
+            "\"manh_me\"",
+            "\"kien_cuong\"",
+            "\"phap_thuat\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Dũng Cảm\"",
+            "\"Mạnh Mẽ\"",
+            "\"Kiên Cường\"",
+            "\"Pháp Thuật\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Brave\"",
+            "\"Mighty\"",
+            "\"Steadfast\"",
+            "\"Arcane\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Tăng HP 15%, giảm các chỉ số khác 5%.\"",
+            "\"Tăng ATK 15%, giảm các chỉ số khác 5%.\"",
+            "\"Tăng DEF 15%, giảm các chỉ số khác 5%.\"",
+            "\"Tăng MATK 15%, giảm các chỉ số khác 5%.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "descriptionEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Increases HP by 15%, reduces all other stats by 5%.\"",
+            "\"Increases ATK by 15%, reduces all other stats by 5%.\"",
+            "\"Increases DEF by 15%, reduces all other stats by 5%.\"",
+            "\"Increases MATK by 15%, reduces all other stats by 5%.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "boostStat",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"hp\"",
+            "\"atk\"",
+            "\"def\"",
+            "\"matk\""
+          ]
+        },
+        {
+          "name": "boostPercent",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 2,
+          "samples": [
+            "15",
+            "0"
+          ],
+          "hint": "tỉ lệ / trọng số",
+          "min": 0,
+          "max": 15,
+          "mean": 13.125
+        },
+        {
+          "name": "reducePercent",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 1,
+          "samples": [
+            "5"
+          ],
+          "hint": "tỉ lệ / trọng số",
+          "min": 5,
+          "max": 5,
+          "mean": 5
+        },
+        {
+          "name": "color",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 7,
+          "samples": [
+            "\"#e74c3c\"",
+            "\"#e67e22\"",
+            "\"#3498db\"",
+            "\"#9b59b6\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "mpPerTurn",
+          "types": [
+            "number"
+          ],
+          "nonNull": 1,
+          "distinct": 1,
+          "samples": [
+            "10"
+          ],
+          "min": 10,
+          "max": 10,
+          "mean": 10
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "dung_cam",
+          "name": "Dũng Cảm",
+          "nameEn": "Brave",
+          "description": "Tăng HP 15%, giảm các chỉ số khác 5%.",
+          "descriptionEn": "Increases HP by 15%, reduces all other stats by 5%.",
+          "boostStat": "hp",
+          "boostPercent": 15,
+          "reducePercent": 5,
+          "color": "#e74c3c"
+        },
+        {
+          "id": "manh_me",
+          "name": "Mạnh Mẽ",
+          "nameEn": "Mighty",
+          "description": "Tăng ATK 15%, giảm các chỉ số khác 5%.",
+          "descriptionEn": "Increases ATK by 15%, reduces all other stats by 5%.",
+          "boostStat": "atk",
+          "boostPercent": 15,
+          "reducePercent": 5,
+          "color": "#e67e22"
+        },
+        {
+          "id": "kien_cuong",
+          "name": "Kiên Cường",
+          "nameEn": "Steadfast",
+          "description": "Tăng DEF 15%, giảm các chỉ số khác 5%.",
+          "descriptionEn": "Increases DEF by 15%, reduces all other stats by 5%.",
+          "boostStat": "def",
+          "boostPercent": 15,
+          "reducePercent": 5,
+          "color": "#3498db"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_447.CLASS_SPRITES",
+      "file": "metro-exports.json",
+      "path": "$.module_447.CLASS_SPRITES",
+      "format": "map",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"kiem_si\"",
+            "\"cung_thu\"",
+            "\"sat_thu\"",
+            "\"phap_su\""
+          ]
+        },
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"/assets/assets/char_gpt/KiemSi.eaaac3671be7e971bee14a3d867e… (+9 ký tự)",
+            "\"/assets/assets/char_gpt/CungThu.1e6bf1f66228b513e977746aa13… (+10 ký tự)",
+            "\"/assets/assets/char_gpt/SatThu.edc223ee95956abb1985bf76a4b0… (+9 ký tự)",
+            "\"/assets/assets/char_gpt/PhapSu.aea34f5b091808b9fb7fb0bbd14a… (+9 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 1,
+          "samples": [
+            "512"
+          ],
+          "min": 512,
+          "max": 512,
+          "mean": 512
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 4,
+          "samples": [
+            "447",
+            "446",
+            "448",
+            "445"
+          ],
+          "min": 445,
+          "max": 448,
+          "mean": 447
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "kiem_si",
+          "uri": "/assets/assets/char_gpt/KiemSi.eaaac3671be7e971bee14a3d867edbe6.png",
+          "width": 512,
+          "height": 447,
+          "toString": "[function]"
+        },
+        {
+          "__key": "cung_thu",
+          "uri": "/assets/assets/char_gpt/CungThu.1e6bf1f66228b513e977746aa13f26c3.png",
+          "width": 512,
+          "height": 446,
+          "toString": "[function]"
+        },
+        {
+          "__key": "sat_thu",
+          "uri": "/assets/assets/char_gpt/SatThu.edc223ee95956abb1985bf76a4b05058.png",
+          "width": 512,
+          "height": 448,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1458.AURA_RINGS",
+      "file": "metro-exports.json",
+      "path": "$.module_1458.AURA_RINGS",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"/assets/assets/aura/vong_0.9ac9c4dfd9c8671fdffc7bbca9f9382e… (+5 ký tự)",
+            "\"/assets/assets/aura/vong_1.cfedf152289b7dbbc3019bbaa587216b… (+5 ký tự)",
+            "\"/assets/assets/aura/vong_2.22cee9277d1fb226b2e4dee4688a35b4… (+5 ký tự)",
+            "\"/assets/assets/aura/vong_3.aac60ad1fd07b411314c1416904a6a28… (+5 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 3,
+          "samples": [
+            "399",
+            "387",
+            "384"
+          ],
+          "min": 384,
+          "max": 399,
+          "mean": 388.5
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 3,
+          "samples": [
+            "399",
+            "387",
+            "384"
+          ],
+          "min": 384,
+          "max": 399,
+          "mean": 388.5
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "uri": "/assets/assets/aura/vong_0.9ac9c4dfd9c8671fdffc7bbca9f9382e.png",
+          "width": 399,
+          "height": 399,
+          "toString": "[function]"
+        },
+        {
+          "uri": "/assets/assets/aura/vong_1.cfedf152289b7dbbc3019bbaa587216b.png",
+          "width": 387,
+          "height": 387,
+          "toString": "[function]"
+        },
+        {
+          "uri": "/assets/assets/aura/vong_2.22cee9277d1fb226b2e4dee4688a35b4.png",
+          "width": 384,
+          "height": 384,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1467.SCROLL_RECIPES",
+      "file": "metro-exports.json",
+      "path": "$.module_1467.SCROLL_RECIPES",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "itemId",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"class_scroll_t2\"",
+            "\"class_scroll_t3\"",
+            "\"class_scroll_t4\"",
+            "\"class_scroll_t5\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "materials",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"materialId\":\"class_scroll_t1\",\"count\":4}]",
+            "[{\"materialId\":\"class_scroll_t2\",\"count\":4}]",
+            "[{\"materialId\":\"class_scroll_t3\",\"count\":4}]",
+            "[{\"materialId\":\"class_scroll_t4\",\"count\":4}]"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "itemId": "class_scroll_t2",
+          "materials": [
+            {
+              "materialId": "class_scroll_t1",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "itemId": "class_scroll_t3",
+          "materials": [
+            {
+              "materialId": "class_scroll_t2",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "itemId": "class_scroll_t4",
+          "materials": [
+            {
+              "materialId": "class_scroll_t3",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1468.ESSENCE_PASSIVES",
+      "file": "metro-exports.json",
+      "path": "$.module_1468.ESSENCE_PASSIVES",
+      "format": "map",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"mat_ban_nguyen_sinh_menh\"",
+            "\"mat_ban_nguyen_nang_luong\"",
+            "\"mat_ban_nguyen_bong_toi\"",
+            "\"mat_ban_nguyen_hoa\""
+          ]
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Sức Sống Bản Nguyên\"",
+            "\"Dòng Chảy Năng Lượng\"",
+            "\"Hút Hồn Bóng Tối\"",
+            "\"Lửa Bản Nguyên\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Primal Vitality\"",
+            "\"Energy Flow\"",
+            "\"Shadow Drain\"",
+            "\"Primal Flame\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Hồi 15% HP tối đa mỗi lượt.\"",
+            "\"Hồi 15 MP mỗi lượt.\"",
+            "\"Hấp thu 15% sát thương gây ra thành HP.\"",
+            "\"Tăng 15% sát thương gây ra và miễn nhiễm đóng băng.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "descriptionEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Heals 15% of max HP each turn.\"",
+            "\"Restores 15 MP each turn.\"",
+            "\"Heals for 15% of damage dealt.\"",
+            "\"+15% damage dealt and immune to freeze.\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "bonuses",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"stat\":\"healSelfPerTurn\",\"percent\":15}]",
+            "[{\"stat\":\"mpPerTurn\",\"percent\":15}]",
+            "[{\"stat\":\"lifesteal\",\"percent\":15}]",
+            "[{\"stat\":\"physDmg\",\"percent\":15},{\"stat\":\"magDmg\",\"percent\":… (+42 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "mat_ban_nguyen_sinh_menh",
+          "name": "Sức Sống Bản Nguyên",
+          "nameEn": "Primal Vitality",
+          "description": "Hồi 15% HP tối đa mỗi lượt.",
+          "descriptionEn": "Heals 15% of max HP each turn.",
+          "bonuses": [
+            {
+              "stat": "healSelfPerTurn",
+              "percent": 15
+            }
+          ]
+        },
+        {
+          "__key": "mat_ban_nguyen_nang_luong",
+          "name": "Dòng Chảy Năng Lượng",
+          "nameEn": "Energy Flow",
+          "description": "Hồi 15 MP mỗi lượt.",
+          "descriptionEn": "Restores 15 MP each turn.",
+          "bonuses": [
+            {
+              "stat": "mpPerTurn",
+              "percent": 15
+            }
+          ]
+        },
+        {
+          "__key": "mat_ban_nguyen_bong_toi",
+          "name": "Hút Hồn Bóng Tối",
+          "nameEn": "Shadow Drain",
+          "description": "Hấp thu 15% sát thương gây ra thành HP.",
+          "descriptionEn": "Heals for 15% of damage dealt.",
+          "bonuses": [
+            {
+              "stat": "lifesteal",
+              "percent": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1494.DUNGEONS",
+      "file": "metro-exports.json",
+      "path": "$.module_1494.DUNGEONS",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "id",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"forest_of_whispers\"",
+            "\"crystal_caverns\"",
+            "\"shadow_realm\"",
+            "\"volcano_peak\""
+          ],
+          "hint": "khóa"
+        },
+        {
+          "name": "name",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Rừng Thì Thầm\"",
+            "\"Hang Pha Lê\"",
+            "\"Vùng Bóng Tối\"",
+            "\"Đỉnh Núi Lửa\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "nameEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Forest of Whispers\"",
+            "\"Crystal Caverns\"",
+            "\"Shadow Realm\"",
+            "\"Volcano Peak\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "description",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"Khu rừng yên tĩnh nơi tân binh luyện tập. Slimes, dơi và qu… (+25 ký tự)",
+            "\"Hang động pha lê sâu dưới lòng đất. Dơi pha lê và golem đá … (+19 ký tự)",
+            "\"Chiều không gian bóng tối. Sói bóng và kỵ sĩ bóng tối săn đ… (+17 ký tự)",
+            "\"Đỉnh núi lửa phun trào. Slime dung nham và golem magma tung… (+22 ký tự)"
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "descriptionEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"A quiet forest where recruits train. Slimes, bats, and mons… (+24 ký tự)",
+            "\"Deep crystal caverns underground. Crystal bats and rock gol… (+29 ký tự)",
+            "\"A dimension of darkness. Shadow wolves and dark knights hun… (+12 ký tự)",
+            "\"An erupting volcano peak. Lava slimes and magma golems ramp… (+23 ký tự)"
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "recommendedLevel",
+          "types": [
+            "number"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "5",
+            "10",
+            "15",
+            "20"
+          ],
+          "hint": "cấp độ",
+          "min": 5,
+          "max": 40,
+          "mean": 22.5
+        },
+        {
+          "name": "color",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#2ea043\"",
+            "\"#58a6ff\"",
+            "\"#8957e5\"",
+            "\"#f85149\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "waves",
+          "types": [
+            "array"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "[{\"enemies\":[{\"id\":\"slime_jr\",\"name\":\"Slime Jr\",\"level\":1,\"s… (+1543 ký tự)",
+            "[{\"enemies\":[{\"id\":\"crystal_bat\",\"name\":\"Crystal Bat\",\"level… (+1652 ký tự)",
+            "[{\"enemies\":[{\"id\":\"shadow_wolf\",\"name\":\"Shadow Wolf\",\"level… (+1643 ký tự)",
+            "[{\"enemies\":[{\"id\":\"lava_slime\",\"name\":\"Lava Slime\",\"level\":… (+1653 ký tự)"
+          ],
+          "hint": "màn / chương"
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "id": "forest_of_whispers",
+          "name": "Rừng Thì Thầm",
+          "nameEn": "Forest of Whispers",
+          "description": "Khu rừng yên tĩnh nơi tân binh luyện tập. Slimes, dơi và quái vật ẩn trong cây cối.",
+          "descriptionEn": "A quiet forest where recruits train. Slimes, bats, and monsters lurk in the trees.",
+          "recommendedLevel": 5,
+          "color": "#2ea043",
+          "waves": [
+            {
+              "enemies": [
+                {
+                  "id": "slime_jr",
+                  "name": "Slime Jr",
+                  "level": 1,
+                  "stats": {
+                    "hp": 30,
+                    "mp": 0,
+                    "atk": 7,
+                    "def": 2,
+                    "matk": 4,
+                    "mdef": 2,
+                    "spd": 5,
+                    "crit": 2,
+                    "critDmg": 50,
+                    "int": 0
+                  },
+                  "goldReward": [
+                    8,
+                    14
+                  ],
+                  "xpReward": [
+                    20,
+                    32
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_wooden_sword",
+                      "chance": 0.15
+                    },
+                    {
+                      "itemId": "mat_slime_gel",
+                      "chance": 0.35
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "slime_jr"
+                },
+                {
+                  "id": "cave_bat",
+                  "name": "Cave Bat",
+                  "level": 2,
+                  "stats": {
+                    "hp": 45,
+                    "mp": 0,
+                    "atk": 10,
+                    "def": 3,
+                    "matk": 5,
+                    "mdef": 2,
+                    "spd": 9,
+                    "crit": 4,
+                    "critDmg": 50,
+                    "int": 0
+                  },
+                  "goldReward": [
+                    12,
+                    20
+                  ],
+                  "xpReward": [
+                    28,
+                    45
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "a_leather_vest",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "ac_wooden_ring",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "mat_bat_wing",
+                      "chance": 0.3
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "cave_bat"
+                }
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                {
+                  "id": "giant_worm",
+                  "name": "Giant Worm",
+                  "level": 5,
+                  "stats": {
+                    "hp": 90,
+                    "mp": 0,
+                    "atk": 16,
+                    "def": 7,
+                    "matk": 6,
+                    "mdef": 4,
+                    "spd": 7,
+                    "crit": 3,
+                    "critDmg": 50,
+                    "int": 0
+                  },
+                  "goldReward": [
+                    22,
+                    36
+                  ],
+                  "xpReward": [
+                    49,
+                    73
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "a_chain_mail",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "w_warhammer",
+                      "chance": 0.08
+                    },
+                    {
+                      "itemId": "mat_giant_worm_fang",
+                      "chance": 0.25
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "giant_worm"
+                },
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                {
+                  "id": "wraith",
+                  "name": "Wraith",
+                  "level": 7,
+                  "stats": {
+                    "hp": 140,
+                    "mp": 20,
+                    "atk": 20,
+                    "def": 9,
+                    "matk": 12,
+                    "mdef": 6,
+                    "spd": 9,
+                    "crit": 6,
+                    "critDmg": 60,
+                    "int": 10
+                  },
+                  "goldReward": [
+                    40,
+                    60
+                  ],
+                  "xpReward": [
+                    97,
+                    138
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "ac_vital_amulet",
+                      "chance": 0.15
+                    },
+                    {
+                      "itemId": "w_runed_staff",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "mat_ghost_essence",
+                      "chance": 0.25
+                    },
+                    {
+                      "itemId": "mat_whispering_core",
+                      "chance": 0.15
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "wraith"
+                },
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "crystal_caverns",
+          "name": "Hang Pha Lê",
+          "nameEn": "Crystal Caverns",
+          "description": "Hang động pha lê sâu dưới lòng đất. Dơi pha lê và golem đá bảo vệ kho báu cổ.",
+          "descriptionEn": "Deep crystal caverns underground. Crystal bats and rock golems guard ancient treasures.",
+          "recommendedLevel": 10,
+          "color": "#58a6ff",
+          "waves": [
+            {
+              "enemies": [
+                {
+                  "id": "crystal_bat",
+                  "name": "Crystal Bat",
+                  "level": 10,
+                  "stats": {
+                    "hp": 216,
+                    "mp": 0,
+                    "atk": 30,
+                    "def": 10,
+                    "matk": 14,
+                    "mdef": 7,
+                    "spd": 17,
+                    "crit": 7,
+                    "critDmg": 60,
+                    "int": 0
+                  },
+                  "goldReward": [
+                    30,
+                    50
+                  ],
+                  "xpReward": [
+                    42,
+                    64
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_crossbow",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "h_chain_hood",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "mat_crystal_bat_scale",
+                      "chance": 0.3
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "crystal_bat"
+                },
+                {
+                  "id": "gem_spider",
+                  "name": "Gem Spider",
+                  "level": 12,
+                  "stats": {
+                    "hp": 264,
+                    "mp": 0,
+                    "atk": 36,
+                    "def": 14,
+                    "matk": 18,
+                    "mdef": 10,
+                    "spd": 14,
+                    "crit": 10,
+                    "critDmg": 66,
+                    "int": 6
+                  },
+                  "goldReward": [
+                    40,
+                    65
+                  ],
+                  "xpReward": [
+                    53,
+                    80
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "ac_sage_ring",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "w_rapier",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "mat_gem_spider_silk",
+                      "chance": 0.25
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "gem_spider"
+                }
+              ]
+            },
+            {
+              "enemies": [
+                {
+                  "id": "rock_golem",
+                  "name": "Rock Golem",
+                  "level": 14,
+                  "stats": {
+                    "hp": 420,
+                    "mp": 0,
+                    "atk": 42,
+                    "def": 24,
+                    "matk": 12,
+                    "mdef": 14,
+                    "spd": 7,
+                    "crit": 4,
+                    "critDmg": 60,
+                    "int": 0
+                  },
+                  "goldReward": [
+                    55,
+                    85
+                  ],
+                  "xpReward": [
+                    74,
+                    106
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "a_plate_armor",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "h_iron_helm",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "mat_stone_golem_fragment",
+                      "chance": 0.25
+                    },
+                    {
+                      "itemId": "mat_crystal_golem_heart",
+                      "chance": 0.15
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "rock_golem"
+                },
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                {
+                  "id": "crystal_wraith",
+                  "name": "Crystal Wraith",
+                  "level": 16,
+                  "stats": {
+                    "hp": 336,
+                    "mp": 30,
+                    "atk": 34,
+                    "def": 12,
+                    "matk": 30,
+                    "mdef": 17,
+                    "spd": 13,
+                    "crit": 12,
+                    "critDmg": 72,
+                    "int": 24
+                  },
+                  "goldReward": [
+                    50,
+                    80
+                  ],
+                  "xpReward": [
+                    69,
+                    101
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_grimoire",
+                      "chance": 0.08
+                    },
+                    {
+                      "itemId": "a_robe",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "mat_crystal_ghost_essence",
+                      "chance": 0.2
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "crystal_wraith"
+                }
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shadow_realm",
+          "name": "Vùng Bóng Tối",
+          "nameEn": "Shadow Realm",
+          "description": "Chiều không gian bóng tối. Sói bóng và kỵ sĩ bóng tối săn đuổi kẻ lạc bước.",
+          "descriptionEn": "A dimension of darkness. Shadow wolves and dark knights hunt the lost.",
+          "recommendedLevel": 15,
+          "color": "#8957e5",
+          "waves": [
+            {
+              "enemies": [
+                {
+                  "id": "shadow_wolf",
+                  "name": "Shadow Wolf",
+                  "level": 15,
+                  "stats": {
+                    "hp": 528,
+                    "mp": 0,
+                    "atk": 60,
+                    "def": 20,
+                    "matk": 13,
+                    "mdef": 13,
+                    "spd": 23,
+                    "crit": 16,
+                    "critDmg": 78,
+                    "int": 7
+                  },
+                  "goldReward": [
+                    60,
+                    100
+                  ],
+                  "xpReward": [
+                    54,
+                    79
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_scimitar",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "ac_belt",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "mat_shadow_wolf_fang",
+                      "chance": 0.25
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "shadow_wolf"
+                },
+                {
+                  "id": "void_bat",
+                  "name": "Void Bat",
+                  "level": 16,
+                  "stats": {
+                    "hp": 459,
+                    "mp": 20,
+                    "atk": 52,
+                    "def": 16,
+                    "matk": 39,
+                    "mdef": 16,
+                    "spd": 26,
+                    "crit": 20,
+                    "critDmg": 85,
+                    "int": 20
+                  },
+                  "goldReward": [
+                    65,
+                    110
+                  ],
+                  "xpReward": [
+                    61,
+                    94
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_chakram",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "ac_ruby_ring",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "mat_void_bat_membrane",
+                      "chance": 0.25
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "void_bat"
+                }
+              ]
+            },
+            {
+              "enemies": [
+                {
+                  "id": "dark_knight",
+                  "name": "Dark Knight",
+                  "level": 17,
+                  "stats": {
+                    "hp": 716,
+                    "mp": 0,
+                    "atk": 72,
+                    "def": 33,
+                    "matk": 20,
+                    "mdef": 20,
+                    "spd": 13,
+                    "crit": 10,
+                    "critDmg": 72,
+                    "int": 13
+                  },
+                  "goldReward": [
+                    80,
+                    130
+                  ],
+                  "xpReward": [
+                    72,
+                    108
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_claymore",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "h_horned_helm",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "mat_shadow_knight_shard",
+                      "chance": 0.2
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "dark_knight"
+                },
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                {
+                  "id": "shadow_mage",
+                  "name": "Shadow Mage",
+                  "level": 18,
+                  "stats": {
+                    "hp": 389,
+                    "mp": 50,
+                    "atk": 26,
+                    "def": 13,
+                    "matk": 78,
+                    "mdef": 33,
+                    "spd": 18,
+                    "crit": 13,
+                    "critDmg": 78,
+                    "int": 52
+                  },
+                  "goldReward": [
+                    70,
+                    120
+                  ],
+                  "xpReward": [
+                    65,
+                    101
+                  ],
+                  "lootTable": [
+                    {
+                      "itemId": "w_tome",
+                      "chance": 0.1
+                    },
+                    {
+                      "itemId": "h_wizard_hat",
+                      "chance": 0.12
+                    },
+                    {
+                      "itemId": "mat_shadow_mage_crystal",
+                      "chance": 0.2
+                    },
+                    {
+                      "itemId": "mat_shadow_lord_core",
+                      "chance": 0.15
+                    }
+                  ],
+                  "tier": "normal",
+                  "familyId": "shadow_mage"
+                },
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            },
+            {
+              "enemies": [
+                "[circular]",
+                "[circular]"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.kiem_si",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.kiem_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 4,
+          "samples": [
+            "\"slash\"",
+            "\"burst\"",
+            "\"bolt\"",
+            "\"holy\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#caa76d\"",
+            "\"#d8b471\"",
+            "\"#d0aa65\"",
+            "\"#d6ae65\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#a66940\"",
+            "\"#445ea2\"",
+            "\"#ab6c3b\"",
+            "\"#aa663b\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "slash",
+          "c": "#caa76d",
+          "c2": "#a66940"
+        },
+        {
+          "fx": "burst",
+          "c": "#d8b471",
+          "c2": "#445ea2"
+        },
+        {
+          "fx": "slash",
+          "c": "#d0aa65",
+          "c2": "#ab6c3b"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.cung_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.cung_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 4,
+          "samples": [
+            "\"proj\"",
+            "\"fire\"",
+            "\"summon\"",
+            "\"bolt\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#b28334\"",
+            "\"#4467a2\"",
+            "\"#c59f5f\"",
+            "\"#c22328\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#a36a43\"",
+            "\"#c5a36b\"",
+            "\"#ac6239\"",
+            "\"#b23f34\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "proj",
+          "c": "#b28334",
+          "c2": "#a36a43"
+        },
+        {
+          "fx": "proj",
+          "c": "#4467a2",
+          "c2": "#c5a36b"
+        },
+        {
+          "fx": "proj",
+          "c": "#c59f5f",
+          "c2": "#ac6239"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.sat_thu",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.sat_thu",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 2,
+          "samples": [
+            "\"dark\"",
+            "\"slash\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#b8392e\"",
+            "\"#ad4338\"",
+            "\"#7ac74f\"",
+            "\"#7a8fbc\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#c81d22\"",
+            "\"#d11416\"",
+            "\"#3d8b40\"",
+            "\"#ae4356\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "dark",
+          "c": "#b8392e",
+          "c2": "#c81d22"
+        },
+        {
+          "fx": "slash",
+          "c": "#ad4338",
+          "c2": "#d11416"
+        },
+        {
+          "fx": "dark",
+          "c": "#7ac74f",
+          "c2": "#3d8b40"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.phap_su",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.phap_su",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 5,
+          "samples": [
+            "\"burst\"",
+            "\"fire\"",
+            "\"ice\"",
+            "\"holy\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#577fd0\"",
+            "\"#cf521c\"",
+            "\"#4e80d0\"",
+            "\"#9c6c4a\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#abd8fc\"",
+            "\"#f8c451\"",
+            "\"#92d0fd\"",
+            "\"#b29062\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "burst",
+          "c": "#577fd0",
+          "c2": "#abd8fc"
+        },
+        {
+          "fx": "fire",
+          "c": "#cf521c",
+          "c2": "#f8c451"
+        },
+        {
+          "fx": "ice",
+          "c": "#4e80d0",
+          "c2": "#92d0fd"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.cuong_bao",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.cuong_bao",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 4,
+          "samples": [
+            "\"burst\"",
+            "\"slash\"",
+            "\"dark\"",
+            "\"fire\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#aa523b\"",
+            "\"#ac4e39\"",
+            "\"#b44a32\"",
+            "\"#b44732\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#c72a36\"",
+            "\"#cb2b2c\"",
+            "\"#dfb784\"",
+            "\"#d60f11\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "burst",
+          "c": "#aa523b",
+          "c2": "#c72a36"
+        },
+        {
+          "fx": "slash",
+          "c": "#ac4e39",
+          "c2": "#cb2b2c"
+        },
+        {
+          "fx": "slash",
+          "c": "#b44a32",
+          "c2": "#dfb784"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.trieu_hoi",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.trieu_hoi",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 1,
+          "samples": [
+            "\"summon\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#6ec9fd\"",
+            "\"#61c5fc\"",
+            "\"#f7be52\"",
+            "\"#5487e8\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#4b84ec\"",
+            "\"#266ae0\"",
+            "\"#dd7a44\"",
+            "\"#8acffd\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "summon",
+          "c": "#6ec9fd",
+          "c2": "#4b84ec"
+        },
+        {
+          "fx": "summon",
+          "c": "#61c5fc",
+          "c2": "#266ae0"
+        },
+        {
+          "fx": "summon",
+          "c": "#f7be52",
+          "c2": "#dd7a44"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.dao_si",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.dao_si",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 5,
+          "samples": [
+            "\"slash\"",
+            "\"holy\"",
+            "\"fire\"",
+            "\"burst\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#e3c87d\"",
+            "\"#dc5a26\"",
+            "\"#f5c555\"",
+            "\"#4383e7\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#74a7d3\"",
+            "\"#f0c162\"",
+            "\"#d85717\"",
+            "\"#a0d7fd\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "slash",
+          "c": "#e3c87d",
+          "c2": "#74a7d3"
+        },
+        {
+          "fx": "holy",
+          "c": "#dc5a26",
+          "c2": "#f0c162"
+        },
+        {
+          "fx": "fire",
+          "c": "#f5c555",
+          "c2": "#d85717"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1503.ULTI_FX_BY_COL.saija",
+      "file": "metro-exports.json",
+      "path": "$.module_1503.ULTI_FX_BY_COL.saija",
+      "format": "array",
+      "rows": 8,
+      "columns": [
+        {
+          "name": "fx",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 5,
+          "samples": [
+            "\"holy\"",
+            "\"bolt\"",
+            "\"summon\"",
+            "\"fire\""
+          ]
+        },
+        {
+          "name": "c",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#6182d6\"",
+            "\"#eac065\"",
+            "\"#6789e1\"",
+            "\"#eabf59\""
+          ]
+        },
+        {
+          "name": "c2",
+          "types": [
+            "string"
+          ],
+          "nonNull": 8,
+          "distinct": 8,
+          "samples": [
+            "\"#78b4df\"",
+            "\"#c68d67\"",
+            "\"#dfb154\"",
+            "\"#bb7d51\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "fx": "holy",
+          "c": "#6182d6",
+          "c2": "#78b4df"
+        },
+        {
+          "fx": "holy",
+          "c": "#eac065",
+          "c2": "#c68d67"
+        },
+        {
+          "fx": "bolt",
+          "c": "#6789e1",
+          "c2": "#dfb154"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.TOPUP_MILESTONES",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.TOPUP_MILESTONES",
+      "format": "array",
+      "rows": 7,
+      "columns": [
+        {
+          "name": "threshold",
+          "types": [
+            "number"
+          ],
+          "nonNull": 7,
+          "distinct": 7,
+          "samples": [
+            "1",
+            "100",
+            "200",
+            "500"
+          ],
+          "min": 1,
+          "max": 5000,
+          "mean": 1257.286
+        },
+        {
+          "name": "mats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 7,
+          "distinct": 7,
+          "samples": [
+            "{\"mat_tavern_refresh_book\":5}",
+            "{\"mat_tavern_refresh_book\":5,\"mat_equip_upgrade_stone\":5}",
+            "{\"class_scroll_t2\":1,\"class_scroll_t3\":1,\"class_scroll_t4\":1… (+1 ký tự)",
+            "{\"mat_divinity_shard\":5,\"mat_tavern_refresh_book\":5,\"mat_equ… (+20 ký tự)"
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "threshold": 1,
+          "mats": {
+            "mat_tavern_refresh_book": 5
+          }
+        },
+        {
+          "threshold": 100,
+          "mats": {
+            "mat_tavern_refresh_book": 5,
+            "mat_equip_upgrade_stone": 5
+          }
+        },
+        {
+          "threshold": 200,
+          "mats": {
+            "class_scroll_t2": 1,
+            "class_scroll_t3": 1,
+            "class_scroll_t4": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1467.QUALITY_INFO",
+      "file": "metro-exports.json",
+      "path": "$.module_1467.QUALITY_INFO",
+      "format": "map",
+      "rows": 6,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "\"normal\"",
+            "\"medium\"",
+            "\"fine\"",
+            "\"high\""
+          ]
+        },
+        {
+          "name": "label",
+          "types": [
+            "string"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "\"Thường\"",
+            "\"Trung\"",
+            "\"Tinh Anh\"",
+            "\"Cao Cấp\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "labelEn",
+          "types": [
+            "string"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "\"Normal\"",
+            "\"Medium\"",
+            "\"Fine\"",
+            "\"High\""
+          ],
+          "hint": "văn bản"
+        },
+        {
+          "name": "statBonus",
+          "types": [
+            "number"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "0",
+            "10",
+            "20",
+            "30"
+          ],
+          "min": 0,
+          "max": 60,
+          "mean": 26.667
+        },
+        {
+          "name": "color",
+          "types": [
+            "string"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "\"#ffffff\"",
+            "\"#3fb950\"",
+            "\"#2f81f7\"",
+            "\"#e3b341\""
+          ],
+          "hint": "phẩm chất / sao"
+        },
+        {
+          "name": "chance",
+          "types": [
+            "number"
+          ],
+          "nonNull": 6,
+          "distinct": 6,
+          "samples": [
+            "0.5",
+            "0.4",
+            "0.09",
+            "0.009"
+          ],
+          "hint": "tỉ lệ / trọng số",
+          "min": 0.000001,
+          "max": 0.5,
+          "mean": 0.167
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "normal",
+          "label": "Thường",
+          "labelEn": "Normal",
+          "statBonus": 0,
+          "color": "#ffffff",
+          "chance": 0.5
+        },
+        {
+          "__key": "medium",
+          "label": "Trung",
+          "labelEn": "Medium",
+          "statBonus": 10,
+          "color": "#3fb950",
+          "chance": 0.4
+        },
+        {
+          "__key": "fine",
+          "label": "Tinh Anh",
+          "labelEn": "Fine",
+          "statBonus": 20,
+          "color": "#2f81f7",
+          "chance": 0.09
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1470.QUALITY_GRADIENTS",
+      "file": "metro-exports.json",
+      "path": "$.module_1470.QUALITY_GRADIENTS",
+      "format": "map",
+      "rows": 5,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 5,
+          "distinct": 5,
+          "samples": [
+            "\"medium\"",
+            "\"fine\"",
+            "\"high\"",
+            "\"super\""
+          ]
+        },
+        {
+          "name": "uri",
+          "types": [
+            "string"
+          ],
+          "nonNull": 5,
+          "distinct": 5,
+          "samples": [
+            "\"/assets/assets/sprites/quality/grad_medium.e2b0163b852a2c84… (+21 ký tự)",
+            "\"/assets/assets/sprites/quality/grad_fine.f0e0eafeb9ddc21ce9… (+19 ký tự)",
+            "\"/assets/assets/sprites/quality/grad_high.04c1d10ed8aa63892d… (+19 ký tự)",
+            "\"/assets/assets/sprites/quality/grad_super.0621ce32e21e00ae4… (+20 ký tự)"
+          ]
+        },
+        {
+          "name": "width",
+          "types": [
+            "number"
+          ],
+          "nonNull": 5,
+          "distinct": 1,
+          "samples": [
+            "64"
+          ],
+          "min": 64,
+          "max": 64,
+          "mean": 64
+        },
+        {
+          "name": "height",
+          "types": [
+            "number"
+          ],
+          "nonNull": 5,
+          "distinct": 1,
+          "samples": [
+            "26"
+          ],
+          "min": 26,
+          "max": 26,
+          "mean": 26
+        },
+        {
+          "name": "toString",
+          "types": [
+            "string"
+          ],
+          "nonNull": 5,
+          "distinct": 1,
+          "samples": [
+            "\"[function]\""
+          ]
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "medium",
+          "uri": "/assets/assets/sprites/quality/grad_medium.e2b0163b852a2c84cdd6684ed563817b.png",
+          "width": 64,
+          "height": 26,
+          "toString": "[function]"
+        },
+        {
+          "__key": "fine",
+          "uri": "/assets/assets/sprites/quality/grad_fine.f0e0eafeb9ddc21ce931a9f8e931ed6a.png",
+          "width": 64,
+          "height": 26,
+          "toString": "[function]"
+        },
+        {
+          "__key": "high",
+          "uri": "/assets/assets/sprites/quality/grad_high.04c1d10ed8aa63892d3af178e1b70897.png",
+          "width": 64,
+          "height": 26,
+          "toString": "[function]"
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.DAILY_QUEST_MILESTONES",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.DAILY_QUEST_MILESTONES",
+      "format": "map",
+      "rows": 5,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 5,
+          "distinct": 5,
+          "samples": [
+            "\"1\"",
+            "\"2\"",
+            "\"3\"",
+            "\"4\""
+          ],
+          "min": 1,
+          "max": 5,
+          "mean": 3
+        },
+        {
+          "name": "mats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 4,
+          "distinct": 3,
+          "samples": [
+            "{\"class_scroll_t1\":1}",
+            "{\"mat_tavern_refresh_book\":1}",
+            "{\"mat_equip_upgrade_stone\":1}"
+          ]
+        },
+        {
+          "name": "stars",
+          "types": [
+            "number"
+          ],
+          "nonNull": 1,
+          "distinct": 1,
+          "samples": [
+            "1"
+          ],
+          "hint": "phẩm chất / sao",
+          "min": 1,
+          "max": 1,
+          "mean": 1
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "1",
+          "mats": {
+            "class_scroll_t1": 1
+          }
+        },
+        {
+          "__key": "2",
+          "mats": {
+            "mat_tavern_refresh_book": 1
+          }
+        },
+        {
+          "__key": "3",
+          "mats": {
+            "mat_equip_upgrade_stone": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.WEEKLY_QUEST_MILESTONES",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.WEEKLY_QUEST_MILESTONES",
+      "format": "map",
+      "rows": 5,
+      "columns": [
+        {
+          "name": "__key",
+          "types": [
+            "string"
+          ],
+          "nonNull": 5,
+          "distinct": 5,
+          "samples": [
+            "\"1\"",
+            "\"2\"",
+            "\"3\"",
+            "\"4\""
+          ],
+          "min": 1,
+          "max": 5,
+          "mean": 3
+        },
+        {
+          "name": "mats",
+          "types": [
+            "object"
+          ],
+          "nonNull": 4,
+          "distinct": 3,
+          "samples": [
+            "{\"class_scroll_t1\":3}",
+            "{\"mat_tavern_refresh_book\":3}",
+            "{\"mat_equip_upgrade_stone\":3}"
+          ]
+        },
+        {
+          "name": "stars",
+          "types": [
+            "number"
+          ],
+          "nonNull": 1,
+          "distinct": 1,
+          "samples": [
+            "3"
+          ],
+          "hint": "phẩm chất / sao",
+          "min": 3,
+          "max": 3,
+          "mean": 3
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "__key": "1",
+          "mats": {
+            "class_scroll_t1": 3
+          }
+        },
+        {
+          "__key": "2",
+          "mats": {
+            "mat_tavern_refresh_book": 3
+          }
+        },
+        {
+          "__key": "3",
+          "mats": {
+            "mat_equip_upgrade_stone": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "metro-exports.json#$.module_1491.FLIP_TOPUP_MILESTONES",
+      "file": "metro-exports.json",
+      "path": "$.module_1491.FLIP_TOPUP_MILESTONES",
+      "format": "array",
+      "rows": 5,
+      "columns": [
+        {
+          "name": "threshold",
+          "types": [
+            "number"
+          ],
+          "nonNull": 5,
+          "distinct": 5,
+          "samples": [
+            "100",
+            "250",
+            "500",
+            "1000"
+          ],
+          "min": 100,
+          "max": 2000,
+          "mean": 770
+        },
+        {
+          "name": "cards",
+          "types": [
+            "number"
+          ],
+          "nonNull": 5,
+          "distinct": 3,
+          "samples": [
+            "1",
+            "2",
+            "3"
+          ],
+          "min": 1,
+          "max": 3,
+          "mean": 1.6
+        }
+      ],
+      "curves": [],
+      "sample": [
+        {
+          "threshold": 100,
+          "cards": 1
+        },
+        {
+          "threshold": 250,
+          "cards": 1
+        },
+        {
+          "threshold": 500,
+          "cards": 1
+        }
+      ]
+    }
+  ],
+  "skipped": []
+}

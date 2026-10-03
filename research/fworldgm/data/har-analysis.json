@@ -1,0 +1,347 @@
+{
+  "generatedAt": "2026-10-03T13:42:48.221Z",
+  "inputs": [
+    "research/fworldgm/raw/capture-2/desktop/capture.har",
+    "research/fworldgm/raw/capture-2/desktop/ws.jsonl"
+  ],
+  "totals": {
+    "requests": 11,
+    "bytes": 4555963,
+    "hosts": 2,
+    "websockets": 0,
+    "wsFrames": 0
+  },
+  "hosts": [
+    {
+      "host": "fworldgm.com",
+      "requests": 10,
+      "bytes": 4555181,
+      "types": {
+        "document": 5,
+        "script": 1,
+        "json": 2,
+        "image": 2
+      },
+      "server": "hcdn"
+    },
+    {
+      "host": "ipwho.is",
+      "requests": 1,
+      "bytes": 782,
+      "types": {
+        "json": 1
+      },
+      "server": "cloudflare",
+      "cdn": "cloudflare"
+    }
+  ],
+  "byType": {
+    "document": {
+      "count": 5,
+      "bytes": 13510
+    },
+    "script": {
+      "count": 1,
+      "bytes": 4280414
+    },
+    "json": {
+      "count": 3,
+      "bytes": 4476
+    },
+    "image": {
+      "count": 2,
+      "bytes": 257563
+    }
+  },
+  "byExtension": {
+    "(none)": {
+      "count": 2,
+      "bytes": 3484
+    },
+    ".js": {
+      "count": 1,
+      "bytes": 4280414
+    },
+    ".php": {
+      "count": 1,
+      "bytes": 992
+    },
+    ".jpg": {
+      "count": 1,
+      "bytes": 243053
+    },
+    ".txt": {
+      "count": 2,
+      "bytes": 5404
+    },
+    ".xml": {
+      "count": 1,
+      "bytes": 2702
+    },
+    ".json": {
+      "count": 1,
+      "bytes": 2702
+    },
+    ".webmanifest": {
+      "count": 1,
+      "bytes": 2702
+    },
+    ".ico": {
+      "count": 1,
+      "bytes": 14510
+    }
+  },
+  "largest": [
+    {
+      "url": "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768",
+      "type": "script",
+      "bytes": 4280414
+    },
+    {
+      "url": "https://fworldgm.com/assets/assets/login_bg.781c0c69e8e0b3ae5c5eff53ad9ee614.jpg",
+      "type": "image",
+      "bytes": 243053
+    },
+    {
+      "url": "https://fworldgm.com/favicon.ico",
+      "type": "image",
+      "bytes": 14510
+    },
+    {
+      "url": "https://fworldgm.com/",
+      "type": "document",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/robots.txt",
+      "type": "document",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/sitemap.xml",
+      "type": "document",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/manifest.json",
+      "type": "json",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/site.webmanifest",
+      "type": "document",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/.well-known/security.txt",
+      "type": "document",
+      "bytes": 2702
+    },
+    {
+      "url": "https://fworldgm.com/api.php?action=get_class_stats",
+      "type": "json",
+      "bytes": 992
+    },
+    {
+      "url": "https://ipwho.is/",
+      "type": "json",
+      "bytes": 782
+    }
+  ],
+  "scripts": [
+    {
+      "url": "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768",
+      "bytes": 4280043,
+      "hasSourceMap": false
+    }
+  ],
+  "fingerprints": [
+    {
+      "id": "metro",
+      "label": "Metro bundler (React Native)",
+      "category": "build",
+      "matches": 1600,
+      "files": [
+        "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768"
+      ]
+    },
+    {
+      "id": "js-obfuscator",
+      "label": "javascript-obfuscator (string array)",
+      "category": "build",
+      "matches": 1,
+      "files": [
+        "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768"
+      ]
+    },
+    {
+      "id": "momo",
+      "label": "MoMo",
+      "category": "payment",
+      "matches": 1,
+      "files": [
+        "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768"
+      ]
+    },
+    {
+      "id": "expo",
+      "label": "Expo / React Native Web",
+      "category": "ui",
+      "matches": 16,
+      "files": [
+        "https://fworldgm.com/",
+        "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768",
+        "https://fworldgm.com/robots.txt",
+        "https://fworldgm.com/sitemap.xml",
+        "https://fworldgm.com/site.webmanifest",
+        "https://fworldgm.com/.well-known/security.txt"
+      ]
+    },
+    {
+      "id": "react",
+      "label": "React",
+      "category": "ui",
+      "matches": 10,
+      "files": [
+        "https://fworldgm.com/_expo/static/js/web/index-93ffc55139caea5aa99577b0fba383b3.js?v=1791010551768"
+      ]
+    }
+  ],
+  "api": [
+    {
+      "key": "GET fworldgm.com/api.php",
+      "method": "GET",
+      "host": "fworldgm.com",
+      "pathPattern": "/api.php",
+      "count": 1,
+      "statuses": [
+        200
+      ],
+      "responseMime": "application/json; charset=utf-8",
+      "sampleResponse": "{\"ok\":true,\"classStats\":{\"kiem_si\":{\"hp\":120,\"mp\":100,\"atk\":14,\"def\":10,\"matk\":6,\"mdef\":7,\"spd\":8,\"crit\":5,\"critDmg\":50,\"int\":0},\"cung_thu\":{\"hp\":90,\"mp\":100,\"atk\":16,\"def\":6,\"matk\":6,\"mdef\":6,\"spd\":12,\"crit\":12,\"critDmg\":60,\"int\":0},\"sat_thu\":{\"hp\":85,\"mp\":100,\"atk\":15,\"def\":5,\"matk\":6,\"mdef\":5,\"spd\":14,\"crit\":18,\"critDmg\":70,\"int\":0},\"phap_su\":{\"hp\":80,\"mp\":100,\"atk\":6,\"def\":5,\"matk\":18,\"mdef\":8,\"spd\":9,\"crit\":8,\"critDmg\":60,\"int\":0},\"cuong_bao\":{\"hp\":140,\"mp\":100,\"atk\":22,\"def\":8,\"matk\":6,\"mdef\":6,\"spd\":10,\"crit\":10,\"critDmg\":60,\"int\":0},\"trieu_hoi\":{\"hp\":75,\"mp\":100,\"atk\":5,\"def\":5,\"matk\":20,\"mdef\":10,\"spd\":8,\"crit\":8,\"critDmg\":60,\"int\":0},\"dao_si\":{\"hp\":95,\"mp\":100,\"atk\":7,\"def\":7,\"matk\":15,\"mdef\":12,\"spd\":7,\"crit\":5,\"critDmg\":50,\"int\":0},\"saija\":{\"hp\":160,\"mp\":100,\"atk\":13,\"def\":14,\"matk\":12,\"mdef\":12,\"spd\":7,\"crit\":5,\"critDmg\":50,\"int\":0}}}",
+      "responseJsonKeys": [
+        "ok",
+        "classStats"
+      ]
+    }
+  ],
+  "websockets": [],
+  "discoveredUrls": [
+    "https://buymeacoffee.com/vikclass",
+    "https://classic-assets.eascdn.net/",
+    "https://fworldgm.com/",
+    "https://fworldgm.com/logo.jpg",
+    "https://necolas.github.io/react-native-web/docs/setup/",
+    "https://zalo.me/g/kcbdlhnkyj3hjbne1x9e"
+  ],
+  "discoveredPaths": [],
+  "strings": {
+    "vietnamese": {
+      "count": 97,
+      "samples": [
+        "game idle RPG chơi ngay trên trình duyệt.",
+        "nội",
+        "x20tại",
+        "x20tính",
+        "x20cấp",
+        "Đã",
+        "x20đủ",
+        "x20chuyển",
+        "x20chức",
+        "x20Rơi",
+        "x20từ",
+        "x20cùng",
+        "x20bậc.",
+        "x20ký",
+        "x20mạch",
+        "x20nước",
+        "x20ngầm.",
+        "x20xé",
+        "x20lục",
+        "x20sắt",
+        "x20thép.",
+        "x20thân",
+        "x20núi",
+        "x20bất",
+        "x20diệt.",
+        "x20tụ",
+        "x20khí",
+        "x20thạch.",
+        "x20đầu",
+        "x20trận",
+        "x20sát",
+        "x20thương",
+        "x20gây",
+        "x20mỗi",
+        "x20lượt",
+        "x20kẻ",
+        "x20địch.",
+        "x20làm",
+        "x20chậm",
+        "x20vàng,",
+        "x20rớt:",
+        "x20vật",
+        "x20phẩm",
+        "x20hồi",
+        "x20xuyên",
+        "x20phá",
+        "x20phòng",
+        "x20thủ!",
+        "x20miễn",
+        "x20nhiễm",
+        "x20hiệu",
+        "x20ứng",
+        "x20khống",
+        "x20chế!",
+        "x20phản",
+        "x20nguyên",
+        "x20đòn",
+        "x20phép",
+        "x20trả",
+        "x20về",
+        "x20thịnh",
+        "x20nộ!",
+        "x20tấn",
+        "x20công",
+        "x20né",
+        "x20tránh!",
+        "x20chặn",
+        "x20tầm",
+        "x20của",
+        "x20bị",
+        "x20khiêu",
+        "x20khích",
+        "x20chỉ",
+        "x20hết",
+        "Bước",
+        "x20thắng",
+        "đ)",
+        "x20khắc",
+        "Bán",
+        "x20vàng?",
+        "x20(lên",
+        "x20cấp)!",
+        "x20(tiêu",
+        "x20thẻ)",
+        "Phục",
+        "x20Lần",
+        "x20tiến",
+        "x20hành?",
+        "x20hấp",
+        "x20thụ",
+        "x20phí:",
+        "x20(có:",
+        "x20vàng",
+        "x20không",
+        "x20nhận",
+        "x20được",
+        "x20thưởng."
+      ]
+    },
+    "cjk": {
+      "count": 0,
+      "samples": []
+    }
+  },
+  "bodiesDir": "research/fworldgm/raw/bodies"
+}
