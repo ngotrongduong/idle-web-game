@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
+    "sim:battle": "tsx src/index.ts battle",
+    "sim:upgrade": "tsx src/index.ts upgrade",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
   },

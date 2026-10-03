@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
+import { runBattleSimulation } from "../src/battle-sim";
+import { runUpgradeSimulation } from "../src/upgrade-sim";
 
-describe("sim foundation", () => {
-  it("depends on the deterministic shared game-core package", () => {
-    expect(GAME_CORE_VERSION).toBe("m0.4-deterministic-battle");
+describe("sim tools", () => {
+  it("depends on the simulation-ready shared game-core package", () => {
+    expect(GAME_CORE_VERSION).toBe("m0.5-simulation-ready");
   });
 
   it("can run a tiny deterministic wave", () => {
@@ -15,5 +17,28 @@ describe("sim foundation", () => {
 
     expect(result.result).toBe("win");
     expect(result.hash).toMatch(/^[0-9a-f]{8}$/);
+  });
+
+  it("summarizes all four sample encounters", () => {
+    const summaries = runBattleSimulation({ runs: 10, seedBase: 10 });
+    expect(summaries).toHaveLength(4);
+    expect(summaries.every((summary) => summary.runs === 10)).toBe(true);
+    expect(
+      summaries.every(
+        (summary) => summary.wins + summary.losses + summary.draws === 10,
+      ),
+    ).toBe(true);
+  });
+
+  it("summarizes upgrade percentiles", () => {
+    const summary = runUpgradeSimulation({
+      runs: 100,
+      targetLevel: 10,
+      seedBase: 1,
+    });
+
+    expect(summary.completed).toBe(100);
+    expect(summary.p90Attempts).toBeGreaterThanOrEqual(summary.p50Attempts);
+    expect(summary.p99Attempts).toBeGreaterThanOrEqual(summary.p90Attempts);
   });
 });

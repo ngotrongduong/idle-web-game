@@ -10,6 +10,8 @@
     "build": "pnpm -r --if-present run build",
     "test": "pnpm -r --if-present run test",
     "typecheck": "pnpm -r --if-present run typecheck",
+    "sim:battle": "pnpm --filter @idle/sim sim:battle",
+    "sim:upgrade": "pnpm --filter @idle/sim sim:upgrade",
     "inspect:capture": "pnpm --filter @idle/inspect capture",
     "inspect:analyze": "pnpm --filter @idle/inspect analyze",
     "inspect:extract": "pnpm --filter @idle/inspect extract",

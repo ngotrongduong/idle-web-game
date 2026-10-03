@@ -1,24 +1,47 @@
-import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
+import { runBattleSimulation } from "./battle-sim";
+import { runUpgradeSimulation } from "./upgrade-sim";
 
-const sample = simulateWave({
-  seed: 42,
-  allies: [
-    { id: "hero", hp: 120, attack: 35, defense: 16, speed: 12 },
-  ],
-  enemies: [
-    { id: "training_dummy", hp: 80, attack: 18, defense: 8, speed: 6 },
-  ],
-});
+function readNumberArg(name: string, fallback: number): number {
+  const index = process.argv.indexOf(`--${name}`);
+  if (index < 0) return fallback;
+  const raw = process.argv[index + 1];
+  const value = Number(raw);
+  if (!raw || !Number.isFinite(value)) {
+    throw new Error(`--${name} requires a numeric value`);
+  }
+  return value;
+}
 
-console.log(
-  JSON.stringify(
-    {
-      gameCore: GAME_CORE_VERSION,
-      result: sample.result,
-      turns: sample.turns,
-      hash: sample.hash,
-    },
-    null,
-    2,
-  ),
-);
+function readStringArg(name: string): string | undefined {
+  const index = process.argv.indexOf(`--${name}`);
+  if (index < 0) return undefined;
+  const raw = process.argv[index + 1];
+  if (!raw) throw new Error(`--${name} requires a value`);
+  return raw;
+}
+
+const command = process.argv[2];
+
+if (command === "battle") {
+  const summary = runBattleSimulation({
+    runs: readNumberArg("runs", 10_000),
+    seedBase: readNumberArg("seed", 1),
+    encounterId: readStringArg("encounter"),
+  });
+  console.log(JSON.stringify(summary, null, 2));
+} else if (command === "upgrade") {
+  const summary = runUpgradeSimulation({
+    runs: readNumberArg("runs", 20_000),
+    seedBase: readNumberArg("seed", 1),
+    targetLevel: readNumberArg("target", 10),
+  });
+  console.log(JSON.stringify(summary, null, 2));
+} else {
+  console.log(
+    [
+      "Usage:",
+      "  pnpm sim:battle -- --runs 10000 [--encounter dungeon_1] [--seed 1]",
+      "  pnpm sim:upgrade -- --runs 20000 [--target 10] [--seed 1]",
+    ].join("\n"),
+  );
+}
