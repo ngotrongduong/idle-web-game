@@ -1,79 +1,130 @@
-import type { Combatant } from "@idle/game-core";
+import {
+  foundationGameData,
+  type GameData,
+} from "@idle/game-data";
+import {
+  scaleStat,
+  type Combatant,
+} from "@idle/game-core";
 
-export const SAMPLE_TEAM: Combatant[] = [
-  {
-    id: "vanguard",
-    hp: 220,
-    attack: 44,
-    defense: 34,
-    speed: 10,
-    critBps: 800,
-  },
-  {
-    id: "ranger",
-    hp: 135,
-    attack: 58,
-    defense: 14,
-    speed: 16,
-    critBps: 1600,
-  },
-  {
-    id: "arcanist",
-    hp: 120,
-    attack: 64,
-    defense: 12,
-    speed: 14,
-    critBps: 1400,
-  },
-  {
-    id: "warden",
-    hp: 155,
-    attack: 38,
-    defense: 22,
-    speed: 12,
-    critBps: 700,
-  },
-];
+const STAT_GROWTH_BPS_PER_LEVEL = 400;
 
-export const SAMPLE_ENCOUNTERS: {
+export type GeneratedEncounter = {
   id: string;
   label: string;
+  dungeonId: string;
+  wave: number;
+  allies: Combatant[];
   enemies: Combatant[];
-}[] = [
-  {
-    id: "dungeon_1",
-    label: "Bamboo Grove sample",
-    enemies: [
-      { id: "sprout_1", hp: 100, attack: 28, defense: 10, speed: 8 },
-      { id: "sprout_2", hp: 110, attack: 30, defense: 12, speed: 9 },
-      { id: "sprout_3", hp: 95, attack: 32, defense: 9, speed: 11 },
-    ],
-  },
-  {
-    id: "dungeon_2",
-    label: "Misty Riverbank sample",
-    enemies: [
-      { id: "mist_1", hp: 150, attack: 40, defense: 18, speed: 11 },
-      { id: "mist_2", hp: 165, attack: 42, defense: 20, speed: 10 },
-      { id: "mist_3", hp: 125, attack: 48, defense: 14, speed: 15 },
-    ],
-  },
-  {
-    id: "dungeon_3",
-    label: "Sunken Shrine sample",
-    enemies: [
-      { id: "shrine_1", hp: 215, attack: 53, defense: 28, speed: 12 },
-      { id: "shrine_2", hp: 185, attack: 62, defense: 21, speed: 15 },
-      { id: "shrine_3", hp: 240, attack: 47, defense: 34, speed: 9 },
-    ],
-  },
-  {
-    id: "dungeon_4",
-    label: "Ember Ridge sample",
-    enemies: [
-      { id: "ember_1", hp: 280, attack: 68, defense: 35, speed: 14 },
-      { id: "ember_2", hp: 230, attack: 78, defense: 27, speed: 17 },
-      { id: "ember_3", hp: 310, attack: 61, defense: 42, speed: 11 },
-    ],
-  },
-];
+  rewardGold: number;
+  rewardExp: number;
+};
+
+function classTierForLevel(level: number): number {
+  if (level >= 20) return 3;
+  if (level >= 10) return 2;
+  return 1;
+}
+
+export function buildProgressionTeam(
+  level: number,
+  data: GameData = foundationGameData,
+): Combatant[] {
+  if (!Number.isInteger(level) || level <= 0) {
+    throw new Error("level must be a positive integer");
+  }
+
+  const tier = classTierForLevel(level);
+
+  return data.classFamilies.map((family) => {
+    const heroClass = data.classes.find(
+      (entry) => entry.familyId === family.id && entry.tier === tier,
+    );
+    if (!heroClass) {
+      throw new Error(`No tier ${tier} class found for family ${family.id}`);
+    }
+
+    return {
+      id: heroClass.id,
+      hp: scaleStat(heroClass.baseHp, level, STAT_GROWTH_BPS_PER_LEVEL),
+      attack: scaleStat(
+        heroClass.baseAttack,
+        level,
+        STAT_GROWTH_BPS_PER_LEVEL,
+      ),
+      defense: Math.max(
+        0,
+        scaleStat(
+          Math.max(1, heroClass.baseDefense),
+          level,
+          STAT_GROWTH_BPS_PER_LEVEL,
+        ),
+      ),
+      speed: heroClass.baseSpeed,
+      critBps: family.archetype === "ranged" ? 1_500 : 1_000,
+    };
+  });
+}
+
+function toCombatant(enemy: GameData["enemies"][number]): Combatant {
+  return {
+    id: enemy.id,
+    hp: enemy.hp,
+    attack: enemy.attack,
+    defense: enemy.defense,
+    speed: enemy.speed,
+  };
+}
+
+export function buildDungeonWave(
+  dungeonId: string,
+  wave: number,
+  data: GameData = foundationGameData,
+): GeneratedEncounter {
+  const dungeon = data.dungeons.find((entry) => entry.id === dungeonId);
+  if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
+  if (!Number.isInteger(wave) || wave < 1 || wave > dungeon.waveCount) {
+    throw new Error(
+      `Wave must be between 1 and ${dungeon.waveCount} for ${dungeonId}`,
+    );
+  }
+
+  const dungeonEnemies = data.enemies.filter(
+    (entry) => entry.dungeonId === dungeonId,
+  );
+  const normals = dungeonEnemies.filter((entry) => entry.rank === "normal");
+  const elite = dungeonEnemies.find((entry) => entry.rank === "elite");
+  const boss = dungeonEnemies.find((entry) => entry.rank === "boss");
+
+  if (normals.length < 2 || !elite || !boss) {
+    throw new Error(`Dungeon ${dungeonId} does not have a complete enemy set`);
+  }
+
+  let selected: typeof dungeonEnemies;
+  if (wave === dungeon.waveCount) {
+    selected = [boss];
+  } else if (wave === dungeon.waveCount - 1) {
+    selected = [normals[(wave - 1) % normals.length]!, elite];
+  } else {
+    selected = [
+      normals[(wave - 1) % normals.length]!,
+      normals[wave % normals.length]!,
+    ];
+  }
+
+  return {
+    id: `${dungeonId}_wave_${wave}`,
+    label: `${dungeon.nameEn} — wave ${wave}`,
+    dungeonId,
+    wave,
+    allies: buildProgressionTeam(dungeon.recommendedLevel, data),
+    enemies: selected.map(toCombatant),
+    rewardGold: selected.reduce((sum, enemy) => sum + enemy.rewardGold, 0),
+    rewardExp: selected.reduce((sum, enemy) => sum + enemy.rewardExp, 0),
+  };
+}
+
+export const SAMPLE_ENCOUNTERS: GeneratedEncounter[] =
+  foundationGameData.dungeons.map((dungeon) =>
+    buildDungeonWave(dungeon.id, dungeon.waveCount - 1),
+  );

@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
+import { foundationGameData } from "@idle/game-data";
 import { runBattleSimulation } from "../src/battle-sim";
+import {
+  buildDungeonWave,
+  buildProgressionTeam,
+  SAMPLE_ENCOUNTERS,
+} from "../src/scenarios";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
 describe("sim tools", () => {
@@ -19,13 +25,37 @@ describe("sim tools", () => {
     expect(result.hash).toMatch(/^[0-9a-f]{8}$/);
   });
 
-  it("summarizes all four sample encounters", () => {
+  it("builds a four-member progression team from class config", () => {
+    const team = buildProgressionTeam(20);
+    expect(team).toHaveLength(4);
+    expect(new Set(team.map((unit) => unit.id)).size).toBe(4);
+  });
+
+  it("generates boss wave 6 from dungeon enemy config", () => {
+    const dungeon = foundationGameData.dungeons[0]!;
+    const wave = buildDungeonWave(dungeon.id, dungeon.waveCount);
+    expect(wave.enemies).toHaveLength(1);
+    const enemy = foundationGameData.enemies.find(
+      (entry) => entry.id === wave.enemies[0]!.id,
+    );
+    expect(enemy?.rank).toBe("boss");
+    expect(wave.rewardGold).toBeGreaterThan(0);
+    expect(wave.rewardExp).toBeGreaterThan(0);
+  });
+
+  it("summarizes all four data-driven dungeon encounters", () => {
+    expect(SAMPLE_ENCOUNTERS).toHaveLength(4);
     const summaries = runBattleSimulation({ runs: 10, seedBase: 10 });
     expect(summaries).toHaveLength(4);
     expect(summaries.every((summary) => summary.runs === 10)).toBe(true);
     expect(
       summaries.every(
         (summary) => summary.wins + summary.losses + summary.draws === 10,
+      ),
+    ).toBe(true);
+    expect(
+      summaries.every(
+        (summary) => summary.expectedGold >= 0 && summary.expectedExp >= 0,
       ),
     ).toBe(true);
   });

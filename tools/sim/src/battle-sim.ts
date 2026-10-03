@@ -1,5 +1,5 @@
 import { simulateWave } from "@idle/game-core";
-import { SAMPLE_ENCOUNTERS, SAMPLE_TEAM } from "./scenarios";
+import { SAMPLE_ENCOUNTERS } from "./scenarios";
 import { mean, percentile } from "./stats";
 
 export type BattleSimulationSummary = {
@@ -13,6 +13,8 @@ export type BattleSimulationSummary = {
   averageTurns: number;
   p50Turns: number;
   p90Turns: number;
+  expectedGold: number;
+  expectedExp: number;
 };
 
 export function runBattleSimulation(input: {
@@ -43,7 +45,7 @@ export function runBattleSimulation(input: {
 
     for (let run = 0; run < input.runs; run += 1) {
       const result = simulateWave({
-        allies: SAMPLE_TEAM,
+        allies: encounter.allies,
         enemies: encounter.enemies,
         seed: seedBase + encounterIndex * 1_000_000 + run,
       });
@@ -54,6 +56,7 @@ export function runBattleSimulation(input: {
       else draws += 1;
     }
 
+    const winRate = wins / input.runs;
     return {
       encounterId: encounter.id,
       label: encounter.label,
@@ -61,10 +64,12 @@ export function runBattleSimulation(input: {
       wins,
       losses,
       draws,
-      winRate: wins / input.runs,
+      winRate,
       averageTurns: mean(turns),
       p50Turns: percentile(turns, 0.5),
       p90Turns: percentile(turns, 0.9),
+      expectedGold: encounter.rewardGold * winRate,
+      expectedExp: encounter.rewardExp * winRate,
     };
   });
 }
