@@ -1,10 +1,5 @@
 import { randomUUID } from "node:crypto";
-import {
-  afterEach,
-  describe,
-  expect,
-  it,
-} from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { buildServer } from "../src/app.js";
 
 const apps: ReturnType<typeof buildServer>[] = [];
@@ -15,9 +10,7 @@ function createApp() {
   return app;
 }
 
-async function createGuest(
-  app: ReturnType<typeof buildServer>,
-) {
+async function createGuest(app: ReturnType<typeof buildServer>) {
   const response = await app.inject({
     method: "POST",
     url: "/api/v1/auth/guest",
@@ -40,9 +33,7 @@ async function createGuest(
 }
 
 afterEach(async () => {
-  await Promise.all(
-    apps.splice(0).map((app) => app.close()),
-  );
+  await Promise.all(apps.splice(0).map((app) => app.close()));
 });
 
 describe("server-authoritative command pipeline", () => {
@@ -116,12 +107,11 @@ describe("server-authoritative command pipeline", () => {
     expect(refresh.statusCode).toBe(200);
     const refreshBody = refresh.json();
     expect(refreshBody.version).toBe(1);
-    const offers =
-      refreshBody.events[0].tavern.offers as Array<{
-        id: string;
-        classId: string;
-        rarity: string;
-      }>;
+    const offers = refreshBody.events[0].tavern.offers as Array<{
+      id: string;
+      classId: string;
+      rarity: string;
+    }>;
     expect(offers).toHaveLength(3);
 
     const blockedRefresh = await app.inject({
@@ -135,9 +125,7 @@ describe("server-authoritative command pipeline", () => {
       },
     });
     expect(blockedRefresh.statusCode).toBe(409);
-    expect(blockedRefresh.json().code).toBe(
-      "TAVERN_COOLDOWN",
-    );
+    expect(blockedRefresh.json().code).toBe("TAVERN_COOLDOWN");
 
     const recruit = await app.inject({
       method: "POST",
@@ -212,12 +200,9 @@ describe("server-authoritative command pipeline", () => {
       }),
     ]);
 
-    expect(
-      [left.statusCode, right.statusCode].sort(),
-    ).toEqual([200, 409]);
+    expect([left.statusCode, right.statusCode].sort()).toEqual([200, 409]);
 
-    const conflict =
-      left.statusCode === 409 ? left : right;
+    const conflict = left.statusCode === 409 ? left : right;
     expect(conflict.json()).toMatchObject({
       code: "VERSION_CONFLICT",
       currentVersion: 1,

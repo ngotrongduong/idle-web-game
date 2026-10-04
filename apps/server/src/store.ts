@@ -1,9 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type {
-  FoundationPlayerState,
-  Hero,
-  TavernOffer,
-} from "@idle/api-contract";
+import type { FoundationPlayerState, Hero, TavernOffer } from "@idle/api-contract";
 
 export type StoredCommandOutcome = {
   statusCode: number;
@@ -22,35 +18,17 @@ export interface GameStore {
   findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined>;
   getPlayer(playerId: string): Promise<FoundationPlayerState | undefined>;
   setPlayer(player: FoundationPlayerState): Promise<void>;
-  getCommandOutcome(
-    playerId: string,
-    cmdId: string,
-  ): Promise<StoredCommandOutcome | undefined>;
-  setCommandOutcome(
-    playerId: string,
-    cmdId: string,
-    outcome: StoredCommandOutcome,
-  ): Promise<void>;
+  getCommandOutcome(playerId: string, cmdId: string): Promise<StoredCommandOutcome | undefined>;
+  setCommandOutcome(playerId: string, cmdId: string, outcome: StoredCommandOutcome): Promise<void>;
   getTavernState(playerId: string): Promise<StoredTavernState | undefined>;
-  setTavernState(
-    playerId: string,
-    state: StoredTavernState,
-  ): Promise<void>;
+  setTavernState(playerId: string, state: StoredTavernState): Promise<void>;
   listHeroes(playerId: string): Promise<Hero[]>;
-  createHero(
-    playerId: string,
-    input: Omit<Hero, "id">,
-  ): Promise<Hero>;
-  withPlayerLock<T>(
-    playerId: string,
-    task: () => Promise<T>,
-  ): Promise<T>;
+  createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero>;
+  withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T>;
   close?(): Promise<void>;
 }
 
-function copyTavernState(
-  state: StoredTavernState,
-): StoredTavernState {
+function copyTavernState(state: StoredTavernState): StoredTavernState {
   return {
     ...state,
     nextFreeRefreshAt: new Date(state.nextFreeRefreshAt),
@@ -61,10 +39,7 @@ function copyTavernState(
 export class InMemoryGameStore implements GameStore {
   private readonly players = new Map<string, FoundationPlayerState>();
   private readonly sessions = new Map<string, string>();
-  private readonly commandOutcomes = new Map<
-    string,
-    Map<string, StoredCommandOutcome>
-  >();
+  private readonly commandOutcomes = new Map<string, Map<string, StoredCommandOutcome>>();
   private readonly taverns = new Map<string, StoredTavernState>();
   private readonly heroes = new Map<string, Hero[]>();
   private readonly lockTails = new Map<string, Promise<void>>();
@@ -82,15 +57,11 @@ export class InMemoryGameStore implements GameStore {
     return { ...player };
   }
 
-  async findPlayerIdBySessionHash(
-    sessionHash: string,
-  ): Promise<string | undefined> {
+  async findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined> {
     return this.sessions.get(sessionHash);
   }
 
-  async getPlayer(
-    playerId: string,
-  ): Promise<FoundationPlayerState | undefined> {
+  async getPlayer(playerId: string): Promise<FoundationPlayerState | undefined> {
     const player = this.players.get(playerId);
     return player ? { ...player } : undefined;
   }
@@ -119,17 +90,12 @@ export class InMemoryGameStore implements GameStore {
     outcomes.set(cmdId, outcome);
   }
 
-  async getTavernState(
-    playerId: string,
-  ): Promise<StoredTavernState | undefined> {
+  async getTavernState(playerId: string): Promise<StoredTavernState | undefined> {
     const state = this.taverns.get(playerId);
     return state ? copyTavernState(state) : undefined;
   }
 
-  async setTavernState(
-    playerId: string,
-    state: StoredTavernState,
-  ): Promise<void> {
+  async setTavernState(playerId: string, state: StoredTavernState): Promise<void> {
     this.taverns.set(playerId, copyTavernState(state));
   }
 
@@ -137,10 +103,7 @@ export class InMemoryGameStore implements GameStore {
     return (this.heroes.get(playerId) ?? []).map((hero) => ({ ...hero }));
   }
 
-  async createHero(
-    playerId: string,
-    input: Omit<Hero, "id">,
-  ): Promise<Hero> {
+  async createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero> {
     const hero: Hero = {
       id: randomUUID(),
       ...input,
@@ -151,10 +114,7 @@ export class InMemoryGameStore implements GameStore {
     return { ...hero };
   }
 
-  async withPlayerLock<T>(
-    playerId: string,
-    task: () => Promise<T>,
-  ): Promise<T> {
+  async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {
     const previous = this.lockTails.get(playerId) ?? Promise.resolve();
 
     let release!: () => void;

@@ -177,5 +177,4 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
 
     expect(await store.listHeroes(player.id)).toContainEqual(hero);
   });
-
 });

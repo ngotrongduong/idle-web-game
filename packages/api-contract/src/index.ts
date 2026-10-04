@@ -22,12 +22,7 @@ export const GuestAuthResponseSchema = z.object({
   state: FoundationPlayerStateSchema,
 });
 
-export const HeroRaritySchema = z.enum([
-  "common",
-  "elite",
-  "rare",
-  "legendary",
-]);
+export const HeroRaritySchema = z.enum(["common", "elite", "rare", "legendary"]);
 
 export const HeroSchema = z.object({
   id: z.string().uuid(),

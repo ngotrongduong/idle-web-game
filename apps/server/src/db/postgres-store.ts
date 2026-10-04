@@ -1,26 +1,12 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
-import type {
-  FoundationPlayerState,
-  Hero,
-  TavernOffer,
-} from "@idle/api-contract";
+import type { FoundationPlayerState, Hero, TavernOffer } from "@idle/api-contract";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
-import {
-  commandOutcomes,
-  heroes,
-  players,
-  sessions,
-  tavernStates,
-} from "./schema.js";
+import { commandOutcomes, heroes, players, sessions, tavernStates } from "./schema.js";
 import * as schema from "./schema.js";
-import type {
-  GameStore,
-  StoredCommandOutcome,
-  StoredTavernState,
-} from "../store.js";
+import type { GameStore, StoredCommandOutcome, StoredTavernState } from "../store.js";
 
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1_000;
 export const COMMAND_OUTCOME_TTL_MS = 24 * 60 * 60 * 1_000;
@@ -32,9 +18,7 @@ export class PostgresGameStore implements GameStore {
 
   constructor(connectionString: string) {
     if (!connectionString.trim()) {
-      throw new Error(
-        "PostgresGameStore requires a database connection string",
-      );
+      throw new Error("PostgresGameStore requires a database connection string");
     }
 
     this.pool = new Pool({ connectionString });
@@ -46,23 +30,14 @@ export class PostgresGameStore implements GameStore {
     return client ? drizzle({ client, schema }) : this.db;
   }
 
-  private async pruneExpiredCommandOutcomes(
-    playerId: string,
-  ): Promise<void> {
+  private async pruneExpiredCommandOutcomes(playerId: string): Promise<void> {
     const cutoff = new Date(Date.now() - COMMAND_OUTCOME_TTL_MS);
     await this.database()
       .delete(commandOutcomes)
-      .where(
-        and(
-          eq(commandOutcomes.playerId, playerId),
-          lt(commandOutcomes.createdAt, cutoff),
-        ),
-      );
+      .where(and(eq(commandOutcomes.playerId, playerId), lt(commandOutcomes.createdAt, cutoff)));
   }
 
-  async createGuest(
-    sessionHash: string,
-  ): Promise<FoundationPlayerState> {
+  async createGuest(sessionHash: string): Promise<FoundationPlayerState> {
     const player: FoundationPlayerState = {
       id: randomUUID(),
       version: 0,
@@ -93,26 +68,17 @@ export class PostgresGameStore implements GameStore {
     return { ...player };
   }
 
-  async findPlayerIdBySessionHash(
-    sessionHash: string,
-  ): Promise<string | undefined> {
+  async findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined> {
     const [row] = await this.database()
       .select({ playerId: sessions.playerId })
       .from(sessions)
-      .where(
-        and(
-          eq(sessions.sessionHash, sessionHash),
-          gt(sessions.expiresAt, new Date()),
-        ),
-      )
+      .where(and(eq(sessions.sessionHash, sessionHash), gt(sessions.expiresAt, new Date())))
       .limit(1);
 
     return row?.playerId;
   }
 
-  async getPlayer(
-    playerId: string,
-  ): Promise<FoundationPlayerState | undefined> {
+  async getPlayer(playerId: string): Promise<FoundationPlayerState | undefined> {
     const [row] = await this.database()
       .select({
         id: players.id,
@@ -190,9 +156,7 @@ export class PostgresGameStore implements GameStore {
       });
   }
 
-  async getTavernState(
-    playerId: string,
-  ): Promise<StoredTavernState | undefined> {
+  async getTavernState(playerId: string): Promise<StoredTavernState | undefined> {
     const [row] = await this.database()
       .select({
         refreshesSinceRarePlus: tavernStates.refreshesSinceRarePlus,
@@ -214,10 +178,7 @@ export class PostgresGameStore implements GameStore {
       : undefined;
   }
 
-  async setTavernState(
-    playerId: string,
-    state: StoredTavernState,
-  ): Promise<void> {
+  async setTavernState(playerId: string, state: StoredTavernState): Promise<void> {
     await this.database()
       .insert(tavernStates)
       .values({
@@ -253,10 +214,7 @@ export class PostgresGameStore implements GameStore {
       .where(eq(heroes.playerId, playerId));
   }
 
-  async createHero(
-    playerId: string,
-    input: Omit<Hero, "id">,
-  ): Promise<Hero> {
+  async createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero> {
     const hero: Hero = {
       id: randomUUID(),
       ...input,
@@ -275,18 +233,12 @@ export class PostgresGameStore implements GameStore {
     return hero;
   }
 
-  async withPlayerLock<T>(
-    playerId: string,
-    task: () => Promise<T>,
-  ): Promise<T> {
+  async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
 
     try {
       await client.query("BEGIN");
-      await client.query(
-        "SELECT id FROM players WHERE id = $1 FOR UPDATE",
-        [playerId],
-      );
+      await client.query("SELECT id FROM players WHERE id = $1 FOR UPDATE", [playerId]);
 
       const result = await this.transactionClient.run(client, task);
       await client.query("COMMIT");
