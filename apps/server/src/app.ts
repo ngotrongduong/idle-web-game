@@ -332,8 +332,9 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "set_team") {
-        const uniqueHeroIds = new Set(envelope.command.heroIds);
-        if (uniqueHeroIds.size !== envelope.command.heroIds.length) {
+        const { slot, heroIds } = envelope.command;
+        const uniqueHeroIds = new Set(heroIds);
+        if (uniqueHeroIds.size !== heroIds.length) {
           const duplicate: StoredCommandOutcome = {
             statusCode: 409,
             body: apiError(
@@ -348,7 +349,7 @@ export function buildServer(options?: { store?: GameStore }) {
 
         const heroes = await store.listHeroes(playerId);
         const ownedHeroIds = new Set(heroes.map((hero) => hero.id));
-        const missingHeroId = envelope.command.heroIds.find((heroId) => !ownedHeroIds.has(heroId));
+        const missingHeroId = heroIds.find((heroId) => !ownedHeroIds.has(heroId));
         if (missingHeroId) {
           const missingHero: StoredCommandOutcome = {
             statusCode: 409,
@@ -364,7 +365,7 @@ export function buildServer(options?: { store?: GameStore }) {
 
         const teams = await store.listTeams(playerId);
         const assignedElsewhere = teams
-          .filter((team) => team.slot !== envelope.command.slot)
+          .filter((team) => team.slot !== slot)
           .flatMap((team) => team.heroIds)
           .find((heroId) => uniqueHeroIds.has(heroId));
 
@@ -382,8 +383,8 @@ export function buildServer(options?: { store?: GameStore }) {
         }
 
         const team = await store.setTeam(playerId, {
-          slot: envelope.command.slot,
-          heroIds: [...envelope.command.heroIds],
+          slot,
+          heroIds: [...heroIds],
         });
 
         const nextState: FoundationPlayerState = {
