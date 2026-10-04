@@ -214,7 +214,9 @@ function humanizeId(value: string): string {
   return value.replaceAll("_", " ");
 }
 
-function catalogName(catalog: Catalog | null, kind: keyof Catalog, id: string): string {
+type CatalogListKey = "classes" | "dungeons" | "materials" | "items";
+
+function catalogName(catalog: Catalog | null, kind: CatalogListKey, id: string): string {
   return catalog?.[kind].find((entry) => entry.id === id)?.nameVi ?? humanizeId(id);
 }
 
@@ -942,6 +944,23 @@ export function App() {
               const equippedHero = heroes.find((hero) => hero.id === item.equippedHeroId);
               const defaultTarget = equipTargets[item.id] ?? heroes[0]?.id ?? "";
               const sellValue = spec ? Math.floor((spec.sellGold * item.qualityBps) / 10_000) : 0;
+              const enhanceBonusBps = catalog?.equipment.enhanceBonusBps[item.enhanceLevel] ?? 0;
+              const effectiveAttack = spec
+                ? Math.floor(
+                    (spec.attack * item.qualityBps * (10_000 + enhanceBonusBps)) / 100_000_000,
+                  )
+                : 0;
+              const effectiveDefense = spec
+                ? Math.floor(
+                    (spec.defense * item.qualityBps * (10_000 + enhanceBonusBps)) / 100_000_000,
+                  )
+                : 0;
+              const nextEnhanceCost = catalog?.equipment.enhanceGoldCosts[item.enhanceLevel];
+              const baseSuccess = catalog?.equipment.enhanceSuccessBps[item.enhanceLevel];
+              const currentSuccess =
+                baseSuccess === undefined
+                  ? undefined
+                  : Math.min(10_000, baseSuccess + item.enhancePityFailures * 500);
 
               return (
                 <article className="card equipment-card" key={item.id}>
