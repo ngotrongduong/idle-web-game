@@ -21,11 +21,7 @@ import {
   levelCapForTier,
   retainHeroPotential,
 } from "@idle/game-core";
-import {
-  foundationGameData,
-  promotionConfig,
-  promotionRuleForTier,
-} from "@idle/game-data";
+import { foundationGameData, promotionConfig, promotionRuleForTier } from "@idle/game-data";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -729,7 +725,9 @@ export function buildServer(options?: { store?: GameStore }) {
 
       if (envelope.command.type === "promote_hero") {
         const { heroId, targetClassId } = envelope.command;
-        const hero = (await store.listHeroes(playerId)).find((candidate) => candidate.id === heroId);
+        const hero = (await store.listHeroes(playerId)).find(
+          (candidate) => candidate.id === heroId,
+        );
         if (!hero) {
           const missing: StoredCommandOutcome = {
             statusCode: 409,
@@ -839,10 +837,7 @@ export function buildServer(options?: { store?: GameStore }) {
           rarity: hero.rarity,
           ...(hero.potential ? { potential: hero.potential } : {}),
         });
-        const potential = retainHeroPotential(
-          currentStats,
-          promotionConfig.retainedPotentialBps,
-        );
+        const potential = retainHeroPotential(currentStats, promotionConfig.retainedPotentialBps);
         const promotedHero = {
           ...hero,
           classId: targetClass.id,
@@ -852,11 +847,7 @@ export function buildServer(options?: { store?: GameStore }) {
         };
 
         await store.setHero(playerId, promotedHero);
-        await store.setMaterialQuantity(
-          playerId,
-          rule.sealMaterialId,
-          sealBalance - rule.sealQty,
-        );
+        await store.setMaterialQuantity(playerId, rule.sealMaterialId, sealBalance - rule.sealQty);
 
         const nextState: FoundationPlayerState = {
           ...state,

@@ -14,12 +14,7 @@ describe("hero stat progression", () => {
   });
 
   it("retains a basis-point share of pre-promotion combat stats", () => {
-    expect(
-      retainHeroPotential(
-        { hp: 504, attack: 81, defense: 76, speed: 21 },
-        2_000,
-      ),
-    ).toEqual({
+    expect(retainHeroPotential({ hp: 504, attack: 81, defense: 76, speed: 21 }, 2_000)).toEqual({
       hp: 100,
       attack: 16,
       defense: 15,
