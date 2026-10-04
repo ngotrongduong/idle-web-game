@@ -13,10 +13,10 @@ farshot_ranger,Viễn Kích Du Hiệp,Farshot Ranger,windstrider,3,gale_marksman
 briar_hunter,Thợ Săn Tầm Gai,Briar Hunter,windstrider,3,thorn_stalker,hybrid,275,73,35,17,highest_attack,damage,highest_attack,14500
 spark_adept,Học Giả Tia Lửa,Spark Adept,ember_sage,1,,damage,135,54,12,13,lowest_hp,damage,lowest_hp,16000
 flame_weaver,Dệt Lửa,Flame Weaver,ember_sage,2,spark_adept,damage,165,75,16,14,lowest_hp,damage,lowest_hp,16000
-storm_scribe,Lôi Thư,Storm Scribe,ember_sage,2,spark_adept,hybrid,180,69,20,15,highest_attack,damage,highest_attack,14500
+storm_scribe,Thư Sĩ Phù Văn,Rune Scribe,ember_sage,2,spark_adept,hybrid,180,69,20,15,highest_attack,damage,highest_attack,14500
 cinder_oracle,Tiên Tri Tàn Hỏa,Cinder Oracle,ember_sage,3,flame_weaver,damage,205,99,21,15,lowest_hp,damage,lowest_hp,16000
 glassfire_magus,Pháp Sư Lưu Hỏa,Glassfire Magus,ember_sage,3,flame_weaver,damage,225,92,25,14,lowest_hp,damage,lowest_hp,16000
-thunder_calligrapher,Lôi Bút Sư,Thunder Calligrapher,ember_sage,3,storm_scribe,hybrid,240,84,30,16,highest_attack,damage,highest_attack,14500
+thunder_calligrapher,Thợ Khắc Phù Lôi,Storm Runesmith,ember_sage,3,storm_scribe,hybrid,240,84,30,16,highest_attack,damage,highest_attack,14500
 dawn_acolyte,Học Đồ Bình Minh,Dawn Acolyte,dawn_warden,1,,support,165,35,18,11,highest_attack,heal,lowest_hp,18000
 light_keeper,Hộ Đăng,Light Keeper,dawn_warden,2,dawn_acolyte,support,220,43,28,11,highest_attack,heal,lowest_hp,18000
 spirit_mender,Dưỡng Linh Sư,Spirit Mender,dawn_warden,2,dawn_acolyte,support,195,49,22,13,highest_attack,heal,lowest_hp,18000

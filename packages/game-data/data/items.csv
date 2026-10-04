@@ -1,31 +1,31 @@
 id,name_vi,name_en,slot,attack,defense,recipe
-bamboo_training_sword,Kiếm Tre Tập Luyện,Bamboo Training Sword,weapon,12,0,bamboo_fiber:3|river_stone:1
-woven_guard,Giáp Đan Sơ Khai,Woven Guard,armor,0,10,bamboo_fiber:2|slime_gel:1
-riverstone_cap,Mũ Đá Suối,Riverstone Cap,helmet,0,7,river_stone:2|bamboo_fiber:1
-gel_charm,Bùa Gel Trong,Clear Gel Charm,accessory,3,3,slime_gel:2|bamboo_fiber:1
-bamboo_spear,Thương Tre,Bamboo Spear,weapon,16,0,bamboo_fiber:4|river_stone:2
-reed_guard,Giáp Lau Sậy,Reed Guard,armor,0,13,reed_thread:3|slime_gel:1
-mistveil_hood,Mũ Trùm Sương,Mistveil Hood,helmet,0,10,reed_thread:2|mist_pearl:1
-driftwood_token,Bùa Lõi Gỗ Trôi,Driftwood Token,accessory,5,4,driftwood_core:2|river_stone:1
-riverhook_blade,Đao Móc Bờ Sông,Riverhook Blade,weapon,22,0,driftwood_core:2|mist_pearl:1|river_stone:2
-mistwoven_coat,Áo Dệt Sương,Mistwoven Coat,armor,0,18,reed_thread:3|mist_pearl:2
-pearlguard_helm,Mũ Hộ Ngọc Sương,Pearlguard Helm,helmet,0,15,mist_pearl:2|driftwood_core:1
-river_echo_charm,Bùa Vọng Sông,River Echo Charm,accessory,7,6,mist_pearl:1|reed_thread:2|river_stone:1
-claybound_mace,Chùy Đất Chìm,Claybound Mace,weapon,30,0,sunken_clay:3|shrine_fragment:1
-lotus_scale_mail,Giáp Vảy Sen,Lotus Scale Mail,armor,0,25,lotus_silk:3|sunken_clay:2
-shrinekeeper_crown,Mão Giữ Miếu,Shrinekeeper Crown,helmet,0,20,shrine_fragment:2|lotus_silk:1
-tideglass_talisman,Bùa Thủy Tinh Triều,Tideglass Talisman,accessory,10,9,tide_crystal:2|lotus_silk:2
-sunken_halberd,Kích Miếu Chìm,Sunken Halberd,weapon,36,0,shrine_fragment:2|tide_crystal:2|sunken_clay:2
-lotus_warden_plate,Giáp Hộ Sen,Lotus Warden Plate,armor,0,31,lotus_silk:4|shrine_fragment:2
-tidewatch_helm,Mũ Canh Triều,Tidewatch Helm,helmet,0,26,tide_crystal:2|sunken_clay:2
-shrine_echo_relic,Thánh Tích Vọng Miếu,Shrine Echo Relic,accessory,13,12,shrine_fragment:2|tide_crystal:1|lotus_silk:1
+bamboo_training_sword,Kiếm Gỗ Sồi Tập Luyện,Oak Training Sword,weapon,12,0,bamboo_fiber:3|river_stone:1
+woven_guard,Áo Độn Bông,Padded Jerkin,armor,0,10,bamboo_fiber:2|slime_gel:1
+riverstone_cap,Mũ Đá Lửa,Flint Cap,helmet,0,7,river_stone:2|bamboo_fiber:1
+gel_charm,Bùa Gỗ Gai,Thornwood Charm,accessory,3,3,slime_gel:2|bamboo_fiber:1
+bamboo_spear,Thương Gỗ Gai,Thornwood Spear,weapon,16,0,bamboo_fiber:4|river_stone:2
+reed_guard,Áo Đan Cói,Reedwoven Vest,armor,0,13,reed_thread:3|slime_gel:1
+mistveil_hood,Mũ Trùm Ma Trơi,Wispveil Hood,helmet,0,10,reed_thread:2|mist_pearl:1
+driftwood_token,Bùa Gỗ Đầm,Bogwood Token,accessory,5,4,driftwood_core:2|river_stone:1
+riverhook_blade,Đao Móc Đầm Lầy,Fenhook Blade,weapon,22,0,driftwood_core:2|mist_pearl:1|river_stone:2
+mistwoven_coat,Áo Dệt Đầm Lầy,Fenwoven Coat,armor,0,18,reed_thread:3|mist_pearl:2
+pearlguard_helm,Mũ Ngọc Ma Trơi,Wisp-pearl Helm,helmet,0,15,mist_pearl:2|driftwood_core:1
+river_echo_charm,Bùa Vọng Đầm,Marsh Echo Charm,accessory,7,6,mist_pearl:1|reed_thread:2|river_stone:1
+claybound_mace,Chùy Mộ Địa,Gravebound Mace,weapon,30,0,sunken_clay:3|shrine_fragment:1
+lotus_scale_mail,Giáp Lụa Liệm,Shroudsilk Mail,armor,0,25,lotus_silk:3|sunken_clay:2
+shrinekeeper_crown,Vòng Trán Viện Trưởng,Abbot's Circlet,helmet,0,20,shrine_fragment:2|lotus_silk:1
+tideglass_talisman,Bùa Thủy Tinh Linh Hồn,Soulglass Talisman,accessory,10,9,tide_crystal:2|lotus_silk:2
+sunken_halberd,Kích Tu Viện,Abbey Halberd,weapon,36,0,shrine_fragment:2|tide_crystal:2|sunken_clay:2
+lotus_warden_plate,Giáp Hiệp Sĩ Dòng,Templar Plate,armor,0,31,lotus_silk:4|shrine_fragment:2
+tidewatch_helm,Mũ Canh Hầm Mộ,Cryptwatch Helm,helmet,0,26,tide_crystal:2|sunken_clay:2
+shrine_echo_relic,Thánh Tích Vọng Âm,Saint's Echo Relic,accessory,13,12,shrine_fragment:2|tide_crystal:1|lotus_silk:1
 emberedge,Lưỡi Than Hồng,Emberedge,weapon,44,0,ember_ore:3|fireglass:1
-ashhide_cuirass,Giáp Da Tro,Ashhide Cuirass,armor,0,38,ash_hide:3|ember_ore:2
-ridgewalker_helm,Mũ Lữ Khách Sườn Núi,Ridgewalker Helm,helmet,0,31,ash_hide:2|ridge_herb:2
-fireglass_pendant,Mặt Dây Thủy Tinh Lửa,Fireglass Pendant,accessory,16,14,fireglass:2|ridge_herb:1
+ashhide_cuirass,Giáp Da Kỳ Nhông,Salamander Cuirass,armor,0,38,ash_hide:3|ember_ore:2
+ridgewalker_helm,Mũ Lữ Khách Vách Đá,Cragwalker Helm,helmet,0,31,ash_hide:2|ridge_herb:2
+fireglass_pendant,Mặt Dây Thủy Tinh Rồng,Dragonglass Pendant,accessory,16,14,fireglass:2|ridge_herb:1
 obsidian_glaive,Đao Hắc Diện,Obsidian Glaive,weapon,52,0,obsidian_shard:2|ember_ore:3|fireglass:1
-emberwarden_plate,Giáp Hộ Than Hồng,Emberwarden Plate,armor,0,45,ash_hide:3|obsidian_shard:2
+emberwarden_plate,Giáp Hộ Lửa,Flamewarden Plate,armor,0,45,ash_hide:3|obsidian_shard:2
 obsidian_circlet,Vòng Trán Hắc Diện,Obsidian Circlet,helmet,0,37,obsidian_shard:2|fireglass:2
-ridgeheart_relic,Thánh Tích Tâm Núi,Ridgeheart Relic,accessory,20,17,ridge_herb:2|obsidian_shard:1|ember_ore:1
+ridgeheart_relic,Thánh Tích Tâm Đá,Cragheart Relic,accessory,20,17,ridge_herb:2|obsidian_shard:1|ember_ore:1
 vanguard_blade,Kiếm Tiền Phong,Vanguard Blade,weapon,58,0,obsidian_shard:3|fireglass:2|ember_ore:3
-mountain_oath_plate,Giáp Thệ Núi,Mountain Oath Plate,armor,0,50,ash_hide:4|obsidian_shard:2|ridge_herb:2
+mountain_oath_plate,Giáp Thệ Rồng,Dragonoath Plate,armor,0,50,ash_hide:4|obsidian_shard:2|ridge_herb:2
