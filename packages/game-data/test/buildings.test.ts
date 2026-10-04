@@ -29,6 +29,19 @@ describe("buildings config", () => {
     }
   });
 
+  it("matches the docs/03 §6 Forge table mid-way (level 4 → 5 and the level 5 odds)", () => {
+    expect(buildingUpgrade("forge", 4)).toEqual({
+      goldCost: 4_216,
+      buildSeconds: 330,
+      materials: [
+        { materialId: "mist_pearl", qty: 20 },
+        { materialId: "driftwood_core", qty: 20 },
+      ],
+    });
+    expect(forgeQualityTiers(5).map((tier) => tier.weightBps)).toEqual([5_800, 3_300, 770, 130]);
+    expect(forgeQualityTiers(10).map((tier) => tier.weightBps)).toEqual([4_300, 4_300, 1_170, 230]);
+  });
+
   it("unlocks enhancement at Forge level 2 and the full +5 at level 5", () => {
     expect(forgeMaxEnhanceLevel(1)).toBe(0);
     expect(forgeMaxEnhanceLevel(2)).toBe(2);

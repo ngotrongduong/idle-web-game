@@ -112,20 +112,31 @@ function buildingPath(building: "hall" | "forge"): BuildingPathSummary {
 
 /**
  * Seconds until the Hall reaches `targetLevel` when every upgrade starts as soon as the builder
- * is free and the gold is there. Gold is the starting purse plus a steady income.
+ * is free and the gold is there. Gold is the starting purse plus the passive income of one team,
+ * which only arrives in whole idle cycles.
  */
-function secondsToHallLevel(targetLevel: number, goldPerSecond: number): number {
+function secondsToHallLevel(
+  targetLevel: number,
+  goldPerCycle: number,
+  cycleSeconds: number,
+): number {
   let gold = STARTING_GOLD;
   let seconds = 0;
+  let paidCycles = 0;
   for (let level = 1; level < targetLevel; level += 1) {
     const upgrade = buildingUpgrade("hall", level)!;
+    const finishedCycles = Math.floor(seconds / cycleSeconds) - paidCycles;
+    gold += finishedCycles * goldPerCycle;
+    paidCycles += finishedCycles;
+
     if (gold < upgrade.goldCost) {
-      if (goldPerSecond <= 0) return Number.POSITIVE_INFINITY;
-      const wait = (upgrade.goldCost - gold) / goldPerSecond;
-      seconds += wait;
-      gold += wait * goldPerSecond;
+      if (goldPerCycle <= 0) return Number.POSITIVE_INFINITY;
+      const cycles = Math.ceil((upgrade.goldCost - gold) / goldPerCycle);
+      gold += cycles * goldPerCycle;
+      paidCycles += cycles;
+      seconds = paidCycles * cycleSeconds;
     }
-    gold += upgrade.buildSeconds * goldPerSecond - upgrade.goldCost;
+    gold -= upgrade.goldCost;
     seconds += upgrade.buildSeconds;
   }
   return seconds;
@@ -306,8 +317,10 @@ export function runEconomySimulation(): EconomySummary {
 
   let teamTwoHallLevel = 1;
   while (teamLimitForHall(teamTwoHallLevel) < 2) teamTwoHallLevel += 1;
+  const passiveCycleSeconds =
+    (idleConfig.cycleDurationSeconds * 10_000) / idleConfig.offlineEfficiencyBps;
   const teamTwoMinutes =
-    secondsToHallLevel(teamTwoHallLevel, (dungeons[0]?.passiveGoldPerHour ?? 0) / 3_600) / 60;
+    secondsToHallLevel(teamTwoHallLevel, dungeons[0]?.cycleGold ?? 0, passiveCycleSeconds) / 60;
 
   const d1Gold = dungeons[0]?.onlineGoldPerHour ?? 0;
   const warnings: string[] = [];

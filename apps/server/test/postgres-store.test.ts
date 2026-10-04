@@ -1,4 +1,5 @@
 import crypto, { randomBytes } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { PostgresGameStore } from "../src/db/postgres-store.js";
@@ -80,33 +81,43 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     await store.createItem(veteran.id, { ...item, enhanceLevel: 2 });
     await store.createItem(veteran.id, { ...item, enhanceLevel: 5 });
 
-    // The statement of migration 0014, run for these players only (the marker row already
-    // exists in a migrated database, which is what keeps a redeploy from running it again).
+    // Runs the backfill block of the real migration file as a first deploy would (marker removed),
+    // then again as every later deploy does. Everything happens in a transaction that is rolled
+    // back, so other tests keep their rows and the marker.
+    const migration = readFileSync(
+      new URL("../drizzle/0014_m1_buildings.sql", import.meta.url),
+      "utf8",
+    );
+    const backfill = /DO \$\$[\s\S]*?\$\$;/.exec(migration)?.[0];
+    expect(backfill).toContain("0014_backfill_forge_level");
+
     const pool = new Pool({ connectionString: databaseUrl! });
-    try {
-      const marker = await pool.query(
-        "SELECT 1 FROM data_migrations WHERE id = '0014_backfill_forge_level'",
-      );
-      expect(marker.rowCount).toBe(1);
-      await pool.query(
-        `UPDATE players p
-         SET forge_level = GREATEST(p.forge_level, GREATEST(2, m.max_level))
-         FROM (
-           SELECT player_id, max(enhance_level) AS max_level
-           FROM player_items
-           GROUP BY player_id
-           HAVING max(enhance_level) > 0
-         ) m
-         WHERE p.id = m.player_id AND p.id = ANY($1::uuid[])`,
+    const client = await pool.connect();
+    const forgeLevels = async () => {
+      const result = await client.query<{ id: string; forge_level: number }>(
+        "SELECT id, forge_level FROM players WHERE id = ANY($1::uuid[])",
         [[fresh.id, enhanced.id, veteran.id]],
       );
+      const byId = new Map(result.rows.map((row) => [row.id, row.forge_level]));
+      return [fresh.id, enhanced.id, veteran.id].map((id) => byId.get(id));
+    };
+    try {
+      await client.query("BEGIN");
+      await client.query("DELETE FROM data_migrations WHERE id = '0014_backfill_forge_level'");
+      await client.query(backfill!);
+      expect(await forgeLevels()).toEqual([1, 2, 5]);
+
+      // A later deploy must not touch players again, even ones who enhanced since.
+      await client.query("UPDATE player_items SET enhance_level = 5 WHERE player_id = $1", [
+        enhanced.id,
+      ]);
+      await client.query(backfill!);
+      expect(await forgeLevels()).toEqual([1, 2, 5]);
     } finally {
+      await client.query("ROLLBACK");
+      client.release();
       await pool.end();
     }
-
-    expect((await store.getPlayer(fresh.id))!.forgeLevel).toBe(1);
-    expect((await store.getPlayer(enhanced.id))!.forgeLevel).toBe(2);
-    expect((await store.getPlayer(veteran.id))!.forgeLevel).toBe(5);
   });
 
   it("rejects expired sessions", async () => {

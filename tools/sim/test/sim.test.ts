@@ -89,7 +89,9 @@ describe("sim tools", () => {
     expect(buildings.hall.longestBuildMinutes).toBeCloseTo(169.83, 1);
 
     // docs/03 §4: a second team by minute 6, with the Hall as the first gold priority.
+    // 1,000 gold pays Lv2 at once; Lv3 (780) needs two 72-gold cycles of 64 s, then 114 s to build.
     expect(buildings.teamTwo.hallLevel).toBe(3);
+    expect(buildings.teamTwo.minutes).toBeCloseTo(4.03, 2);
     expect(buildings.teamTwo.minutes).toBeLessThanOrEqual(buildings.teamTwo.targetMinutes);
 
     // +5 takes ≈5.8 attempts; dust costs 1..5 put the journey at roughly 20 dismantled items.

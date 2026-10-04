@@ -132,8 +132,8 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 - Một thợ xây: đang xây công trình này thì chưa nâng được công trình khác.
 - **Tăng tốc** bằng Đồng Hồ Cát Thợ Xây: mỗi cái bớt 5 phút, server không bao giờ dùng nhiều hơn số cần để xây xong. Nguồn tạm thời: boss của cả 4 hầm rơi 2% (≈9 cái sau một đêm 8 giờ với một đội hạ được boss, tức ~45 phút tăng tốc). Quest và sự kiện (M2) sẽ là nguồn chính.
 - Tổng thời gian xây 1→10: Sảnh ~6 giờ, Lò Rèn ~4,8 giờ; lần dài nhất 2,8 giờ. Thứ chặn công trình vẫn là vàng (Sảnh ~1,02 triệu, Lò Rèn ~0,81 triệu), thời gian xây chỉ tạo nhịp quay lại.
-- **Nhịp đội 2**: với 1.000 vàng khởi đầu và vàng thụ động hầm 1, Sảnh Lv3 (mở đội 2) xong sớm nhất ở phút ~3,1 nếu ưu tiên Sảnh (`sim:economy` → `buildings.teamTwo`), nằm trong mốc 6 phút ở §4. Vì vậy giữ nguyên mốc Lv1 / Lv3 / Lv6 / Lv9; quest chính (M2.1) cần dẫn người chơi nâng Sảnh hai lần trước.
-- Cường hóa +5 cần Lò Rèn Lv5 (cộng dồn 6.704 vàng và ~11 phút xây), phù hợp mốc "cường hóa +5 ở D4–D5".
+- **Nhịp đội 2**: với 1.000 vàng khởi đầu và vàng thụ động hầm 1, Sảnh Lv3 (mở đội 2) xong sớm nhất ở phút ~4,0 nếu ưu tiên Sảnh (`sim:economy` → `buildings.teamTwo`: vàng về theo từng vòng 64 giây, 72 vàng mỗi vòng), nằm trong mốc 6 phút ở §4. Vì vậy giữ nguyên mốc Lv1 / Lv3 / Lv6 / Lv9; quest chính (M2.1) cần dẫn người chơi nâng Sảnh hai lần trước.
+- Cường hóa +5 cần Lò Rèn Lv5 (cộng dồn 6.704 vàng, ~11 phút xây và nguyên liệu hầm 2). **Chưa khớp mốc "cường hóa +5 ở D4–D5" ở §4**: món +5 đầu tiên (~18 Bụi Rèn, ~1.969 vàng) vẫn đạt được trong ngày đầu, cả đội 16 món +5 khoảng D2–D3. Đây là số tạm; nếu muốn đúng mốc thì tăng giá Bụi Rèn hoặc dời mức +5 lên cấp Lò Rèn cao hơn trong đợt cân bằng sau khi chơi thử.
 
 ## 7. Tuyển mộ và gacha
 

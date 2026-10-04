@@ -1,3 +1,5 @@
+import { HALL_MAX_LEVEL } from "@idle/game-core";
+import { buildingsConfig } from "@idle/game-data";
 import { afterAll, describe, expect, it } from "vitest";
 import { buildServer } from "../src/app.js";
 import { createConfiguredGameStore } from "../src/store-factory.js";
@@ -45,6 +47,9 @@ describe("GET /api/v1/catalog", () => {
       upgradeMaterials: [],
     });
     expect(body.hall[9]).toMatchObject({ level: 10, upgradeGoldCost: null, buildSeconds: null });
+    // game-core caps the Hall, game-data the buildings: the two maximums must stay the same.
+    expect(HALL_MAX_LEVEL).toBe(buildingsConfig.maxLevel);
+    expect(body.hall).toHaveLength(buildingsConfig.maxLevel);
     expect(body.forge).toHaveLength(10);
     expect(body.forge[0]).toEqual({
       level: 1,

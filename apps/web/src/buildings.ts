@@ -101,7 +101,10 @@ export function formatBps(bps: number): string {
 
 export type UpgradeBlock = "max_level" | "builder_busy" | "gold" | "materials";
 
-/** Why an upgrade cannot start, in the order the server checks; null when it can. */
+/**
+ * Why an upgrade cannot start; null when it can. Follows the server's order, except that a maxed
+ * building says so even while the builder is busy elsewhere.
+ */
 export function upgradeBlock(input: {
   goldCost: number | null;
   materials: readonly MaterialCost[];
