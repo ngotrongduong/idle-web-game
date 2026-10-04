@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: chatgpt/m0-foundation
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -30,7 +32,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Commit refreshed lockfile
-        if: github.event_name == 'push' && github.ref == 'refs/heads/chatgpt/m0-foundation'
+        if: github.event_name == 'pull_request'
         run: |
           if git diff --quiet -- pnpm-lock.yaml; then
             exit 0
