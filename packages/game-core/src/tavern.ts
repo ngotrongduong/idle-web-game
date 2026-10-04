@@ -30,23 +30,13 @@ function assertNonNegativeInteger(value: number, label: string): void {
   }
 }
 
-function legendaryChanceBps(
-  state: TavernPityState,
-  rules: TavernRarityRules,
-): number {
+function legendaryChanceBps(state: TavernPityState, rules: TavernRarityRules): number {
   const attempt = state.refreshesSinceLegendary + 1;
   const softSteps = Math.max(0, attempt - rules.legendarySoftPityStart + 1);
-  return Math.min(
-    BPS,
-    rules.baseRarityBps.legendary +
-      softSteps * rules.legendarySoftPityStepBps,
-  );
+  return Math.min(BPS, rules.baseRarityBps.legendary + softSteps * rules.legendarySoftPityStepBps);
 }
 
-function nextPityState(
-  state: TavernPityState,
-  rarity: HeroRarity,
-): TavernPityState {
+function nextPityState(state: TavernPityState, rarity: HeroRarity): TavernPityState {
   if (rarity === "legendary") {
     return {
       refreshesSinceRarePlus: 0,
@@ -72,14 +62,8 @@ export function rollTavernRarity(
   state: TavernPityState,
   rules: TavernRarityRules,
 ): TavernRarityRoll {
-  assertNonNegativeInteger(
-    state.refreshesSinceRarePlus,
-    "refreshesSinceRarePlus",
-  );
-  assertNonNegativeInteger(
-    state.refreshesSinceLegendary,
-    "refreshesSinceLegendary",
-  );
+  assertNonNegativeInteger(state.refreshesSinceRarePlus, "refreshesSinceRarePlus");
+  assertNonNegativeInteger(state.refreshesSinceLegendary, "refreshesSinceLegendary");
 
   const legendaryAttempt = state.refreshesSinceLegendary + 1;
   if (legendaryAttempt >= rules.legendaryPityRefreshes) {
@@ -133,4 +117,3 @@ export function rollTavernRarity(
     legendaryChanceBps: legendaryBps,
   };
 }
-

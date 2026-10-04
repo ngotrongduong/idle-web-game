@@ -56,9 +56,7 @@ describe("sim tools", () => {
 
     expect(summary.maxRefreshesToRarePlus).toBeLessThanOrEqual(40);
     expect(summary.maxRefreshesToLegendary).toBeLessThanOrEqual(200);
-    expect(summary.p90RefreshesToLegendary).toBeGreaterThanOrEqual(
-      summary.p90RefreshesToRarePlus,
-    );
+    expect(summary.p90RefreshesToLegendary).toBeGreaterThanOrEqual(summary.p90RefreshesToRarePlus);
   });
 
   it("summarizes upgrade percentiles", () => {

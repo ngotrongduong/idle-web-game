@@ -46,11 +46,7 @@ export function runGachaSimulation(input: {
     };
     let firstRarePlus: number | undefined;
 
-    for (
-      let refresh = 1;
-      refresh <= rules.legendaryPityRefreshes;
-      refresh += 1
-    ) {
+    for (let refresh = 1; refresh <= rules.legendaryPityRefreshes; refresh += 1) {
       const result = rollTavernRarity(rng, pity, rules);
       pity = result.nextPity;
 
@@ -69,10 +65,7 @@ export function runGachaSimulation(input: {
     }
   }
 
-  if (
-    rarePlusRefreshes.length !== input.runs ||
-    legendaryRefreshes.length !== input.runs
-  ) {
+  if (rarePlusRefreshes.length !== input.runs || legendaryRefreshes.length !== input.runs) {
     throw new Error("pity guarantees were not satisfied in every simulation");
   }
 

@@ -18,10 +18,7 @@ export const TavernConfigSchema = z
     legendarySoftPityStepBps: z.number().int().nonnegative(),
   })
   .superRefine((config, context) => {
-    const total = Object.values(config.baseRarityBps).reduce(
-      (sum, value) => sum + value,
-      0,
-    );
+    const total = Object.values(config.baseRarityBps).reduce((sum, value) => sum + value, 0);
     if (total !== 10_000) {
       context.addIssue({
         code: "custom",
