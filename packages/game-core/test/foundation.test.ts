@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { GOLDEN_V1, GOLDEN_V2, GOLDEN_V2_RULES } from "../src/goldens";
 import { clampInt, GAME_CORE_VERSION, scaleStat, SeededRng, simulateWave } from "../src/index";
 
 describe("game-core foundation", () => {
@@ -71,6 +72,60 @@ describe("game-core foundation", () => {
     expect(battle.result).toBe("win");
     expect(battle.turns).toBe(8);
     expect(battle.hash).toBe("c080875a");
+  });
+
+  it("pins battle formula v2 (docs/03 §3) with levels, crits, 50% MP and heal ULTs", () => {
+    const battle = simulateWave({ ...GOLDEN_V2, rules: GOLDEN_V2_RULES });
+
+    expect(battle.result).toBe("win");
+    expect(battle.turns).toBe(26);
+    expect(battle.hash).toBe("fce81aeb");
+    expect(battle.events.some((event) => event.critical)).toBe(true);
+    expect(battle.events.some((event) => event.action === "ultimate" && event.healing > 0)).toBe(
+      true,
+    );
+    expect(simulateWave(GOLDEN_V1).hash).toBe("c080875a");
+  });
+
+  it("rejects v2 rules or units that are missing formula inputs", () => {
+    const { critCapBps: _critCapBps, ...rulesWithoutCap } = GOLDEN_V2_RULES;
+    expect(() => simulateWave({ ...GOLDEN_V2, rules: rulesWithoutCap })).toThrow(/critCapBps/);
+    const [first, ...rest] = GOLDEN_V2.allies;
+    const { level: _level, ...withoutLevel } = first!;
+    expect(() =>
+      simulateWave({ ...GOLDEN_V2, allies: [withoutLevel, ...rest], rules: GOLDEN_V2_RULES }),
+    ).toThrow(/level/);
+  });
+
+  it("rounds v2 damage once and caps crit chance", () => {
+    const attacker = { id: "a", level: 1, hp: 100, attack: 33, defense: 0, speed: 10 };
+    const defender = { id: "d", level: 1, hp: 10_000, attack: 1, defense: 25, speed: 1 };
+    const rules = {
+      ...GOLDEN_V2_RULES,
+      maxTurns: 1,
+      varianceMinBps: 10_000,
+      varianceMaxBps: 10_000,
+      familyAdvantage: {},
+    };
+    // K = 60 + 8·1 = 68; 33·68/93 = 24.13 → 24 (v1 floors each step).
+    const normal = simulateWave({
+      allies: [{ ...attacker, critBps: 0 }],
+      enemies: [defender],
+      seed: 1,
+      rules,
+    });
+    expect(normal.events[0]?.damage).toBe(24);
+    // critBps 10000 is capped to 75%, so some seeds still miss the crit.
+    const crits = Array.from({ length: 200 }, (_, seed) =>
+      simulateWave({
+        allies: [{ ...attacker, critBps: 10_000 }],
+        enemies: [defender],
+        seed,
+        rules,
+      }),
+    ).filter((battle) => battle.events[0]?.critical).length;
+    expect(crits).toBeGreaterThan(120);
+    expect(crits).toBeLessThan(180);
   });
 
   it("keeps the legacy golden hash when optional battle features are unused", () => {

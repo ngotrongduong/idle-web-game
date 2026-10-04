@@ -5,23 +5,27 @@ import type {
   Hero,
   InventoryItem,
 } from "@idle/api-contract";
-import { equipmentStatValue, foundationGameData } from "@idle/game-data";
 import {
-  calculateHeroStats,
-  DEFAULT_BATTLE_RULES,
+  battleConfig,
+  combatantSetup,
+  currentBattleRules,
+  equipmentStatValue,
+  foundationGameData,
+} from "@idle/game-data";
+import {
+  buildEnemyCombatant,
+  buildHeroCombatant,
+  selectWaveEnemies,
   simulateWave,
   type BattleRules,
   type Combatant,
+  type CombatantSetup,
 } from "@idle/game-core";
 
-const FAMILY_ADVANTAGE = Object.fromEntries(
-  foundationGameData.classFamilies.map((family) => [family.id, family.advantageFamilyId]),
-);
+/** Rules snapshotted into every new run; runs keep their own copy so later tuning never rewrites history. */
+export const CURRENT_DUNGEON_BATTLE_RULES: BattleRules = currentBattleRules;
 
-export const CURRENT_DUNGEON_BATTLE_RULES: BattleRules = {
-  ...DEFAULT_BATTLE_RULES,
-  familyAdvantage: FAMILY_ADVANTAGE,
-};
+export const COMBATANT_SETUP: CombatantSetup = combatantSetup;
 
 export function createDungeonSeed(): number {
   return randomBytes(4).readUInt32BE(0);
@@ -45,69 +49,44 @@ export function heroToCombatant(
     throw new Error(`Unknown class family: ${heroClass.familyId}`);
   }
 
-  const stats = calculateHeroStats({
-    baseHp: heroClass.baseHp,
-    baseAttack: heroClass.baseAttack,
-    baseDefense: heroClass.baseDefense,
-    baseSpeed: heroClass.baseSpeed,
-    level: hero.level,
-    rarity: hero.rarity,
-    ...(hero.potential ? { potential: hero.potential } : {}),
-  });
-
   const equipped = equipment.filter((item) => item.equippedHeroId === hero.id);
-  const equipmentAttack = equipped.reduce((sum, item) => {
-    const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
-    return sum + (spec ? equipmentStatValue(spec.attack, item.qualityBps, item.enhanceLevel) : 0);
-  }, 0);
-  const equipmentDefense = equipped.reduce((sum, item) => {
-    const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
-    return sum + (spec ? equipmentStatValue(spec.defense, item.qualityBps, item.enhanceLevel) : 0);
-  }, 0);
+  const equipmentStat = (stat: "attack" | "defense") =>
+    equipped.reduce((sum, item) => {
+      const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
+      return sum + (spec ? equipmentStatValue(spec[stat], item.qualityBps, item.enhanceLevel) : 0);
+    }, 0);
 
-  return {
-    id: hero.id,
-    hp: stats.hp,
-    attack: stats.attack + equipmentAttack,
-    defense: stats.defense + equipmentDefense,
-    speed: stats.speed,
-    critBps: family.archetype === "ranged" ? 1_500 : 1_000,
-    familyId: family.id,
-    targeting: heroClass.targeting,
-    ultimatePowerBps: heroClass.ultimatePowerBps,
-    ultimateKind: heroClass.ultimateKind,
-    ultimateTargeting: heroClass.ultimateTargeting,
-  };
+  return buildHeroCombatant(
+    {
+      id: hero.id,
+      heroClass,
+      archetype: family.archetype,
+      level: hero.level,
+      rarity: hero.rarity,
+      ...(hero.potential ? { potential: hero.potential } : {}),
+      equipmentAttack: equipmentStat("attack"),
+      equipmentDefense: equipmentStat("defense"),
+    },
+    COMBATANT_SETUP,
+  );
 }
 
-function enemyToCombatant(enemy: (typeof foundationGameData.enemies)[number]): BattleUnitSnapshot {
-  return {
-    id: enemy.id,
-    hp: enemy.hp,
-    attack: enemy.attack,
-    defense: enemy.defense,
-    speed: enemy.speed,
-  };
-}
-
-function enemiesForWave(dungeonId: string, wave: number) {
+export function enemiesForWave(dungeonId: string, wave: number) {
   const dungeon = foundationGameData.dungeons.find((entry) => entry.id === dungeonId);
   if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
+  const dungeonEnemies = foundationGameData.enemies.filter(
+    (entry) => entry.dungeonId === dungeonId,
+  );
+  return selectWaveEnemies(dungeonEnemies, dungeon.waveCount, wave);
+}
 
-  const enemies = foundationGameData.enemies.filter((entry) => entry.dungeonId === dungeonId);
-  const normal = enemies.filter((entry) => entry.rank === "normal");
-  const elite = enemies.find((entry) => entry.rank === "elite");
-  const boss = enemies.find((entry) => entry.rank === "boss");
-
-  if (normal.length < 2 || !elite || !boss) {
-    throw new Error(`Dungeon ${dungeonId} does not have a complete enemy set`);
-  }
-
-  if (wave === dungeon.waveCount) return [boss];
-  if (wave === dungeon.waveCount - 1) {
-    return [normal[(wave - 1) % normal.length]!, elite];
-  }
-  return [normal[(wave - 1) % normal.length]!, normal[wave % normal.length]!];
+export function enemyCombatantsForWave(dungeonId: string, wave: number): BattleUnitSnapshot[] {
+  const dungeon = foundationGameData.dungeons.find((entry) => entry.id === dungeonId);
+  if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
+  const multiplier = battleConfig.enemyStatMultiplierBps[dungeonId]!;
+  return enemiesForWave(dungeonId, wave).map((enemy) =>
+    buildEnemyCombatant(enemy, dungeon.recommendedLevel, multiplier),
+  );
 }
 
 export function simulateDungeonCycle(input: {
@@ -128,7 +107,7 @@ export function simulateDungeonCycle(input: {
     const wave = index + 1;
     const waveSeed = deriveWaveSeed(input.seed, wave);
     const selectedEnemies = enemiesForWave(input.dungeonId, wave);
-    const enemies = selectedEnemies.map(enemyToCombatant);
+    const enemies = enemyCombatantsForWave(input.dungeonId, wave);
 
     const result = simulateWave({
       allies: allies as Combatant[],

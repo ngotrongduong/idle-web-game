@@ -1,7 +1,11 @@
-import { foundationGameData, type GameData } from "@idle/game-data";
-import { scaleStat, type Combatant } from "@idle/game-core";
-
-const STAT_GROWTH_BPS_PER_LEVEL = 400;
+import { battleConfig, combatantSetup, foundationGameData, type GameData } from "@idle/game-data";
+import {
+  buildEnemyCombatant,
+  buildHeroCombatant,
+  selectWaveEnemies,
+  type Combatant,
+  type HeroStatRarity,
+} from "@idle/game-core";
 
 export type GeneratedEncounter = {
   id: string;
@@ -14,56 +18,75 @@ export type GeneratedEncounter = {
   rewardExp: number;
 };
 
-function classTierForLevel(level: number): number {
-  if (level >= 20) return 3;
-  if (level >= 10) return 2;
-  return 1;
+/** Maps a combat level (1–30, same scale as enemy levels) to the class tier and in-tier level. */
+export function tierAndLevelForCombatLevel(combatLevel: number): { tier: number; level: number } {
+  if (!Number.isInteger(combatLevel) || combatLevel <= 0 || combatLevel > 30) {
+    throw new Error("combat level must be an integer from 1 to 30");
+  }
+  if (combatLevel <= 10) return { tier: 1, level: combatLevel };
+  if (combatLevel <= 20) return { tier: 2, level: Math.round(((combatLevel - 10) * 19) / 10) + 1 };
+  return { tier: 3, level: Math.round(((combatLevel - 20) * 29) / 10) + 1 };
 }
 
-export function buildProgressionTeam(
-  level: number,
+/** A team built with the server's own formulas (docs/03 §2, battle.json). */
+export function buildTeam(
+  members: Array<{ classId: string; level: number; rarity?: HeroStatRarity }>,
   data: GameData = foundationGameData,
 ): Combatant[] {
-  if (!Number.isInteger(level) || level <= 0) {
-    throw new Error("level must be a positive integer");
-  }
-
-  const tier = classTierForLevel(level);
-
-  return data.classFamilies.map((family) => {
-    const heroClass = data.classes.find(
-      (entry) => entry.familyId === family.id && entry.tier === tier,
+  return members.map((member, index) => {
+    const heroClass = data.classes.find((entry) => entry.id === member.classId);
+    if (!heroClass) throw new Error(`Unknown class ${member.classId}`);
+    const family = data.classFamilies.find((entry) => entry.id === heroClass.familyId);
+    if (!family) throw new Error(`Unknown family ${heroClass.familyId}`);
+    return buildHeroCombatant(
+      {
+        id: `${member.classId}_${index + 1}`,
+        heroClass,
+        archetype: family.archetype,
+        level: member.level,
+        rarity: member.rarity ?? "common",
+      },
+      combatantSetup,
     );
-    if (!heroClass) {
-      throw new Error(`No tier ${tier} class found for family ${family.id}`);
-    }
-
-    return {
-      id: heroClass.id,
-      hp: scaleStat(heroClass.baseHp, level, STAT_GROWTH_BPS_PER_LEVEL),
-      attack: scaleStat(heroClass.baseAttack, level, STAT_GROWTH_BPS_PER_LEVEL),
-      defense: Math.max(
-        0,
-        scaleStat(Math.max(1, heroClass.baseDefense), level, STAT_GROWTH_BPS_PER_LEVEL),
-      ),
-      speed: heroClass.baseSpeed,
-      critBps: family.archetype === "ranged" ? 1_500 : 1_000,
-      familyId: family.id,
-      targeting: heroClass.targeting,
-      ultimatePowerBps: heroClass.ultimatePowerBps,
-      ultimateKind: heroClass.ultimateKind,
-      ultimateTargeting: heroClass.ultimateTargeting,
-    };
   });
 }
 
-function toCombatant(enemy: GameData["enemies"][number]): Combatant {
+export function buildProgressionTeam(
+  combatLevel: number,
+  data: GameData = foundationGameData,
+): Combatant[] {
+  const { tier, level } = tierAndLevelForCombatLevel(combatLevel);
+  return buildTeam(
+    data.classFamilies.map((family) => {
+      const heroClass = data.classes.find(
+        (entry) => entry.familyId === family.id && entry.tier === tier,
+      );
+      if (!heroClass) throw new Error(`No tier ${tier} class found for family ${family.id}`);
+      return { classId: heroClass.id, level };
+    }),
+    data,
+  );
+}
+
+export function buildWaveEnemies(
+  dungeonId: string,
+  wave: number,
+  data: GameData = foundationGameData,
+) {
+  const dungeon = data.dungeons.find((entry) => entry.id === dungeonId);
+  if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
+  const selected = selectWaveEnemies(
+    data.enemies.filter((entry) => entry.dungeonId === dungeonId),
+    dungeon.waveCount,
+    wave,
+  );
+  const multiplier = battleConfig.enemyStatMultiplierBps[dungeonId]!;
   return {
-    id: enemy.id,
-    hp: enemy.hp,
-    attack: enemy.attack,
-    defense: enemy.defense,
-    speed: enemy.speed,
+    dungeon,
+    selected,
+    enemies: selected.map((enemy) =>
+      buildEnemyCombatant(enemy, dungeon.recommendedLevel, multiplier),
+    ),
   };
 }
 
@@ -72,37 +95,14 @@ export function buildDungeonWave(
   wave: number,
   data: GameData = foundationGameData,
 ): GeneratedEncounter {
-  const dungeon = data.dungeons.find((entry) => entry.id === dungeonId);
-  if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
-  if (!Number.isInteger(wave) || wave < 1 || wave > dungeon.waveCount) {
-    throw new Error(`Wave must be between 1 and ${dungeon.waveCount} for ${dungeonId}`);
-  }
-
-  const dungeonEnemies = data.enemies.filter((entry) => entry.dungeonId === dungeonId);
-  const normals = dungeonEnemies.filter((entry) => entry.rank === "normal");
-  const elite = dungeonEnemies.find((entry) => entry.rank === "elite");
-  const boss = dungeonEnemies.find((entry) => entry.rank === "boss");
-
-  if (normals.length < 2 || !elite || !boss) {
-    throw new Error(`Dungeon ${dungeonId} does not have a complete enemy set`);
-  }
-
-  let selected: typeof dungeonEnemies;
-  if (wave === dungeon.waveCount) {
-    selected = [boss];
-  } else if (wave === dungeon.waveCount - 1) {
-    selected = [normals[(wave - 1) % normals.length]!, elite];
-  } else {
-    selected = [normals[(wave - 1) % normals.length]!, normals[wave % normals.length]!];
-  }
-
+  const { dungeon, selected, enemies } = buildWaveEnemies(dungeonId, wave, data);
   return {
     id: `${dungeonId}_wave_${wave}`,
     label: `${dungeon.nameEn} — wave ${wave}`,
     dungeonId,
     wave,
     allies: buildProgressionTeam(dungeon.recommendedLevel, data),
-    enemies: selected.map(toCombatant),
+    enemies,
     rewardGold: selected.reduce((sum, enemy) => sum + enemy.rewardGold, 0),
     rewardExp: selected.reduce((sum, enemy) => sum + enemy.rewardExp, 0),
   };

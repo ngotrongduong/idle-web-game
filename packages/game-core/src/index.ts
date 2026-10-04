@@ -21,12 +21,24 @@ export {
 export {
   HERO_RARITY_MULTIPLIER_BPS,
   calculateHeroStats,
+  combatLevel,
   levelMultiplierBps,
+  progressionHundredths,
   retainHeroPotential,
+  tierLevelMultiplierBps,
   type HeroComputedStats,
   type HeroStatPotential,
   type HeroStatRarity,
 } from "./hero-stats.js";
+export {
+  buildEnemyCombatant,
+  buildHeroCombatant,
+  selectWaveEnemies,
+  type CombatantSetup,
+  type EnemyStatMultiplierBps,
+  type EnemyStats,
+  type HeroClassStats,
+} from "./combatants.js";
 export {
   DEFAULT_BATTLE_RULES,
   scaleStat,

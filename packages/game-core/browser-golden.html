@@ -7,54 +7,18 @@
   </head>
   <body>
     <pre id="result">pending</pre>
+    <pre id="result-v2">pending</pre>
     <script type="module">
       import { simulateWave } from "./src/index.ts";
+      import { GOLDEN_V1, GOLDEN_V2, GOLDEN_V2_RULES } from "./src/goldens.ts";
 
-      const battle = simulateWave({
-        seed: 123456,
-        allies: [
-          {
-            id: "warrior",
-            hp: 180,
-            attack: 42,
-            defense: 28,
-            speed: 12,
-            critBps: 1000,
-          },
-          {
-            id: "mage",
-            hp: 110,
-            attack: 55,
-            defense: 12,
-            speed: 15,
-            critBps: 1400,
-          },
-        ],
-        enemies: [
-          {
-            id: "slime_a",
-            hp: 95,
-            attack: 25,
-            defense: 10,
-            speed: 8,
-            critBps: 500,
-          },
-          {
-            id: "slime_b",
-            hp: 105,
-            attack: 27,
-            defense: 12,
-            speed: 9,
-            critBps: 500,
-          },
-        ],
-      });
+      const summarize = (battle) =>
+        JSON.stringify({ result: battle.result, turns: battle.turns, hash: battle.hash });
 
-      document.querySelector("#result").textContent = JSON.stringify({
-        result: battle.result,
-        turns: battle.turns,
-        hash: battle.hash,
-      });
+      document.querySelector("#result").textContent = summarize(simulateWave(GOLDEN_V1));
+      document.querySelector("#result-v2").textContent = summarize(
+        simulateWave({ ...GOLDEN_V2, rules: GOLDEN_V2_RULES }),
+      );
     </script>
   </body>
 </html>

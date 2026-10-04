@@ -225,6 +225,8 @@ export const BattleUnitSnapshotSchema = z.object({
   ultimateKind: z.enum(["damage", "heal"]).optional(),
   ultimateTargeting: z.enum(["random", "lowest_hp", "highest_attack"]).optional(),
   startingMp: z.number().int().nonnegative().optional(),
+  /** Combat level (battle formula v2); absent on runs persisted with formula v1. */
+  level: z.number().int().positive().optional(),
 });
 
 export type BattleUnitSnapshot = z.infer<typeof BattleUnitSnapshotSchema>;
@@ -244,8 +246,13 @@ export const DungeonWaveReplaySchema = z.object({
 export type DungeonWaveReplay = z.infer<typeof DungeonWaveReplaySchema>;
 
 export const BattleRulesSnapshotSchema = z.object({
+  /** Absent on runs persisted before battle formula v2. */
+  formulaVersion: z.union([z.literal(1), z.literal(2)]).optional(),
   maxTurns: z.number().int().positive(),
   defenseK: z.number().int().positive(),
+  defenseKBase: z.number().int().positive().optional(),
+  defenseKPerLevel: z.number().int().nonnegative().optional(),
+  critCapBps: z.number().int().min(0).max(10_000).optional(),
   varianceMinBps: z.number().int().positive(),
   varianceMaxBps: z.number().int().positive(),
   defaultCritBps: z.number().int().min(0).max(10_000),

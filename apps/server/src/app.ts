@@ -1031,6 +1031,7 @@ export function buildServer(options?: { store?: GameStore }) {
           baseAttack: currentClass.baseAttack,
           baseDefense: currentClass.baseDefense,
           baseSpeed: currentClass.baseSpeed,
+          tier: currentClass.tier,
           level: hero.level,
           rarity: hero.rarity,
           ...(hero.potential ? { potential: hero.potential } : {}),

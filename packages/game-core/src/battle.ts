@@ -17,11 +17,23 @@ export type Combatant = {
   ultimateKind?: "damage" | "heal";
   ultimateTargeting?: TargetingMode;
   startingMp?: number;
+  /** Combat level; required by formula v2 (defense constant scales with the attacker's level). */
+  level?: number;
 };
 
 export type BattleRules = {
+  /**
+   * Missing or 1: the original M0 formula, kept bit-for-bit so persisted runs replay unchanged.
+   * 2: docs/03 §3 — K = defenseKBase + defenseKPerLevel·level, crit capped at critCapBps, and a
+   * single rounding at the end.
+   */
+  formulaVersion?: 1 | 2;
   maxTurns: number;
+  /** Formula v1 defense constant. */
   defenseK: number;
+  defenseKBase?: number;
+  defenseKPerLevel?: number;
+  critCapBps?: number;
   varianceMinBps: number;
   varianceMaxBps: number;
   defaultCritBps: number;
@@ -113,6 +125,22 @@ function validateCombatant(unit: Combatant): void {
 function validateRules(rules: BattleRules): void {
   assertPositiveInt(rules.maxTurns, "rules.maxTurns");
   assertPositiveInt(rules.defenseK, "rules.defenseK");
+  if (
+    rules.formulaVersion !== undefined &&
+    rules.formulaVersion !== 1 &&
+    rules.formulaVersion !== 2
+  ) {
+    throw new Error("rules.formulaVersion must be 1 or 2");
+  }
+  if (rules.formulaVersion === 2) {
+    // v2 snapshots must carry every constant so replays never depend on code defaults.
+    assertPositiveInt(rules.defenseKBase ?? 0, "rules.defenseKBase");
+    assertNonNegativeInt(rules.defenseKPerLevel ?? -1, "rules.defenseKPerLevel");
+    assertNonNegativeInt(rules.critCapBps ?? -1, "rules.critCapBps");
+    if ((rules.critCapBps ?? 0) > BPS) {
+      throw new Error(`critCapBps must be <= ${BPS}`);
+    }
+  }
   assertPositiveInt(rules.varianceMinBps, "rules.varianceMinBps");
   assertPositiveInt(rules.varianceMaxBps, "rules.varianceMaxBps");
   if (rules.varianceMaxBps < rules.varianceMinBps) {
@@ -216,6 +244,37 @@ function calculateDamage(
   return { damage, critical };
 }
 
+const BPS_BIG = BigInt(BPS);
+const BPS4_BIG = BPS_BIG * BPS_BIG * BPS_BIG * BPS_BIG;
+
+/** Formula v2 (docs/03 §3): every factor multiplied exactly, rounded half-up once, minimum 1. */
+function calculateDamageV2(
+  attacker: RuntimeUnit,
+  defender: RuntimeUnit,
+  rng: SeededRng,
+  rules: BattleRules,
+  powerBps: number,
+): { damage: number; critical: boolean } {
+  const defenseK = rules.defenseKBase! + rules.defenseKPerLevel! * attacker.level!;
+  const varianceRange = rules.varianceMaxBps - rules.varianceMinBps + 1;
+  const varianceBps = rules.varianceMinBps + rng.nextInt(varianceRange);
+  const critChanceBps = Math.min(rules.critCapBps!, attacker.critBps ?? rules.defaultCritBps);
+  const critical = rng.nextInt(BPS) < critChanceBps;
+  const critBps = critical ? rules.critMultiplierBps : BPS;
+
+  const numerator =
+    BigInt(attacker.attack) *
+    BigInt(defenseK) *
+    BigInt(varianceBps) *
+    BigInt(powerBps) *
+    BigInt(critBps) *
+    BigInt(familyMultiplierBps(attacker, defender, rules));
+  const denominator = BigInt(defenseK + defender.defense) * BPS4_BIG;
+  const rounded = (2n * numerator + denominator) / (2n * denominator);
+
+  return { damage: Math.max(1, Number(rounded)), critical };
+}
+
 function hashBattle(result: BattleResult["result"], turns: number, events: BattleEvent[]): string {
   const serializedEvents = events
     .map(
@@ -259,12 +318,15 @@ export function simulateWave(input: {
     ...input.rules,
   };
   validateRules(rules);
+  const formulaV2 = rules.formulaVersion === 2;
 
   for (const unit of [...input.allies, ...input.enemies]) {
     if ((unit.startingMp ?? 0) > rules.mpMax) {
       throw new Error(`${unit.id}.startingMp must be <= rules.mpMax`);
     }
+    if (formulaV2) assertPositiveInt(unit.level ?? 0, `${unit.id}.level`);
   }
+  const damageFormula = formulaV2 ? calculateDamageV2 : calculateDamage;
 
   const rng = new SeededRng(input.seed);
   const allies: RuntimeUnit[] = input.allies.map((unit) => ({
@@ -323,7 +385,7 @@ export function simulateWave(input: {
           rng,
           canUseUltimate ? (actor.ultimateTargeting ?? actor.targeting) : actor.targeting,
         );
-        const damageResult = calculateDamage(actor, target, rng, rules, powerBps);
+        const damageResult = damageFormula(actor, target, rng, rules, powerBps);
         damage = damageResult.damage;
         critical = damageResult.critical;
         target.currentHp = Math.max(0, target.currentHp - damage);
