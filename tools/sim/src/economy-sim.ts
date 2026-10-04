@@ -1,7 +1,4 @@
-import {
-  getUpgradeSuccessBps,
-  UPGRADE_PITY_STEP_BPS,
-} from "@idle/game-core";
+import { getUpgradeSuccessBps, UPGRADE_PITY_STEP_BPS } from "@idle/game-core";
 import {
   equipmentConfig,
   enhancementGoldCost,
@@ -69,11 +66,7 @@ function round(value: number, digits = 2): number {
   return Math.round(value * factor) / factor;
 }
 
-function expectedRuleQuantity(rule: {
-  chanceBps: number;
-  minQty: number;
-  maxQty: number;
-}): number {
+function expectedRuleQuantity(rule: { chanceBps: number; minQty: number; maxQty: number }): number {
   return (rule.chanceBps / 10_000) * ((rule.minQty + rule.maxQty) / 2);
 }
 
@@ -138,8 +131,7 @@ function averageQualityMultiplier(): number {
 
 export function runEconomySimulation(): EconomySummary {
   const onlineCyclesPerHour = 3_600 / idleConfig.cycleDurationSeconds;
-  const passiveCyclesPerHour =
-    (onlineCyclesPerHour * idleConfig.offlineEfficiencyBps) / 10_000;
+  const passiveCyclesPerHour = (onlineCyclesPerHour * idleConfig.offlineEfficiencyBps) / 10_000;
   const passiveCapCycles = Math.floor(
     (idleConfig.offlineCapHours * 3_600 * idleConfig.offlineEfficiencyBps) /
       10_000 /
@@ -187,7 +179,9 @@ export function runEconomySimulation(): EconomySummary {
     .filter((item) => item.recipe.length > 0)
     .map((item) => {
       const source = dungeons.find((dungeon) =>
-        item.recipe.every((ingredient) => (dungeon.expectedLootPerCycle[ingredient.materialId] ?? 0) > 0),
+        item.recipe.every(
+          (ingredient) => (dungeon.expectedLootPerCycle[ingredient.materialId] ?? 0) > 0,
+        ),
       );
 
       let expectedCycles: number | null = null;
@@ -244,7 +238,10 @@ export function runEconomySimulation(): EconomySummary {
   }
 
   const firstRecipe = recipes[0];
-  if (firstRecipe?.expectedOnlineMinutes !== null && firstRecipe?.expectedOnlineMinutes !== undefined) {
+  if (
+    firstRecipe?.expectedOnlineMinutes !== null &&
+    firstRecipe?.expectedOnlineMinutes !== undefined
+  ) {
     if (firstRecipe.expectedOnlineMinutes > 3 * 1.2) {
       warnings.push(
         `first_craft_slower_than_target:${firstRecipe.itemId} expected=${firstRecipe.expectedOnlineMinutes}m target=3m`,
