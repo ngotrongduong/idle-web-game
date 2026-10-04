@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BattleRules } from "@idle/game-core";
-import { t } from "@idle/i18n";
+import { type PlainKey } from "@idle/i18n";
 import { BuildingsCard, ConstructionNote } from "./BuildingsCard";
+import { LanguageSwitch } from "./LanguageSwitch";
 import {
   applyBuildingState,
   clockOffsetMs as measureClockOffsetMs,
@@ -9,6 +10,7 @@ import {
   enhanceBlock,
   enhanceCapLabel,
   forgeLevelForEnhance,
+  formatBps,
   oddsLabel,
   type BuildingId,
   type BuildingRules,
@@ -18,6 +20,9 @@ import {
   type HallLevel,
   type QualityTier,
 } from "./buildings";
+import { findCatalogName } from "./catalog-names";
+import { NoticeError, errorMessageKey, noticeKey } from "./errors";
+import { useLocale } from "./locale";
 import { verifyDungeonRunReplay } from "./replay";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
@@ -83,7 +88,6 @@ type MaterialBalance = {
 type HeroPromotionState = {
   heroId: string;
   currentClassId: string;
-  currentClassNameVi: string;
   currentTier: number;
   levelCap: number;
   atLevelCap: boolean;
@@ -193,15 +197,6 @@ type CommandSuccess = {
   events: Array<{ type: string } | DungeonRewardsClaimedEvent>;
 };
 
-/** Player-facing text for errors whose server message would show internal ids or English. */
-const ERROR_MESSAGE_KEYS = {
-  BUILDER_BUSY: "error.builderBusy",
-  FORGE_LEVEL_TOO_LOW: "error.forgeLevelTooLow",
-  INSUFFICIENT_GOLD: "error.insufficientGold",
-  INSUFFICIENT_MATERIAL: "error.insufficientMaterial",
-  MAX_LEVEL: "error.maxLevel",
-} as const;
-
 /** Errors that mean the client's building levels or timer are out of date. */
 const BUILDING_ERROR_CODES = new Set([
   "BUILDER_BUSY",
@@ -209,11 +204,6 @@ const BUILDING_ERROR_CODES = new Set([
   "FORGE_LEVEL_TOO_LOW",
   "MAX_LEVEL",
 ]);
-
-function commandErrorMessage(body: ApiErrorBody): string {
-  const key = ERROR_MESSAGE_KEYS[body.code as keyof typeof ERROR_MESSAGE_KEYS];
-  return key ? t("vi", key) : body.message;
-}
 
 type CatalogEntry = {
   id: string;
@@ -296,21 +286,10 @@ async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
 
-function rarityLabel(rarity: TavernOffer["rarity"]): string {
-  return t("vi", `rarity.${rarity}`);
-}
-
-function humanizeId(value: string): string {
-  return value.replaceAll("_", " ");
-}
-
 type CatalogListKey = "classes" | "dungeons" | "materials" | "items";
 
-function catalogName(catalog: Catalog | null, kind: CatalogListKey, id: string): string {
-  return catalog?.[kind].find((entry) => entry.id === id)?.nameVi ?? humanizeId(id);
-}
-
 export function App() {
+  const { locale, t, format, plural, formatNodes, number, time, name, list } = useLocale();
   const [activeTab, setActiveTab] = useState<Tab>("tavern");
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [tavern, setTavern] = useState<TavernState | null>(null);
@@ -337,7 +316,8 @@ export function App() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [lastClaim, setLastClaim] = useState<DungeonRewardsClaimedEvent | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  /** The notice as a message key, so it is shown in whatever language is selected right now. */
+  const [error, setError] = useState<PlainKey | null>(null);
   const [now, setNow] = useState(() => Date.now());
   /** Server clock minus device clock; build countdowns run on the server clock. */
   const [clockOffsetMs, setClockOffsetMs] = useState(0);
@@ -353,7 +333,7 @@ export function App() {
     const requestId = buildingsRequestRef.current;
     const sentAt = Date.now();
     const response = await fetch("/api/v1/buildings", { credentials: "include" });
-    if (!response.ok) throw new Error(t("vi", "app.loadError"));
+    if (!response.ok) throw new NoticeError("app.loadError");
     const body = await readJson<BuildingsBody>(response);
     if (requestId !== buildingsRequestRef.current) return;
 
@@ -394,7 +374,7 @@ export function App() {
       !inventoryResponse.ok ||
       !inventorySettingsResponse.ok
     ) {
-      throw new Error(t("vi", "app.loadError"));
+      throw new NoticeError("app.loadError");
     }
 
     const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(tavernResponse);
@@ -435,7 +415,7 @@ export function App() {
     ]);
 
     if (!heroesResponse.ok || !runsResponse.ok) {
-      throw new Error(t("vi", "app.loadError"));
+      throw new NoticeError("app.loadError");
     }
 
     const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
@@ -462,7 +442,7 @@ export function App() {
         setPlayer(guest.state);
       } else {
         if (!stateResponse.ok) {
-          throw new Error(t("vi", "app.connectError"));
+          throw new NoticeError("app.connectError");
         }
         setPlayer(await readJson<PlayerState>(stateResponse));
       }
@@ -474,7 +454,7 @@ export function App() {
 
       await loadCollections();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
+      setError(noticeKey(reason));
     } finally {
       setBusy(false);
     }
@@ -494,7 +474,7 @@ export function App() {
 
     const refresh = () => {
       void loadDungeonProgress().catch((reason) => {
-        setError(reason instanceof Error ? reason.message : String(reason));
+        setError(noticeKey(reason));
       });
     };
 
@@ -509,7 +489,7 @@ export function App() {
 
     const refresh = () => {
       void refreshBuildings().catch((reason) => {
-        setError(reason instanceof Error ? reason.message : String(reason));
+        setError(noticeKey(reason));
       });
     };
 
@@ -558,9 +538,37 @@ export function App() {
   const teamLimit = hallInfo?.teamLimit ?? 1;
   const forgeInfo = catalog?.forge.find((entry) => entry.level === player?.forgeLevel);
   const forgeEnhanceCap = forgeInfo?.maxEnhanceLevel ?? 0;
+  /** A catalog name in the selected language; never the internal id, which players must not see. */
+  const catalogName = (kind: CatalogListKey, id: string) =>
+    findCatalogName(catalog?.[kind], id, locale) ?? t("common.unknown");
+  const rarityLabel = (rarity: TavernOffer["rarity"]) => t(`rarity.${rarity}`);
   const ownedMaterial = (materialId: string) =>
     promotion.materials.find((entry) => entry.materialId === materialId)?.qty ?? 0;
-  const materialName = (materialId: string) => catalogName(catalog, "materials", materialId);
+  const materialName = (materialId: string) => catalogName("materials", materialId);
+  const materialQty = (entry: MaterialBalance) =>
+    format("common.itemQty", { name: materialName(entry.materialId), qty: entry.qty });
+  const heroSummary = (hero: Hero, tier?: number) =>
+    tier === undefined
+      ? format("hero.summary", {
+          rarity: rarityLabel(hero.rarity),
+          level: hero.level,
+          exp: hero.exp,
+        })
+      : format("hero.summaryTier", {
+          rarity: rarityLabel(hero.rarity),
+          tier,
+          level: hero.level,
+          exp: hero.exp,
+        });
+  const claimSummary = (claim: DungeonRewardsClaimedEvent) =>
+    format("dungeon.claimNotice", {
+      rewards: list([
+        plural("dungeon.cycles", claim.cycles),
+        format("reward.gold", { gold: claim.gold }),
+        format("reward.expPerHero", { exp: claim.expPerHero }),
+        ...claim.materials.map(materialQty),
+      ]),
+    });
   const dustMaterialId = catalog?.equipment.forgeDustMaterialId ?? "";
   const dustBalance = dustMaterialId ? ownedMaterial(dustMaterialId) : 0;
   const activeRunCount = runs.filter((run) => run.status === "active").length;
@@ -572,12 +580,9 @@ export function App() {
   const canRefresh = Boolean(player && tavern && nextRefreshTime <= now);
 
   const nextRefreshLabel = useMemo(() => {
-    if (!tavern || canRefresh) return t("vi", "tavern.refreshReady");
-    return new Date(tavern.nextFreeRefreshAt).toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }, [canRefresh, tavern]);
+    if (!tavern || canRefresh) return t("tavern.refreshReady");
+    return time(new Date(tavern.nextFreeRefreshAt));
+  }, [canRefresh, tavern, t, time]);
 
   const sendCommand = useCallback(
     async (command: GameCommand) => {
@@ -608,7 +613,8 @@ export function App() {
             // A speed-up sent just as the build finished is not a failure the player caused.
             if (body.code === "NO_CONSTRUCTION") return;
           }
-          throw new Error(commandErrorMessage(body));
+          // The server's `message` is English text for logs; the player reads the code's message.
+          throw new NoticeError(errorMessageKey(body.code));
         }
 
         const body = await readJson<CommandSuccess>(response);
@@ -627,7 +633,7 @@ export function App() {
         );
         await loadCollections();
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : String(reason));
+        setError(noticeKey(reason));
       } finally {
         setBusy(false);
       }
@@ -673,14 +679,17 @@ export function App() {
   return (
     <main className="shell">
       <header className="hero">
-        <span className="eyebrow">M1 CORE LOOP</span>
-        <h1>{t("vi", "app.title")}</h1>
-        <p>{t("vi", "app.subtitleM1")}</p>
+        <div className="hero-top">
+          <span className="eyebrow">{t("app.eyebrow")}</span>
+          <LanguageSwitch />
+        </div>
+        <h1>{t("app.title")}</h1>
+        <p>{t("app.subtitleM1")}</p>
       </header>
 
       {error ? (
         <section className="notice notice-error" role="alert">
-          {error}
+          {t(error)}
         </section>
       ) : null}
 
@@ -688,9 +697,9 @@ export function App() {
         <>
           <section className="card tavern-header">
             <div>
-              <span className="section-kicker">{t("vi", "tavern.title")}</span>
+              <span className="section-kicker">{t("tavern.title")}</span>
               <strong>
-                {t("vi", "tavern.heroes")} {heroes.length}/{heroCapacity}
+                {format("tavern.heroCount", { count: heroes.length, capacity: heroCapacity })}
               </strong>
             </div>
             <button
@@ -699,33 +708,40 @@ export function App() {
               disabled={!canRefresh || busy}
               onClick={() => void sendCommand({ type: "refresh_tavern" })}
             >
-              {busy ? t("vi", "common.working") : t("vi", "tavern.refresh")}
+              {busy ? t("common.working") : t("tavern.refresh")}
             </button>
           </section>
 
           <section className="card status-grid">
             <div>
-              <span>{t("vi", "tavern.nextRefresh")}</span>
+              <span>{t("tavern.nextRefresh")}</span>
               <strong>{nextRefreshLabel}</strong>
             </div>
             <div>
-              <span>{t("vi", "tavern.rarePity")}</span>
-              <strong>{tavern?.refreshesSinceRarePlus ?? 0}/40</strong>
+              <span>{t("tavern.rarePity")}</span>
+              <strong>
+                {format("common.ratio", { current: tavern?.refreshesSinceRarePlus ?? 0, max: 40 })}
+              </strong>
             </div>
             <div>
-              <span>{t("vi", "tavern.legendaryPity")}</span>
-              <strong>{tavern?.refreshesSinceLegendary ?? 0}/200</strong>
+              <span>{t("tavern.legendaryPity")}</span>
+              <strong>
+                {format("common.ratio", {
+                  current: tavern?.refreshesSinceLegendary ?? 0,
+                  max: 200,
+                })}
+              </strong>
             </div>
           </section>
 
-          <section className="stack" aria-label={t("vi", "tavern.offers")}>
+          <section className="stack" aria-label={t("tavern.offers")}>
             {tavern?.offers.length ? (
               tavern.offers.map((offer) => (
                 <article className={`offer-card rarity-${offer.rarity}`} key={offer.id}>
                   <div>
                     <span className="rarity">{rarityLabel(offer.rarity)}</span>
-                    <strong>{catalogName(catalog, "classes", offer.classId)}</strong>
-                    <small>{t("vi", "tavern.levelOne")}</small>
+                    <strong>{catalogName("classes", offer.classId)}</strong>
+                    <small>{t("tavern.levelOne")}</small>
                   </div>
                   <button
                     type="button"
@@ -737,28 +753,26 @@ export function App() {
                       })
                     }
                   >
-                    {t("vi", "tavern.recruit")}
+                    {t("tavern.recruit")}
                   </button>
                 </article>
               ))
             ) : (
               <section className="card empty-state">
-                <strong>{t("vi", "tavern.noOffers")}</strong>
-                <p>{t("vi", "tavern.noOffersHint")}</p>
+                <strong>{t("tavern.noOffers")}</strong>
+                <p>{t("tavern.noOffersHint")}</p>
               </section>
             )}
           </section>
 
           <section className="card roster">
             <div className="roster-heading">
-              <span className="section-kicker">{t("vi", "tavern.roster")}</span>
+              <span className="section-kicker">{t("tavern.roster")}</span>
               <span className="seal-summary">
-                {t("vi", "promotion.seals")}: I ×
-                {promotion.materials.find((entry) => entry.materialId === "promotion_seal_t1")
-                  ?.qty ?? 0}
-                {" · "}II ×
-                {promotion.materials.find((entry) => entry.materialId === "promotion_seal_t2")
-                  ?.qty ?? 0}
+                {format("promotion.sealSummary", {
+                  tier1: ownedMaterial("promotion_seal_t1"),
+                  tier2: ownedMaterial("promotion_seal_t2"),
+                })}
               </span>
             </div>
             {heroes.length ? (
@@ -781,26 +795,25 @@ export function App() {
                     <li className="hero-roster-item" key={hero.id}>
                       <span>
                         <strong>
-                          {promotionState?.currentClassNameVi ??
-                            catalogName(catalog, "classes", hero.classId)}
+                          {catalogName("classes", promotionState?.currentClassId ?? hero.classId)}
                         </strong>
-                        <small>
-                          {rarityLabel(hero.rarity)} · T{promotionState?.currentTier ?? "?"} · Lv.
-                          {hero.level} · EXP {hero.exp}
-                        </small>
+                        <small>{heroSummary(hero, promotionState?.currentTier)}</small>
                         {promotionState?.targets.length && rule ? (
                           <small>
-                            {t("vi", "promotion.requirement")}: {rule.goldCost} gold ·{" "}
-                            {rule.sealQty} {catalogName(catalog, "materials", rule.sealMaterialId)}
+                            {format("promotion.requirement", {
+                              gold: rule.goldCost,
+                              qty: rule.sealQty,
+                              material: materialName(rule.sealMaterialId),
+                            })}
                           </small>
                         ) : null}
                         {promotionState?.busy ? (
-                          <small>{t("vi", "promotion.busy")}</small>
+                          <small>{t("promotion.busy")}</small>
                         ) : promotionState &&
                           !promotionState.atLevelCap &&
                           promotionState.targets.length ? (
                           <small>
-                            {t("vi", "promotion.needCap")} Lv.{promotionState.levelCap}
+                            {format("promotion.needCap", { level: promotionState.levelCap })}
                           </small>
                         ) : null}
                       </span>
@@ -820,7 +833,7 @@ export function App() {
                                 })
                               }
                             >
-                              {t("vi", "promotion.promote")} → {target.nameVi}
+                              {format("promotion.promoteTo", { name: name(target) })}
                             </button>
                           ))}
                         </div>
@@ -830,45 +843,43 @@ export function App() {
                 })}
               </ul>
             ) : (
-              <p>{t("vi", "tavern.emptyRoster")}</p>
+              <p>{t("tavern.emptyRoster")}</p>
             )}
           </section>
 
           <section className="card inventory">
-            <span className="section-kicker">{t("vi", "inventory.title")}</span>
+            <span className="section-kicker">{t("inventory.title")}</span>
             {promotion.materials.some((entry) => entry.qty > 0) ? (
               <ul className="inventory-list">
                 {promotion.materials
                   .filter((entry) => entry.qty > 0)
                   .map((entry) => (
                     <li key={entry.materialId} data-material-id={entry.materialId}>
-                      <span>{catalogName(catalog, "materials", entry.materialId)}</span>
-                      <strong>×{entry.qty}</strong>
+                      <span>{materialName(entry.materialId)}</span>
+                      <strong>{format("common.quantity", { qty: entry.qty })}</strong>
                     </li>
                   ))}
               </ul>
             ) : (
-              <p>{t("vi", "inventory.empty")}</p>
+              <p>{t("inventory.empty")}</p>
             )}
           </section>
         </>
       ) : activeTab === "dungeon" ? (
         <section className="stack dungeon-stack">
           <section className="card">
-            <span className="section-kicker">{t("vi", "dungeon.title")}</span>
-            <h2>{t("vi", "dungeon.subtitle")}</h2>
-            <p>{t("vi", "dungeon.help")}</p>
+            <span className="section-kicker">{t("dungeon.title")}</span>
+            <h2>{t("dungeon.subtitle")}</h2>
+            <p>{t("dungeon.help")}</p>
             <strong className="player-gold">
-              {t("vi", "dungeon.playerGold")}: {player?.gold ?? 0}
+              {format("common.labelValue", {
+                label: t("dungeon.playerGold"),
+                value: number(player?.gold ?? 0),
+              })}
             </strong>
             {lastClaim ? (
               <p className="claim-notice" role="status">
-                {t("vi", "dungeon.lastClaim")}: {lastClaim.cycles} {t("vi", "dungeon.cycles")} · +
-                {lastClaim.gold} gold · +{lastClaim.expPerHero} EXP/{t("vi", "dungeon.hero")}
-                {lastClaim.materials.map(
-                  (entry) =>
-                    ` · ${catalogName(catalog, "materials", entry.materialId)} ×${entry.qty}`,
-                )}
+                {claimSummary(lastClaim)}
               </p>
             ) : null}
           </section>
@@ -884,11 +895,9 @@ export function App() {
               <article className="card team-card" key={slot}>
                 <div className="team-heading">
                   <div>
-                    <span className="section-kicker">
-                      {t("vi", "dungeon.team")} {slot}
-                    </span>
+                    <span className="section-kicker">{format("dungeon.teamTitle", { slot })}</span>
                     <strong>
-                      {selectedHeroIds.length}/4 {t("vi", "dungeon.members")}
+                      {format("dungeon.memberCount", { count: selectedHeroIds.length, max: 4 })}
                     </strong>
                   </div>
                   <button
@@ -903,8 +912,8 @@ export function App() {
                     }
                   >
                     {savedTeam?.heroIds.join("|") === selectedHeroIds.join("|")
-                      ? t("vi", "dungeon.saved")
-                      : t("vi", "dungeon.saveTeam")}
+                      ? t("dungeon.saved")
+                      : t("dungeon.saveTeam")}
                   </button>
                 </div>
 
@@ -926,22 +935,20 @@ export function App() {
                             onChange={() => toggleHeroForTeam(slot, hero.id)}
                           />
                           <span>
-                            <strong>{catalogName(catalog, "classes", hero.classId)}</strong>
-                            <small>
-                              {rarityLabel(hero.rarity)} · Lv.{hero.level} · EXP {hero.exp}
-                            </small>
+                            <strong>{catalogName("classes", hero.classId)}</strong>
+                            <small>{heroSummary(hero)}</small>
                           </span>
                         </label>
                       );
                     })
                   ) : (
-                    <p>{t("vi", "dungeon.needHeroes")}</p>
+                    <p>{t("dungeon.needHeroes")}</p>
                   )}
                 </div>
 
                 <div className="dungeon-controls">
                   <select
-                    aria-label={`${t("vi", "dungeon.select")} ${slot}`}
+                    aria-label={format("dungeon.selectFor", { slot })}
                     disabled={busy || Boolean(activeRun)}
                     value={selectedDungeons[slot]}
                     onChange={(event) =>
@@ -958,13 +965,14 @@ export function App() {
                             value={dungeon.id}
                             disabled={!isDungeonUnlocked(dungeon)}
                           >
-                            {dungeon.nameVi}
-                            {isDungeonUnlocked(dungeon) ? "" : ` (${t("vi", "dungeon.locked")})`}
+                            {isDungeonUnlocked(dungeon)
+                              ? name(dungeon)
+                              : format("dungeon.optionLocked", { name: name(dungeon) })}
                           </option>
                         ))
                       : FALLBACK_DUNGEON_IDS.map((dungeonId) => (
                           <option key={dungeonId} value={dungeonId}>
-                            {catalogName(catalog, "dungeons", dungeonId)}
+                            {t("common.loading")}
                           </option>
                         ))}
                   </select>
@@ -981,15 +989,13 @@ export function App() {
                         })
                       }
                     >
-                      {t("vi", "dungeon.stop")}
+                      {t("dungeon.stop")}
                     </button>
                   ) : (
                     <button
                       className="primary-button"
                       type="button"
-                      title={
-                        activeRunCount >= teamLimit ? t("vi", "dungeon.teamLimitHint") : undefined
-                      }
+                      title={activeRunCount >= teamLimit ? t("dungeon.teamLimitHint") : undefined}
                       disabled={busy || selectedHeroIds.length === 0 || activeRunCount >= teamLimit}
                       onClick={() =>
                         void sendCommand({
@@ -999,7 +1005,7 @@ export function App() {
                         })
                       }
                     >
-                      {t("vi", "dungeon.start")}
+                      {t("dungeon.start")}
                     </button>
                   )}
                 </div>
@@ -1007,13 +1013,16 @@ export function App() {
                 {latestRun ? (
                   <section className="run-panel">
                     <div className="run-summary">
-                      <strong>{catalogName(catalog, "dungeons", latestRun.dungeonId)}</strong>
+                      <strong>{catalogName("dungeons", latestRun.dungeonId)}</strong>
                       <span className={`run-status status-${latestRun.status}`}>
-                        {latestRun.status}
+                        {t(`run.status.${latestRun.status}`)}
                       </span>
                     </div>
                     <small>
-                      seed {latestRun.seed} · {latestRun.waves.length} {t("vi", "dungeon.waves")}
+                      {format("dungeon.runMeta", {
+                        seed: String(latestRun.seed),
+                        waves: plural("dungeon.waves", latestRun.waves.length),
+                      })}
                     </small>
                     <span
                       className={
@@ -1023,43 +1032,44 @@ export function App() {
                       }
                     >
                       {replayVerification?.ok
-                        ? t("vi", "dungeon.replayVerified")
-                        : t("vi", "dungeon.replayMismatch")}
+                        ? t("dungeon.replayVerified")
+                        : t("dungeon.replayMismatch")}
                     </span>
 
                     <div className="idle-rewards">
                       <div>
-                        <span className="section-kicker">{t("vi", "dungeon.idleRewards")}</span>
-                        <strong>
-                          {latestRun.pendingCycles} {t("vi", "dungeon.cycles")}
-                        </strong>
+                        <span className="section-kicker">{t("dungeon.idleRewards")}</span>
+                        <strong>{plural("dungeon.cycles", latestRun.pendingCycles)}</strong>
                         <small>
-                          +{latestRun.pendingGold} gold · +{latestRun.pendingExpPerHero} EXP/
-                          {t("vi", "dungeon.hero")}
+                          {list([
+                            format("reward.gold", { gold: latestRun.pendingGold }),
+                            format("reward.expPerHero", { exp: latestRun.pendingExpPerHero }),
+                          ])}
                         </small>
                         {latestRun.pendingMaterials.length ? (
                           <small className="pending-loot">
-                            {t("vi", "dungeon.pendingLoot")}:{" "}
-                            {latestRun.pendingMaterials
-                              .map(
-                                (entry) =>
-                                  `${catalogName(catalog, "materials", entry.materialId)} ×${entry.qty}`,
-                              )
-                              .join(" · ")}
+                            {format("common.labelValue", {
+                              label: t("dungeon.pendingLoot"),
+                              value: list(latestRun.pendingMaterials.map(materialQty)),
+                            })}
                           </small>
                         ) : null}
                         {(() => {
                           const expected = expectedPerCycle(latestRun);
                           return expected ? (
                             <small className="expected-rewards">
-                              {t("vi", "dungeon.expectedPerCycle")}: +{expected.gold} gold · +
-                              {expected.exp} EXP · {t("vi", "dungeon.bossWinRate")}{" "}
-                              {expected.bossWinPercent}%
+                              {format("dungeon.expectedPerCycle", {
+                                rewards: list([
+                                  format("reward.gold", { gold: expected.gold }),
+                                  format("reward.exp", { exp: expected.exp }),
+                                  format("reward.bossWin", { percent: expected.bossWinPercent }),
+                                ]),
+                              })}
                             </small>
                           ) : null;
                         })()}
                         <small>
-                          {t("vi", "dungeon.completedCycles")}: {latestRun.completedCycles}
+                          {format("dungeon.completedCycles", { count: latestRun.completedCycles })}
                         </small>
                       </div>
                       <button
@@ -1073,7 +1083,7 @@ export function App() {
                           })
                         }
                       >
-                        {t("vi", "dungeon.claim")}
+                        {t("dungeon.claim")}
                       </button>
                     </div>
 
@@ -1085,20 +1095,24 @@ export function App() {
 
                         return (
                           <div className="wave-card" key={wave.wave}>
-                            <span>
-                              {t("vi", "dungeon.wave")} {wave.wave}
-                            </span>
-                            <strong>{wave.result}</strong>
+                            <span>{format("dungeon.waveTitle", { wave: wave.wave })}</span>
+                            <strong>{t(`wave.result.${wave.result}`)}</strong>
                             <small>
-                              {wave.turns} turns · {wave.hash}
+                              {format("dungeon.waveMeta", {
+                                turns: plural("dungeon.turns", wave.turns),
+                                hash: wave.hash,
+                              })}
                             </small>
                             <small>
                               {replayWave?.matches
-                                ? t("vi", "dungeon.hashMatch")
-                                : t("vi", "dungeon.hashMismatch")}
+                                ? t("dungeon.hashMatch")
+                                : t("dungeon.hashMismatch")}
                             </small>
                             <small>
-                              +{wave.rewardGold} gold · +{wave.rewardExp} EXP
+                              {list([
+                                format("reward.gold", { gold: wave.rewardGold }),
+                                format("reward.exp", { exp: wave.rewardExp }),
+                              ])}
                             </small>
                           </div>
                         );
@@ -1113,32 +1127,49 @@ export function App() {
       ) : activeTab === "forge" ? (
         <section className="stack forge-stack">
           <section className="card">
-            <span className="section-kicker">{t("vi", "equipment.title")}</span>
-            <h2>{t("vi", "equipment.subtitle")}</h2>
-            <p>{t("vi", "equipment.help")}</p>
+            <span className="section-kicker">{t("equipment.title")}</span>
+            <h2>{t("equipment.subtitle")}</h2>
+            <p>{t("equipment.help")}</p>
             <ul className="hall-stats forge-summary" data-testid="forge-summary">
               <li>
-                {t("vi", "building.forge")}:{" "}
-                <strong>
-                  {t("vi", "guild.level")}{" "}
-                  <span data-testid="forge-tab-level">{player?.forgeLevel ?? 1}</span>
-                </strong>
+                {formatNodes("common.labelValue", {
+                  label: t("building.forge"),
+                  value: (
+                    <strong>
+                      {formatNodes("common.level", {
+                        level: <span data-testid="forge-tab-level">{player?.forgeLevel ?? 1}</span>,
+                      })}
+                    </strong>
+                  ),
+                })}
               </li>
               <li>
-                {t("vi", "forge.enhanceCap")}:{" "}
-                <strong data-testid="forge-tab-enhance-cap">
-                  {enhanceCapLabel(forgeEnhanceCap)}
-                </strong>
+                {formatNodes("common.labelValue", {
+                  label: t("forge.enhanceCap"),
+                  value: (
+                    <strong data-testid="forge-tab-enhance-cap">
+                      {enhanceCapLabel(forgeEnhanceCap, locale)}
+                    </strong>
+                  ),
+                })}
               </li>
               {dustMaterialId ? (
                 <li data-material-id={dustMaterialId}>
-                  {materialName(dustMaterialId)}:{" "}
-                  <strong data-testid="forge-dust-balance">×{dustBalance}</strong>
+                  {formatNodes("common.labelValue", {
+                    label: materialName(dustMaterialId),
+                    value: (
+                      <strong data-testid="forge-dust-balance">
+                        {format("common.quantity", { qty: dustBalance })}
+                      </strong>
+                    ),
+                  })}
                 </li>
               ) : null}
               <li>
-                {t("vi", "dungeon.playerGold")}:{" "}
-                <strong data-testid="forge-gold">{player?.gold ?? 0}</strong>
+                {formatNodes("common.labelValue", {
+                  label: t("dungeon.playerGold"),
+                  value: <strong data-testid="forge-gold">{number(player?.gold ?? 0)}</strong>,
+                })}
               </li>
             </ul>
             {player?.construction?.building === "forge" ? (
@@ -1149,8 +1180,8 @@ export function App() {
           <section className="card auto-sell-card">
             <div className="auto-sell-heading">
               <div>
-                <span className="section-kicker">{t("vi", "autosell.title")}</span>
-                <strong>{t("vi", "autosell.subtitle")}</strong>
+                <span className="section-kicker">{t("autosell.title")}</span>
+                <strong>{t("autosell.subtitle")}</strong>
               </div>
               <label className="toggle-row">
                 <input
@@ -1165,13 +1196,13 @@ export function App() {
                     })
                   }
                 />
-                <span>{autoSell.enabled ? t("vi", "autosell.on") : t("vi", "autosell.off")}</span>
+                <span>{autoSell.enabled ? t("autosell.on") : t("autosell.off")}</span>
               </label>
             </div>
             <label className="auto-sell-threshold">
-              <span>{t("vi", "autosell.threshold")}</span>
+              <span>{t("autosell.threshold")}</span>
               <select
-                aria-label={t("vi", "autosell.threshold")}
+                aria-label={t("autosell.threshold")}
                 value={autoSell.maxQualityBps}
                 disabled={busy}
                 onChange={(event) =>
@@ -1184,16 +1215,19 @@ export function App() {
               >
                 {catalog?.equipment.qualityTiers.map((tier) => (
                   <option key={tier.id} value={tier.multiplierBps}>
-                    {tier.nameVi} · ≤ {(tier.multiplierBps / 100).toFixed(0)}%
+                    {format("autosell.option", {
+                      name: name(tier),
+                      percent: formatBps(tier.multiplierBps, locale),
+                    })}
                   </option>
                 ))}
               </select>
             </label>
-            <small>{t("vi", "autosell.help")}</small>
+            <small>{t("autosell.help")}</small>
           </section>
 
           <section className="card">
-            <span className="section-kicker">{t("vi", "craft.title")}</span>
+            <span className="section-kicker">{t("craft.title")}</span>
             <div className="craft-grid">
               {catalog?.items.map((spec) => {
                 const canCraft = spec.recipe.every(
@@ -1204,15 +1238,8 @@ export function App() {
                 return (
                   <div className="craft-row" data-item-id={spec.id} key={spec.id}>
                     <span>
-                      <strong>{spec.nameVi}</strong>
-                      <small>
-                        {spec.recipe
-                          .map(
-                            (ingredient) =>
-                              `${catalogName(catalog, "materials", ingredient.materialId)} ×${ingredient.qty}`,
-                          )
-                          .join(" · ")}
-                      </small>
+                      <strong>{name(spec)}</strong>
+                      <small>{list(spec.recipe.map(materialQty))}</small>
                     </span>
                     <button
                       type="button"
@@ -1224,7 +1251,7 @@ export function App() {
                         })
                       }
                     >
-                      {t("vi", "craft.craft")}
+                      {t("craft.craft")}
                     </button>
                   </div>
                 );
@@ -1232,9 +1259,14 @@ export function App() {
             </div>
             {catalog ? (
               <small data-testid="craft-odds">
-                {t("vi", "forge.craftOdds")} ({t("vi", "building.forge")}{" "}
-                {t("vi", "guild.level").toLowerCase()} {player?.forgeLevel ?? 1}):{" "}
-                {oddsLabel(catalog.equipment.qualityTiers, forgeInfo?.qualityWeightsBps)}
+                {format("forge.craftOddsAtLevel", {
+                  level: player?.forgeLevel ?? 1,
+                  odds: oddsLabel(
+                    catalog.equipment.qualityTiers,
+                    forgeInfo?.qualityWeightsBps,
+                    locale,
+                  ),
+                })}
               </small>
             ) : null}
           </section>
@@ -1258,9 +1290,10 @@ export function App() {
                 : 0;
               const nextEnhanceCost = catalog?.equipment.enhanceGoldCosts[item.enhanceLevel];
               const nextEnhanceDust = catalog?.equipment.enhanceDustCosts[item.enhanceLevel];
+              const maxEnhanceLevel = catalog?.equipment.enhanceGoldCosts.length ?? 0;
               const enhanceBlocked = enhanceBlock({
                 enhanceLevel: item.enhanceLevel,
-                maxEnhanceLevel: catalog?.equipment.enhanceGoldCosts.length ?? 0,
+                maxEnhanceLevel,
                 forgeCap: forgeEnhanceCap,
                 goldCost: nextEnhanceCost,
                 dustCost: nextEnhanceDust,
@@ -1275,6 +1308,7 @@ export function App() {
                 item.qualityBps,
                 catalog?.equipment.qualityTiers ?? [],
               );
+              const itemName = catalogName("items", item.itemId);
               const cannotDestroy = item.locked || Boolean(item.equippedHeroId);
               const baseSuccess = catalog?.equipment.enhanceSuccessBps[item.enhanceLevel];
               const currentSuccess =
@@ -1295,11 +1329,15 @@ export function App() {
                 >
                   <div className="equipment-heading">
                     <div>
-                      <span className="equipment-slot">{item.slot}</span>
-                      <strong>{catalogName(catalog, "items", item.itemId)}</strong>
+                      <span className="equipment-slot">{t(`slot.${item.slot}`)}</span>
+                      <strong>{itemName}</strong>
                       <small>
-                        ATK +{effectiveAttack} · DEF +{effectiveDefense} · Q{" "}
-                        {(item.qualityBps / 100).toFixed(0)}% · +{item.enhanceLevel}
+                        {format("equipment.stats", {
+                          attack: effectiveAttack,
+                          defense: effectiveDefense,
+                          quality: formatBps(item.qualityBps, locale),
+                          enhance: item.enhanceLevel,
+                        })}
                       </small>
                     </div>
                     <button
@@ -1314,15 +1352,17 @@ export function App() {
                         })
                       }
                     >
-                      {item.locked ? t("vi", "equipment.unlock") : t("vi", "equipment.lock")}
+                      {item.locked ? t("equipment.unlock") : t("equipment.lock")}
                     </button>
                   </div>
 
                   {equippedHero ? (
                     <div className="equipment-equipped">
                       <span>
-                        {t("vi", "equipment.equippedBy")}:{" "}
-                        <strong>{catalogName(catalog, "classes", equippedHero.classId)}</strong>
+                        {formatNodes("common.labelValue", {
+                          label: t("equipment.equippedBy"),
+                          value: <strong>{catalogName("classes", equippedHero.classId)}</strong>,
+                        })}
                       </span>
                       <button
                         type="button"
@@ -1334,13 +1374,13 @@ export function App() {
                           })
                         }
                       >
-                        {t("vi", "equipment.unequip")}
+                        {t("equipment.unequip")}
                       </button>
                     </div>
                   ) : heroes.length ? (
                     <div className="equipment-actions">
                       <select
-                        aria-label={t("vi", "equipment.selectHero") + " " + item.id}
+                        aria-label={format("equipment.selectHeroFor", { item: itemName })}
                         value={defaultTarget}
                         onChange={(event) =>
                           setEquipTargets((current) => ({
@@ -1351,7 +1391,10 @@ export function App() {
                       >
                         {heroes.map((hero) => (
                           <option key={hero.id} value={hero.id}>
-                            {catalogName(catalog, "classes", hero.classId)} · Lv.{hero.level}
+                            {format("hero.option", {
+                              name: catalogName("classes", hero.classId),
+                              level: hero.level,
+                            })}
                           </option>
                         ))}
                       </select>
@@ -1366,11 +1409,11 @@ export function App() {
                           })
                         }
                       >
-                        {t("vi", "equipment.equip")}
+                        {t("equipment.equip")}
                       </button>
                     </div>
                   ) : (
-                    <small>{t("vi", "equipment.needHero")}</small>
+                    <small>{t("equipment.needHero")}</small>
                   )}
 
                   <div className="enhance-actions">
@@ -1379,23 +1422,27 @@ export function App() {
                         {enhanceBlocked !== "max_level" &&
                         nextEnhanceCost !== undefined &&
                         currentSuccess !== undefined
-                          ? `${t("vi", "enhance.next")}: ${nextEnhanceCost} ${t(
-                              "vi",
-                              "common.gold",
-                            )} · ${nextEnhanceDust ?? 0} ${materialName(dustMaterialId)} · ${(
-                              currentSuccess / 100
-                            ).toFixed(0)}%`
-                          : t("vi", "enhance.max")}
+                          ? format("enhance.nextCost", {
+                              gold: nextEnhanceCost,
+                              dust: nextEnhanceDust ?? 0,
+                              material: materialName(dustMaterialId),
+                              chance: formatBps(currentSuccess, locale),
+                            })
+                          : format("enhance.max", { level: maxEnhanceLevel })}
                       </span>
                       {enhanceBlocked && enhanceBlocked !== "max_level" ? (
                         <small className="disabled-reason" data-testid="enhance-reason">
                           {enhanceBlocked === "forge"
-                            ? `${t("vi", "enhance.blocked.forge")} ${forgeLevelNeeded ?? ""}`
+                            ? forgeLevelNeeded === null
+                              ? t("enhance.blocked.forgeUnknown")
+                              : format("enhance.blocked.forge", { level: forgeLevelNeeded })
                             : enhanceBlocked === "dust"
-                              ? `${t("vi", "enhance.blocked.dust")} ${materialName(
-                                  dustMaterialId,
-                                )} (${dustBalance}/${nextEnhanceDust ?? 0})`
-                              : t("vi", "enhance.blocked.gold")}
+                              ? format("enhance.blocked.dust", {
+                                  material: materialName(dustMaterialId),
+                                  owned: dustBalance,
+                                  needed: nextEnhanceDust ?? 0,
+                                })
+                              : t("enhance.blocked.gold")}
                         </small>
                       ) : null}
                     </span>
@@ -1410,14 +1457,12 @@ export function App() {
                         })
                       }
                     >
-                      {t("vi", "enhance.action")}
+                      {t("enhance.action")}
                     </button>
                   </div>
 
                   <div className="equipment-footer">
-                    <span>
-                      {t("vi", "equipment.sellValue")}: {sellValue} {t("vi", "common.gold")}
-                    </span>
+                    <span>{format("equipment.sellValue", { gold: sellValue })}</span>
                     <div className="equipment-footer-actions">
                       <button
                         type="button"
@@ -1431,8 +1476,10 @@ export function App() {
                           })
                         }
                       >
-                        {t("vi", "equipment.dismantle")} (+{dismantleDust}{" "}
-                        {materialName(dustMaterialId)})
+                        {format("equipment.dismantle", {
+                          dust: dismantleDust,
+                          material: materialName(dustMaterialId),
+                        })}
                       </button>
                       <button
                         type="button"
@@ -1446,7 +1493,7 @@ export function App() {
                           })
                         }
                       >
-                        {t("vi", "equipment.sell")}
+                        {t("equipment.sell")}
                       </button>
                     </div>
                   </div>
@@ -1455,8 +1502,8 @@ export function App() {
             })
           ) : (
             <section className="card empty-state">
-              <strong>{t("vi", "equipment.empty")}</strong>
-              <p>{t("vi", "equipment.emptyHint")}</p>
+              <strong>{t("equipment.empty")}</strong>
+              <p>{t("equipment.emptyHint")}</p>
             </section>
           )}
         </section>
@@ -1480,17 +1527,17 @@ export function App() {
           />
         ) : (
           <section className="card empty-state">
-            <strong>{t("vi", "common.working")}</strong>
+            <strong>{t("common.working")}</strong>
           </section>
         )
       ) : (
         <section className="card empty-state">
-          <strong>{t("vi", `nav.${activeTab}`)}</strong>
-          <p>{t("vi", "app.nextMilestone")}</p>
+          <strong>{t(`nav.${activeTab}`)}</strong>
+          <p>{t("app.nextMilestone")}</p>
         </section>
       )}
 
-      <nav className="tabs" aria-label={t("vi", "nav.main")}>
+      <nav className="tabs" aria-label={t("nav.main")}>
         {tabs.map((tab) => (
           <button
             className={tab === activeTab ? "active" : ""}
@@ -1498,7 +1545,7 @@ export function App() {
             type="button"
             onClick={() => setActiveTab(tab)}
           >
-            {t("vi", `nav.${tab}`)}
+            {t(`nav.${tab}`)}
           </button>
         ))}
       </nav>

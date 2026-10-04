@@ -1,289 +1,172 @@
+import { messages } from "./messages";
+
 export type Locale = "vi" | "en";
 
-const messages = {
-  vi: {
-    "app.title": "Project Guildhall",
-    "app.subtitle": "Idle guild-management RPG — nền móng kỹ thuật đang hoạt động.",
-    "app.subtitleM1": "Quản lý hội quán, tuyển anh hùng và chuẩn bị đội hình.",
-    "app.connectError": "Không thể kết nối tới máy chủ.",
-    "app.loadError": "Không tải được dữ liệu người chơi.",
-    "app.nextMilestone": "Màn này sẽ được nối vào core loop ở milestone tiếp theo.",
-    "foundation.ready": "M0.1 đã sẵn sàng",
-    "common.working": "Đang xử lý…",
-    "common.gold": "vàng",
-    "nav.main": "Điều hướng chính",
-    "nav.guild": "Hội Quán",
-    "nav.dungeon": "Đội & Hầm",
-    "nav.forge": "Rèn",
-    "nav.tavern": "Tuyển Mộ",
-    "nav.more": "Thêm",
-    "tavern.title": "Tavern",
-    "tavern.heroes": "Anh hùng",
-    "tavern.refresh": "Làm mới",
-    "tavern.refreshReady": "Sẵn sàng",
-    "tavern.nextRefresh": "Làm mới tiếp",
-    "tavern.rarePity": "Pity Hiếm+",
-    "tavern.legendaryPity": "Pity Huyền thoại",
-    "tavern.offers": "Ứng viên tuyển mộ",
-    "tavern.recruit": "Tuyển",
-    "tavern.levelOne": "Khởi đầu Lv.1",
-    "tavern.noOffers": "Chưa có ứng viên",
-    "tavern.noOffersHint": "Làm mới Tavern để tạo ba ứng viên mới.",
-    "tavern.roster": "Đội ngũ hiện có",
-    "tavern.emptyRoster": "Bạn chưa tuyển anh hùng nào.",
-    "tavern.loadError": "Không tải được dữ liệu Tavern.",
-    "promotion.seals": "Ấn thăng cấp",
-    "promotion.requirement": "Yêu cầu",
-    "promotion.needCap": "Cần đạt",
-    "promotion.busy":
-      "Đang chạy hầm hoặc còn thưởng chưa nhận — dừng và nhận thưởng trước khi thăng cấp",
-    "promotion.promote": "Thăng",
-    "dungeon.title": "Đội & Hầm",
-    "dungeon.subtitle": "Xếp đội và chạy hầm ngục",
-    "dungeon.help":
-      "Mỗi đội có tối đa 4 anh hùng. Lưu đội trước, sau đó chọn hầm và bắt đầu lượt chạy deterministic 6 wave.",
-    "dungeon.team": "Đội",
-    "dungeon.members": "thành viên",
-    "dungeon.saveTeam": "Lưu đội",
-    "dungeon.saved": "Đã lưu",
-    "dungeon.select": "Chọn hầm cho đội",
-    "dungeon.start": "Bắt đầu",
-    "dungeon.stop": "Dừng",
-    "dungeon.needHeroes": "Hãy tuyển anh hùng ở Tavern trước.",
-    "dungeon.waves": "wave",
-    "dungeon.wave": "Wave",
-    "dungeon.replayVerified": "Replay client đã khớp server",
-    "dungeon.replayMismatch": "Cảnh báo: replay không khớp",
-    "dungeon.hashMatch": "Hash client ✓",
-    "dungeon.hashMismatch": "Hash client mismatch",
-    "dungeon.playerGold": "Vàng",
-    "dungeon.idleRewards": "Thưởng idle đang chờ",
-    "dungeon.cycles": "cycle",
-    "dungeon.hero": "hero",
-    "dungeon.completedCycles": "Tổng cycle hoàn tất",
-    "dungeon.claim": "Nhận thưởng",
-    "dungeon.pendingLoot": "Chiến lợi phẩm",
-    "dungeon.expectedPerCycle": "Kỳ vọng mỗi vòng",
-    "dungeon.locked": "khóa — hạ boss hầm trước",
-    "dungeon.teamLimitHint": "Đã đủ số đội chạy song song. Nâng Sảnh Hội để mở thêm đội.",
-    "guild.level": "Cấp",
-    "guild.heroCapacity": "Số hero tối đa",
-    "guild.teamLimit": "Số đội chạy song song",
-    "guild.nextTeamAt": "Mở thêm một đội ở cấp",
-    "building.hall": "Sảnh Hội",
-    "building.forge": "Lò Rèn",
-    "buildings.builder": "Thợ xây",
-    "buildings.builderIdle": "Thợ xây đang rảnh. Chọn một công trình để nâng cấp.",
-    "buildings.upgrading": "Đang nâng cấp",
-    "buildings.remaining": "Còn lại",
-    "buildings.finishing": "Đang hoàn tất…",
-    "buildings.progress": "Tiến độ xây dựng",
-    "buildings.speedUpEach": "mỗi cái bớt",
-    "buildings.speedUpOne": "Dùng 1",
-    "buildings.speedUpNeeded": "Dùng đủ để xong",
-    "buildings.speedUpAll": "Dùng hết",
-    "buildings.speedUpEmpty": "Chưa có vật phẩm tăng tốc — boss hầm ngục đôi khi rơi ra.",
-    "buildings.upgrade": "Nâng cấp",
-    "buildings.buildTime": "Thời gian xây",
-    "buildings.nextLevel": "Cấp tiếp theo",
-    "buildings.blocked.max_level": "Đã đạt cấp tối đa.",
-    "buildings.blocked.builder_busy": "Thợ xây đang bận — chờ công trình hiện tại xong.",
-    "buildings.blocked.gold": "Chưa đủ vàng.",
-    "buildings.blocked.materials": "Chưa đủ nguyên liệu.",
-    "forge.enhanceCap": "Cường hóa tối đa",
-    "forge.enhanceLocked": "chưa mở",
-    "forge.craftOdds": "Tỉ lệ phẩm chất khi chế tạo",
-    "dungeon.bossWinRate": "thắng boss",
-    "dungeon.lastClaim": "Vừa nhận",
-    "inventory.title": "Kho nguyên liệu",
-    "inventory.empty": "Chưa có nguyên liệu. Chạy hầm để nhặt chiến lợi phẩm.",
-    "equipment.title": "Kho & Trang bị",
-    "equipment.subtitle": "Quản lý trang bị của anh hùng",
-    "equipment.help":
-      "Trang bị chỉ thay đổi chỉ số cho lần chạy hầm tiếp theo. Run đang hoạt động giữ nguyên snapshot cũ để replay luôn khớp.",
-    "equipment.empty": "Kho trang bị đang trống",
-    "equipment.emptyHint": "Chưa có trang bị. Chế tạo ở Lò Rèn bằng nguyên liệu nhặt từ hầm ngục.",
-    "equipment.lock": "Khóa",
-    "equipment.unlock": "Mở khóa",
-    "equipment.equippedBy": "Đang mặc bởi",
-    "equipment.unequip": "Tháo",
-    "equipment.selectHero": "Chọn anh hùng cho trang bị",
-    "equipment.equip": "Trang bị",
-    "equipment.needHero": "Tuyển ít nhất một anh hùng trước khi trang bị.",
-    "equipment.sellValue": "Giá bán",
-    "equipment.sell": "Bán",
-    "equipment.dismantle": "Phân rã",
-    "autosell.title": "Tự động bán",
-    "autosell.subtitle": "Lọc trang bị phẩm chất thấp",
-    "autosell.on": "Đang bật",
-    "autosell.off": "Đang tắt",
-    "autosell.threshold": "Tự bán đến phẩm chất",
-    "autosell.help":
-      "Chỉ áp dụng cho trang bị mới nhận hoặc mới chế tạo. Trang bị đã khóa hoặc đang mặc không bao giờ bị tự bán.",
-    "craft.title": "Chế tạo",
-    "craft.craft": "Chế tạo",
-    "enhance.next": "Lần cường hóa tiếp",
-    "enhance.max": "Đã đạt +5",
-    "enhance.action": "Cường hóa",
-    "enhance.blocked.forge": "Cần Lò Rèn cấp",
-    "enhance.blocked.gold": "Chưa đủ vàng.",
-    "enhance.blocked.dust": "Chưa đủ",
-    "error.builderBusy": "Thợ xây đang bận với công trình khác.",
-    "error.forgeLevelTooLow": "Cấp Lò Rèn chưa đủ để cường hóa tiếp.",
-    "error.insufficientGold": "Chưa đủ vàng.",
-    "error.insufficientMaterial": "Chưa đủ nguyên liệu.",
-    "error.maxLevel": "Công trình đã đạt cấp tối đa.",
-    "rarity.common": "Thường",
-    "rarity.elite": "Tinh anh",
-    "rarity.rare": "Hiếm",
-    "rarity.legendary": "Huyền thoại",
-  },
-  en: {
-    "app.title": "Project Guildhall",
-    "app.subtitle": "Idle guild-management RPG — technical foundation is running.",
-    "app.subtitleM1": "Manage your guildhall, recruit heroes, and prepare teams.",
-    "app.connectError": "Could not connect to the server.",
-    "app.loadError": "Could not load player data.",
-    "app.nextMilestone": "This screen will join the core loop in the next milestone.",
-    "foundation.ready": "M0.1 is ready",
-    "common.working": "Working…",
-    "common.gold": "gold",
-    "nav.main": "Main navigation",
-    "nav.guild": "Guildhall",
-    "nav.dungeon": "Teams & Dungeons",
-    "nav.forge": "Forge",
-    "nav.tavern": "Tavern",
-    "nav.more": "More",
-    "tavern.title": "Tavern",
-    "tavern.heroes": "Heroes",
-    "tavern.refresh": "Refresh",
-    "tavern.refreshReady": "Ready",
-    "tavern.nextRefresh": "Next refresh",
-    "tavern.rarePity": "Rare+ pity",
-    "tavern.legendaryPity": "Legendary pity",
-    "tavern.offers": "Recruitment candidates",
-    "tavern.recruit": "Recruit",
-    "tavern.levelOne": "Starts at Lv.1",
-    "tavern.noOffers": "No candidates yet",
-    "tavern.noOffersHint": "Refresh the Tavern to generate three new candidates.",
-    "tavern.roster": "Current roster",
-    "tavern.emptyRoster": "You have not recruited any heroes yet.",
-    "tavern.loadError": "Could not load Tavern data.",
-    "promotion.seals": "Promotion seals",
-    "promotion.requirement": "Requires",
-    "promotion.needCap": "Reach",
-    "promotion.busy": "In a dungeon or owed rewards — stop the run and claim before promotion",
-    "promotion.promote": "Promote",
-    "dungeon.title": "Teams & Dungeons",
-    "dungeon.subtitle": "Build teams and run dungeons",
-    "dungeon.help":
-      "Each team supports up to four heroes. Save the team, choose a dungeon, then start a deterministic six-wave run.",
-    "dungeon.team": "Team",
-    "dungeon.members": "members",
-    "dungeon.saveTeam": "Save team",
-    "dungeon.saved": "Saved",
-    "dungeon.select": "Select dungeon for team",
-    "dungeon.start": "Start",
-    "dungeon.stop": "Stop",
-    "dungeon.needHeroes": "Recruit heroes in the Tavern first.",
-    "dungeon.waves": "waves",
-    "dungeon.wave": "Wave",
-    "dungeon.replayVerified": "Client replay matches server",
-    "dungeon.replayMismatch": "Warning: replay mismatch",
-    "dungeon.hashMatch": "Client hash ✓",
-    "dungeon.hashMismatch": "Client hash mismatch",
-    "dungeon.playerGold": "Gold",
-    "dungeon.idleRewards": "Pending idle rewards",
-    "dungeon.cycles": "cycles",
-    "dungeon.hero": "hero",
-    "dungeon.completedCycles": "Completed cycles",
-    "dungeon.claim": "Claim",
-    "dungeon.pendingLoot": "Loot",
-    "dungeon.expectedPerCycle": "Expected per cycle",
-    "dungeon.locked": "locked — beat the previous boss",
-    "dungeon.teamLimitHint": "All parallel team slots are busy. Upgrade the Hall to unlock more.",
-    "guild.level": "Level",
-    "guild.heroCapacity": "Hero capacity",
-    "guild.teamLimit": "Parallel teams",
-    "guild.nextTeamAt": "Next team unlocks at level",
-    "building.hall": "Guild Hall",
-    "building.forge": "Forge",
-    "buildings.builder": "Builder",
-    "buildings.builderIdle": "The builder is free. Pick a building to upgrade.",
-    "buildings.upgrading": "Upgrading",
-    "buildings.remaining": "Time left",
-    "buildings.finishing": "Finishing…",
-    "buildings.progress": "Construction progress",
-    "buildings.speedUpEach": "each one skips",
-    "buildings.speedUpOne": "Use 1",
-    "buildings.speedUpNeeded": "Use enough to finish",
-    "buildings.speedUpAll": "Use all",
-    "buildings.speedUpEmpty": "No speed-up items yet — dungeon bosses sometimes drop them.",
-    "buildings.upgrade": "Upgrade",
-    "buildings.buildTime": "Build time",
-    "buildings.nextLevel": "Next level",
-    "buildings.blocked.max_level": "Maximum level reached.",
-    "buildings.blocked.builder_busy":
-      "The builder is busy — wait for the current upgrade to finish.",
-    "buildings.blocked.gold": "Not enough gold.",
-    "buildings.blocked.materials": "Not enough materials.",
-    "forge.enhanceCap": "Enhancement cap",
-    "forge.enhanceLocked": "locked",
-    "forge.craftOdds": "Craft quality odds",
-    "dungeon.bossWinRate": "boss win",
-    "dungeon.lastClaim": "Just claimed",
-    "inventory.title": "Materials",
-    "inventory.empty": "No materials yet. Run dungeons to collect loot.",
-    "equipment.title": "Inventory & Equipment",
-    "equipment.subtitle": "Manage hero equipment",
-    "equipment.help":
-      "Equipment changes stats for the next dungeon run only. Active runs keep their original snapshots so replay remains deterministic.",
-    "equipment.empty": "Equipment inventory is empty",
-    "equipment.emptyHint": "No equipment yet. Craft some at the Forge from dungeon materials.",
-    "equipment.lock": "Lock",
-    "equipment.unlock": "Unlock",
-    "equipment.equippedBy": "Equipped by",
-    "equipment.unequip": "Unequip",
-    "equipment.selectHero": "Select hero for equipment",
-    "equipment.equip": "Equip",
-    "equipment.needHero": "Recruit at least one hero before equipping items.",
-    "equipment.sellValue": "Sell value",
-    "equipment.sell": "Sell",
-    "equipment.dismantle": "Dismantle",
-    "autosell.title": "Auto-sell",
-    "autosell.subtitle": "Filter low-quality equipment",
-    "autosell.on": "On",
-    "autosell.off": "Off",
-    "autosell.threshold": "Auto-sell up to quality",
-    "autosell.help":
-      "Only applies to newly acquired or crafted equipment. Locked or equipped items are never auto-sold.",
-    "craft.title": "Crafting",
-    "craft.craft": "Craft",
-    "enhance.next": "Next enhancement",
-    "enhance.max": "Maximum +5 reached",
-    "enhance.action": "Enhance",
-    "enhance.blocked.forge": "Needs Forge level",
-    "enhance.blocked.gold": "Not enough gold.",
-    "enhance.blocked.dust": "Not enough",
-    "error.builderBusy": "The builder is busy with another upgrade.",
-    "error.forgeLevelTooLow": "The Forge level is too low for this enhancement.",
-    "error.insufficientGold": "Not enough gold.",
-    "error.insufficientMaterial": "Not enough materials.",
-    "error.maxLevel": "The building is already at its maximum level.",
-    "rarity.common": "Common",
-    "rarity.elite": "Elite",
-    "rarity.rare": "Rare",
-    "rarity.legendary": "Legendary",
-  },
-} as const;
+/** Vietnam is the launch market, so everyone starts in Vietnamese; the browser language is not read. */
+export const DEFAULT_LOCALE: Locale = "vi";
+export const LOCALES: readonly Locale[] = ["vi", "en"];
 
-type MessageKey = keyof (typeof messages)["vi"];
+export function isLocale(value: unknown): value is Locale {
+  return value === "vi" || value === "en";
+}
 
-export function t(locale: Locale, key: MessageKey): string {
+const LOCALE_TAGS: Record<Locale, string> = { vi: "vi-VN", en: "en-US" };
+
+/** BCP 47 tag for `Intl` (dates, numbers). */
+export function localeTag(locale: Locale): string {
+  return LOCALE_TAGS[locale];
+}
+
+type Messages = (typeof messages)["vi"];
+export type MessageKey = keyof Messages;
+
+/** Names of the `{placeholders}` in a message, read from its literal type. */
+export type ParamNames<S extends string> = S extends `${string}{${infer Name}}${infer Rest}`
+  ? Name | ParamNames<Rest>
+  : never;
+
+/** Placeholder names of the message `K`. */
+export type ParamNamesOf<K extends MessageKey> = ParamNames<Messages[K]>;
+
+/** A value that goes into a message: numbers are formatted for the locale, strings are kept. */
+export type MessageValue = string | number;
+
+export type MessageParams<K extends MessageKey> = { [N in ParamNamesOf<K>]: MessageValue };
+
+/** Keys of messages without placeholders. */
+export type PlainKey = {
+  [K in MessageKey]: [ParamNames<Messages[K]>] extends [never] ? K : never;
+}[MessageKey];
+
+/** Keys of messages that take parameters. */
+export type ParamKey = Exclude<MessageKey, PlainKey>;
+
+type StripOther<K> = K extends `${infer Base}.other` ? Base : never;
+
+/** `x` for the plural pair `x.one` / `x.other`. */
+export type PluralBase = StripOther<MessageKey>;
+type OtherKey<B extends PluralBase> = `${B}.other` & MessageKey;
+
+/** Placeholders of a plural message besides the automatic `{count}`. */
+export type PluralParams<B extends PluralBase> = Omit<MessageParams<OtherKey<B>>, "count">;
+
+/** Message without placeholders. Messages with placeholders go through `format`. */
+export function t(locale: Locale, key: PlainKey): string {
   return messages[locale][key];
+}
+
+const PLACEHOLDER = /\{(\w+)\}/g;
+
+/** Placeholder names of a template, first occurrence first, each once. */
+export function placeholders(template: string): string[] {
+  return [...new Set([...template.matchAll(PLACEHOLDER)].map((match) => match[1]!))];
+}
+
+const numberFormats = new Map<string, Intl.NumberFormat>();
+
+/**
+ * Number for the locale: `12.345,5` in Vietnamese, `12,345.5` in English. Four-digit numbers stay
+ * ungrouped (`1000`, as Spanish and Polish do) so small balances read as plain digits; grouping
+ * starts at five digits.
+ */
+export function formatNumber(locale: Locale, value: number): string {
+  const grouped = Math.abs(value) >= 10_000;
+  const cacheKey = `${locale}:${grouped}`;
+  let formatter = numberFormats.get(cacheKey);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(localeTag(locale), { useGrouping: grouped });
+    numberFormats.set(cacheKey, formatter);
+  }
+  return formatter.format(value);
+}
+
+/** `hh:mm` in the locale's clock (24 h in Vietnamese, 12 h in English); empty for an invalid date. */
+export function formatTime(locale: Locale, date: Date): string {
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat(localeTag(locale), {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function templateOf(locale: Locale, key: MessageKey): string {
+  return messages[locale][key];
+}
+
+function valueText(locale: Locale, value: MessageValue): string {
+  return typeof value === "number" ? formatNumber(locale, value) : value;
+}
+
+function fill(
+  locale: Locale,
+  key: string,
+  template: string,
+  params: Readonly<Record<string, MessageValue | undefined>>,
+): string {
+  return template.replace(PLACEHOLDER, (_match, name: string) => {
+    const value = params[name];
+    if (value === undefined) {
+      throw new Error(`Missing parameter "${name}" for message "${key}"`);
+    }
+    return valueText(locale, value);
+  });
+}
+
+/** A message with its `{placeholders}` filled in. A missing parameter throws. */
+export function format<K extends ParamKey>(
+  locale: Locale,
+  key: K,
+  params: MessageParams<K>,
+): string {
+  return fill(locale, key, templateOf(locale, key), params);
+}
+
+/**
+ * The plural form of `<base>.one` / `<base>.other` for `count`, chosen by the locale's plural rules;
+ * `{count}` is filled in automatically, other placeholders come from `params`.
+ */
+export function formatPlural<B extends PluralBase>(
+  locale: Locale,
+  base: B,
+  count: number,
+  params?: PluralParams<B>,
+): string {
+  const category = new Intl.PluralRules(localeTag(locale)).select(count);
+  const key = `${base}.${category === "one" ? "one" : "other"}` as MessageKey;
+  return fill(locale, key, templateOf(locale, key), { ...params, count });
+}
+
+export type TemplatePart = string | { param: string };
+
+/**
+ * A message split into text and placeholders, for callers that put elements (not just text) into a
+ * sentence. The word order stays the template's.
+ */
+export function templateParts(locale: Locale, key: ParamKey): TemplatePart[] {
+  const template = templateOf(locale, key);
+  const parts: TemplatePart[] = [];
+  let last = 0;
+  for (const match of template.matchAll(PLACEHOLDER)) {
+    if (match.index > last) parts.push(template.slice(last, match.index));
+    parts.push({ param: match[1]! });
+    last = match.index + match[0].length;
+  }
+  if (last < template.length) parts.push(template.slice(last));
+  return parts;
 }
 
 /** Every message key of a locale, so tests can check that the locales stay aligned. */
 export function messageKeys(locale: Locale): string[] {
   return Object.keys(messages[locale]);
+}
+
+/** The raw template of `key`, or undefined; for tests and for looking up keys built at run time. */
+export function rawMessage(locale: Locale, key: string): string | undefined {
+  return (messages[locale] as Readonly<Record<string, string>>)[key];
+}
+
+/** True when `key` is a message without placeholders, so it can be shown through `t`. */
+export function isPlainKey(key: string): key is PlainKey {
+  const template = rawMessage("vi", key);
+  return template !== undefined && placeholders(template).length === 0;
 }

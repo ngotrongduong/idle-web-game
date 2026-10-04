@@ -35,6 +35,47 @@ button:disabled {
   padding: 18px 4px;
 }
 
+.hero-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.locale-switch {
+  display: inline-flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid #6e5a43;
+  border-radius: 999px;
+}
+
+.locale-switch button {
+  min-height: 36px;
+  border: 0;
+  padding: 6px 12px;
+  color: #aa9b87;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.locale-switch button + button {
+  border-left: 1px solid #6e5a43;
+}
+
+.locale-switch button.active {
+  color: #fff4de;
+  background: #5b4424;
+  font-weight: 700;
+}
+
+.locale-switch button:focus-visible {
+  outline: 2px solid #d9b56d;
+  outline-offset: -2px;
+}
+
 .eyebrow,
 .section-kicker {
   color: #d9b56d;
@@ -118,6 +159,8 @@ p {
 
 .stack {
   display: grid;
+  /* `minmax(0, 1fr)`: a wide child (a select with long option names) must not widen the page. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   margin-top: 12px;
 }
@@ -127,7 +170,6 @@ p {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  text-transform: capitalize;
 }
 
 .offer-card .rarity {
@@ -168,7 +210,6 @@ p {
 .roster li {
   border-top: 1px solid #44372a;
   padding-top: 8px;
-  text-transform: capitalize;
 }
 
 .roster li span {
@@ -227,6 +268,7 @@ h2 {
 
 .team-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -271,7 +313,6 @@ h2 {
 .hero-picker label span {
   display: grid;
   gap: 2px;
-  text-transform: capitalize;
 }
 
 .hero-picker small,
@@ -288,7 +329,6 @@ h2 {
 .dungeon-controls select {
   min-width: 0;
   flex: 1;
-  text-transform: capitalize;
 }
 
 .danger-button {
@@ -491,6 +531,7 @@ h2 {
 
 .equipment-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -615,6 +656,7 @@ h2 {
 
 .auto-sell-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -672,6 +714,7 @@ h2 {
 .builder-card,
 .building-card {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 

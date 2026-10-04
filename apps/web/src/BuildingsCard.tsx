@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { t } from "@idle/i18n";
 import {
   constructionProgress,
   enhanceCapLabel,
@@ -16,6 +15,7 @@ import {
   type MaterialCost,
   type QualityTier,
 } from "./buildings";
+import { useLocale } from "./locale";
 
 /** The contract caps `speed_up_construction.items`; the server never uses more than it needs. */
 const MAX_SPEED_UP_ITEMS = 1_000;
@@ -36,14 +36,20 @@ function useServerNow(offsetMs: number): number {
 /** One line for screens other than the Guild tab: what is being built and how long is left. */
 export function ConstructionNote(props: { construction: Construction; clockOffsetMs: number }) {
   const { construction } = props;
+  const { t, format } = useLocale();
   const remainingMs = remainingBuildMs(construction, useServerNow(props.clockOffsetMs));
+  const target = format("buildings.upgradingTo", {
+    building: t(`building.${construction.building}`),
+    level: construction.targetLevel,
+  });
   return (
     <small className="construction-note" data-testid="construction-note">
-      {t("vi", "buildings.upgrading")}: {t("vi", `building.${construction.building}`)} →{" "}
-      {t("vi", "guild.level")} {construction.targetLevel} ·{" "}
       {remainingMs > 0
-        ? `${t("vi", "buildings.remaining")} ${formatDuration(remainingMs / 1_000)}`
-        : t("vi", "buildings.finishing")}
+        ? format("buildings.noteRemaining", {
+            target,
+            time: formatDuration(remainingMs / 1_000),
+          })
+        : format("buildings.noteFinishing", { target })}
     </small>
   );
 }
@@ -58,6 +64,7 @@ function ConstructionPanel(props: {
   onSpeedUp: (items: number) => void;
 }) {
   const { construction, rules, speedUpOwned, busy } = props;
+  const { t, format } = useLocale();
   const serverNow = useServerNow(props.clockOffsetMs);
   const remainingMs = remainingBuildMs(construction, serverNow);
   const percent = Math.round(constructionProgress(construction, serverNow) * 100);
@@ -65,6 +72,10 @@ function ConstructionPanel(props: {
   const finishing = remainingMs === 0;
   const needed = rules ? speedUpItemsNeeded(remainingMs, rules.speedUpSecondsPerItem) : 0;
   const usable = Math.min(needed, speedUpOwned, MAX_SPEED_UP_ITEMS);
+  const useAllLabel =
+    speedUpOwned > 0 && speedUpOwned < needed
+      ? t("buildings.speedUpAll")
+      : t("buildings.speedUpNeeded");
 
   return (
     <div
@@ -73,19 +84,21 @@ function ConstructionPanel(props: {
       data-building={construction.building}
     >
       <strong data-testid="construction-target">
-        {t("vi", "buildings.upgrading")}: {t("vi", `building.${construction.building}`)} →{" "}
-        {t("vi", "guild.level")} {construction.targetLevel}
+        {format("buildings.upgradingTo", {
+          building: t(`building.${construction.building}`),
+          level: construction.targetLevel,
+        })}
       </strong>
       <div className="construction-time">
-        <span>{t("vi", "buildings.remaining")}</span>
+        <span>{t("buildings.remaining")}</span>
         <strong data-testid="construction-countdown">
-          {finishing ? t("vi", "buildings.finishing") : formatDuration(remainingMs / 1_000)}
+          {finishing ? t("buildings.finishing") : formatDuration(remainingMs / 1_000)}
         </strong>
       </div>
       <div
         className="progress"
         role="progressbar"
-        aria-label={t("vi", "buildings.progress")}
+        aria-label={t("buildings.progress")}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={percent}
@@ -96,8 +109,11 @@ function ConstructionPanel(props: {
       {rules ? (
         <div className="speed-up">
           <small data-testid="speed-up-owned" data-material-id={rules.speedUpMaterialId}>
-            {props.speedUpName} ×{speedUpOwned} · {t("vi", "buildings.speedUpEach")}{" "}
-            {formatDuration(rules.speedUpSecondsPerItem)}
+            {format("buildings.speedUpOwned", {
+              name: props.speedUpName,
+              owned: speedUpOwned,
+              duration: formatDuration(rules.speedUpSecondsPerItem),
+            })}
           </small>
           <div className="speed-up-actions">
             <button
@@ -106,7 +122,7 @@ function ConstructionPanel(props: {
               disabled={busy || finishing || speedUpOwned < 1}
               onClick={() => props.onSpeedUp(1)}
             >
-              {t("vi", "buildings.speedUpOne")}
+              {t("buildings.speedUpOne")}
             </button>
             <button
               type="button"
@@ -114,15 +130,17 @@ function ConstructionPanel(props: {
               disabled={busy || finishing || usable < 1}
               onClick={() => props.onSpeedUp(usable)}
             >
-              {speedUpOwned > 0 && speedUpOwned < needed
-                ? t("vi", "buildings.speedUpAll")
-                : t("vi", "buildings.speedUpNeeded")}
-              {needed > 0 ? ` (×${usable > 0 ? usable : needed})` : ""}
+              {needed > 0
+                ? format("common.withCount", {
+                    label: useAllLabel,
+                    count: usable > 0 ? usable : needed,
+                  })
+                : useAllLabel}
             </button>
           </div>
           {speedUpOwned < 1 ? (
             <small className="disabled-reason" data-testid="speed-up-reason">
-              {t("vi", "buildings.speedUpEmpty")}
+              {t("buildings.speedUpEmpty")}
             </small>
           ) : null}
         </div>
@@ -144,6 +162,7 @@ function UpgradePanel(props: {
   onUpgrade: (building: BuildingId) => void;
 }) {
   const { building, goldCost, buildSeconds, materials, gold, ownedMaterial } = props;
+  const { t, format, number } = useLocale();
   const block = upgradeBlock({
     goldCost,
     materials,
@@ -155,7 +174,7 @@ function UpgradePanel(props: {
   if (goldCost === null || buildSeconds === null) {
     return (
       <p className="disabled-reason" data-testid={`upgrade-${building}-reason`}>
-        {t("vi", "buildings.blocked.max_level")}
+        {t("buildings.blocked.max_level")}
       </p>
     );
   }
@@ -164,8 +183,8 @@ function UpgradePanel(props: {
     <>
       <ul className="cost-list" data-testid={`upgrade-${building}-cost`}>
         <li className={gold >= goldCost ? undefined : "unmet"}>
-          <span>{t("vi", "dungeon.playerGold")}</span>
-          <strong>{goldCost}</strong>
+          <span>{t("dungeon.playerGold")}</span>
+          <strong>{number(goldCost)}</strong>
         </li>
         {materials.map((entry) => {
           const owned = ownedMaterial(entry.materialId);
@@ -176,14 +195,12 @@ function UpgradePanel(props: {
               key={entry.materialId}
             >
               <span>{props.materialName(entry.materialId)}</span>
-              <strong>
-                {owned}/{entry.qty}
-              </strong>
+              <strong>{format("common.ratio", { current: owned, max: entry.qty })}</strong>
             </li>
           );
         })}
         <li>
-          <span>{t("vi", "buildings.buildTime")}</span>
+          <span>{t("buildings.buildTime")}</span>
           <strong>{formatDuration(buildSeconds)}</strong>
         </li>
       </ul>
@@ -194,12 +211,15 @@ function UpgradePanel(props: {
         disabled={props.busy || block !== null}
         onClick={() => props.onUpgrade(building)}
       >
-        {t("vi", "buildings.upgrade")} {t("vi", `building.${building}`)} ({goldCost}{" "}
-        {t("vi", "common.gold")} · {formatDuration(buildSeconds)})
+        {format("buildings.upgradeAction", {
+          building: t(`building.${building}`),
+          gold: goldCost,
+          time: formatDuration(buildSeconds),
+        })}
       </button>
       {block ? (
         <small className="disabled-reason" data-testid={`upgrade-${building}-reason`}>
-          {t("vi", `buildings.blocked.${block}`)}
+          {t(`buildings.blocked.${block}`)}
         </small>
       ) : null}
     </>
@@ -226,6 +246,7 @@ export type BuildingsCardProps = {
 /** Guild tab: the builder's current job, then one card per building with its next upgrade. */
 export function BuildingsCard(props: BuildingsCardProps) {
   const { construction, rules, gold, ownedMaterial, materialName, busy } = props;
+  const { locale, t, format, formatNodes, number } = useLocale();
   const hallInfo = props.hall.find((entry) => entry.level === props.hallLevel);
   const nextHall = props.hall.find((entry) => entry.level === props.hallLevel + 1);
   const forgeInfo = props.forge.find((entry) => entry.level === props.forgeLevel);
@@ -234,14 +255,18 @@ export function BuildingsCard(props: BuildingsCardProps) {
     (entry) => entry.level > props.hallLevel && entry.teamLimit > (hallInfo?.teamLimit ?? 1),
   );
   const builderBusy = construction !== null;
+  const forgeCap = forgeInfo?.maxEnhanceLevel ?? 0;
 
   return (
     <section className="stack">
       <section className="card builder-card" data-testid="builder-card">
         <div className="builder-heading">
-          <span className="section-kicker">{t("vi", "buildings.builder")}</span>
+          <span className="section-kicker">{t("buildings.builder")}</span>
           <strong className="player-gold">
-            {t("vi", "dungeon.playerGold")}: <span data-testid="guild-gold">{gold}</span>
+            {formatNodes("common.labelValue", {
+              label: t("dungeon.playerGold"),
+              value: <span data-testid="guild-gold">{number(gold)}</span>,
+            })}
           </strong>
         </div>
         {construction ? (
@@ -255,35 +280,55 @@ export function BuildingsCard(props: BuildingsCardProps) {
             onSpeedUp={props.onSpeedUp}
           />
         ) : (
-          <p data-testid="builder-idle">{t("vi", "buildings.builderIdle")}</p>
+          <p data-testid="builder-idle">{t("buildings.builderIdle")}</p>
         )}
       </section>
 
       <section className="card building-card" data-testid="building-hall">
-        <span className="section-kicker">{t("vi", "building.hall")}</span>
+        <span className="section-kicker">{t("building.hall")}</span>
         <h2>
-          {t("vi", "guild.level")} <span data-testid="hall-level">{props.hallLevel}</span>
+          {formatNodes("common.level", {
+            level: <span data-testid="hall-level">{props.hallLevel}</span>,
+          })}
         </h2>
         <ul className="hall-stats">
           <li>
-            {t("vi", "guild.heroCapacity")}:{" "}
-            <strong data-testid="hall-hero-capacity">{hallInfo?.heroCapacity ?? 0}</strong>
+            {formatNodes("common.labelValue", {
+              label: t("guild.heroCapacity"),
+              value: (
+                <strong data-testid="hall-hero-capacity">
+                  {number(hallInfo?.heroCapacity ?? 0)}
+                </strong>
+              ),
+            })}
           </li>
           <li>
-            {t("vi", "guild.teamLimit")}:{" "}
-            <strong data-testid="hall-team-limit">{hallInfo?.teamLimit ?? 1}</strong>
+            {formatNodes("common.labelValue", {
+              label: t("guild.teamLimit"),
+              value: (
+                <strong data-testid="hall-team-limit">{number(hallInfo?.teamLimit ?? 1)}</strong>
+              ),
+            })}
           </li>
         </ul>
         {nextHall && hallInfo ? (
           <div className="building-next" data-testid="hall-next">
             <span className="section-kicker">
-              {t("vi", "buildings.nextLevel")} ({nextHall.level})
+              {format("buildings.nextLevel", { level: nextHall.level })}
             </span>
             <small>
-              {t("vi", "guild.heroCapacity")}: {hallInfo.heroCapacity} → {nextHall.heroCapacity}
+              {format("common.change", {
+                label: t("guild.heroCapacity"),
+                from: hallInfo.heroCapacity,
+                to: nextHall.heroCapacity,
+              })}
             </small>
             <small>
-              {t("vi", "guild.teamLimit")}: {hallInfo.teamLimit} → {nextHall.teamLimit}
+              {format("common.change", {
+                label: t("guild.teamLimit"),
+                from: hallInfo.teamLimit,
+                to: nextHall.teamLimit,
+              })}
             </small>
           </div>
         ) : null}
@@ -300,43 +345,54 @@ export function BuildingsCard(props: BuildingsCardProps) {
           onUpgrade={props.onUpgrade}
         />
         {nextTeamLevel ? (
-          <small>
-            {t("vi", "guild.nextTeamAt")} {nextTeamLevel.level}
-          </small>
+          <small>{format("guild.nextTeamAt", { level: nextTeamLevel.level })}</small>
         ) : null}
       </section>
 
       <section className="card building-card" data-testid="building-forge">
-        <span className="section-kicker">{t("vi", "building.forge")}</span>
+        <span className="section-kicker">{t("building.forge")}</span>
         <h2>
-          {t("vi", "guild.level")} <span data-testid="forge-level">{props.forgeLevel}</span>
+          {formatNodes("common.level", {
+            level: <span data-testid="forge-level">{props.forgeLevel}</span>,
+          })}
         </h2>
         <ul className="hall-stats">
           <li>
-            {t("vi", "forge.enhanceCap")}:{" "}
-            <strong data-testid="forge-enhance-cap">
-              {enhanceCapLabel(forgeInfo?.maxEnhanceLevel ?? 0)}
-            </strong>
+            {formatNodes("common.labelValue", {
+              label: t("forge.enhanceCap"),
+              value: (
+                <strong data-testid="forge-enhance-cap">{enhanceCapLabel(forgeCap, locale)}</strong>
+              ),
+            })}
           </li>
           <li>
-            {t("vi", "forge.craftOdds")}:{" "}
-            <strong data-testid="forge-odds">
-              {oddsLabel(props.qualityTiers, forgeInfo?.qualityWeightsBps)}
-            </strong>
+            {formatNodes("common.labelValue", {
+              label: t("forge.craftOdds"),
+              value: (
+                <strong data-testid="forge-odds">
+                  {oddsLabel(props.qualityTiers, forgeInfo?.qualityWeightsBps, locale)}
+                </strong>
+              ),
+            })}
           </li>
         </ul>
         {nextForge ? (
           <div className="building-next" data-testid="forge-next">
             <span className="section-kicker">
-              {t("vi", "buildings.nextLevel")} ({nextForge.level})
+              {format("buildings.nextLevel", { level: nextForge.level })}
             </span>
             <small>
-              {t("vi", "forge.enhanceCap")}: {enhanceCapLabel(forgeInfo?.maxEnhanceLevel ?? 0)} →{" "}
-              {enhanceCapLabel(nextForge.maxEnhanceLevel)}
+              {format("common.change", {
+                label: t("forge.enhanceCap"),
+                from: enhanceCapLabel(forgeCap, locale),
+                to: enhanceCapLabel(nextForge.maxEnhanceLevel, locale),
+              })}
             </small>
             <small>
-              {t("vi", "forge.craftOdds")}:{" "}
-              {oddsLabel(props.qualityTiers, nextForge.qualityWeightsBps)}
+              {format("common.labelValue", {
+                label: t("forge.craftOdds"),
+                value: oddsLabel(props.qualityTiers, nextForge.qualityWeightsBps, locale),
+              })}
             </small>
           </div>
         ) : null}

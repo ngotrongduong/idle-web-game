@@ -166,19 +166,36 @@ describe("upgrade and enhancement gating", () => {
     expect(dismantleDustFor(13_000, [])).toBe(0);
   });
 
-  it("lists craft odds for a Forge level and formats basis points", () => {
-    expect(oddsLabel(tiers, forge[1]!.qualityWeightsBps)).toBe(
-      "Thường 67% · Tinh xảo 27% · Hiếm 5.3% · Kiệt tác 0.7%",
+  it("lists craft odds for a Forge level in the player's language", () => {
+    expect(oddsLabel(tiers, forge[1]!.qualityWeightsBps, "vi")).toBe(
+      "Thường 67% · Tinh xảo 27% · Hiếm 5,3% · Kiệt tác 0,7%",
     );
-    expect(oddsLabel(tiers, undefined)).toBe(
-      "Thường 70% · Tinh xảo 25% · Hiếm 4.5% · Kiệt tác 0.5%",
+    expect(oddsLabel(tiers, undefined, "vi")).toBe(
+      "Thường 70% · Tinh xảo 25% · Hiếm 4,5% · Kiệt tác 0,5%",
     );
-    expect(enhanceCapLabel(0)).toBe("chưa mở");
-    expect(enhanceCapLabel(2)).toBe("+2");
-    expect(formatBps(7_000)).toBe("70%");
-    expect(formatBps(450)).toBe("4.5%");
-    expect(formatBps(50)).toBe("0.5%");
-    expect(formatBps(4_375)).toBe("43.75%");
+    expect(oddsLabel(tiers, forge[1]!.qualityWeightsBps, "en")).toBe(
+      "Common 67% · Fine 27% · Rare 5.3% · Masterwork 0.7%",
+    );
+    expect(oddsLabel(tiers, undefined, "en")).toBe(
+      "Common 70% · Fine 25% · Rare 4.5% · Masterwork 0.5%",
+    );
+  });
+
+  it("labels the enhancement cap in both languages", () => {
+    expect(enhanceCapLabel(0, "vi")).toBe("chưa mở");
+    expect(enhanceCapLabel(0, "en")).toBe("locked");
+    expect(enhanceCapLabel(2, "vi")).toBe("+2");
+    expect(enhanceCapLabel(2, "en")).toBe("+2");
+  });
+
+  it("formats basis points with the locale's decimal separator", () => {
+    expect(formatBps(7_000, "vi")).toBe("70%");
+    expect(formatBps(7_000, "en")).toBe("70%");
+    expect(formatBps(450, "vi")).toBe("4,5%");
+    expect(formatBps(450, "en")).toBe("4.5%");
+    expect(formatBps(50, "en")).toBe("0.5%");
+    expect(formatBps(4_375, "vi")).toBe("43,75%");
+    expect(formatBps(4_375, "en")).toBe("43.75%");
   });
 });
 

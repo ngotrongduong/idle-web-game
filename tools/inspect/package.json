@@ -20,7 +20,8 @@
     "e2e:promotion": "tsx src/e2e-promotion.ts",
     "e2e:equipment": "tsx src/e2e-equipment.ts",
     "e2e:auto-sell": "tsx src/e2e-auto-sell.ts",
-    "e2e:buildings": "tsx src/e2e-buildings.ts"
+    "e2e:buildings": "tsx src/e2e-buildings.ts",
+    "e2e:language": "tsx src/e2e-language.ts"
   },
   "dependencies": {
     "playwright": "1.56.1",

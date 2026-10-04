@@ -2,7 +2,9 @@
  * Display helpers for the M1.7 buildings UI. The server decides every outcome; these functions only
  * turn catalog data and server timestamps into what the screen shows (countdowns, disabled reasons).
  */
-import { t } from "@idle/i18n";
+import { format, t, type Locale } from "@idle/i18n";
+import { localizedName } from "./catalog-names";
+import { joinParts } from "./translator";
 
 export type BuildingId = "hall" | "forge";
 
@@ -79,7 +81,10 @@ export function constructionProgress(construction: Construction, serverNowMs: nu
   return Math.min(1, Math.max(0, done));
 }
 
-/** `m:ss` under an hour, `h:mm:ss` from one hour; a partial second counts as a whole one. */
+/**
+ * `m:ss` under an hour, `h:mm:ss` from one hour; a partial second counts as a whole one. A clock
+ * reading, so it reads the same in every language.
+ */
 export function formatDuration(totalSeconds: number): string {
   const seconds = Number.isFinite(totalSeconds) ? Math.max(0, Math.ceil(totalSeconds)) : 0;
   const hours = Math.floor(seconds / 3_600);
@@ -94,9 +99,12 @@ export function speedUpItemsNeeded(remainingMs: number, secondsPerItem: number):
   return Math.ceil(remainingMs / (secondsPerItem * 1_000));
 }
 
-/** Basis points as a percentage without trailing zeros: 7000 → "70%", 450 → "4.5%". */
-export function formatBps(bps: number): string {
-  return `${Number((bps / 100).toFixed(2))}%`;
+/**
+ * Basis points as a percentage without trailing zeros: 7000 → "70%", and 450 → "4.5%" in English
+ * or "4,5%" in Vietnamese.
+ */
+export function formatBps(bps: number, locale: Locale): string {
+  return format(locale, "common.percent", { value: Number((bps / 100).toFixed(2)) });
 }
 
 export type UpgradeBlock = "max_level" | "builder_busy" | "gold" | "materials";
@@ -164,21 +172,26 @@ export function dismantleDustFor(qualityBps: number, tiers: readonly QualityTier
 }
 
 /**
- * Craft odds of one Forge level, e.g. "Thường 70% · Tinh xảo 25%". `weightsBps` is in quality-tier
- * order; without it the tiers' base (Forge level 1) weights are shown.
+ * Craft odds of one Forge level, e.g. "Thường 70% · Tinh xảo 25%" or "Common 70% · Fine 25%".
+ * `weightsBps` is in quality-tier order; without it the tiers' base (Forge level 1) weights are
+ * shown.
  */
 export function oddsLabel(
   tiers: readonly QualityTier[],
   weightsBps: readonly number[] | undefined,
+  locale: Locale,
 ): string {
-  return tiers
-    .map((tier, index) => `${tier.nameVi} ${formatBps(weightsBps?.[index] ?? tier.weightBps)}`)
-    .join(" · ");
+  return joinParts(
+    tiers.map(
+      (tier, index) =>
+        `${localizedName(tier, locale)} ${formatBps(weightsBps?.[index] ?? tier.weightBps, locale)}`,
+    ),
+  );
 }
 
 /** "+2" for a Forge that enhances up to +2; the locked label while enhancement is not open. */
-export function enhanceCapLabel(maxEnhanceLevel: number): string {
-  return maxEnhanceLevel > 0 ? `+${maxEnhanceLevel}` : t("vi", "forge.enhanceLocked");
+export function enhanceCapLabel(maxEnhanceLevel: number, locale: Locale): string {
+  return maxEnhanceLevel > 0 ? `+${maxEnhanceLevel}` : t(locale, "forge.enhanceLocked");
 }
 
 function sameConstruction(left: Construction | null, right: Construction | null): boolean {
