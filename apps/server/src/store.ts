@@ -247,7 +247,9 @@ export class InMemoryGameStore implements GameStore {
   }
 
   async getAutoSellSettings(playerId: string): Promise<AutoSellSettings> {
-    return { ...(this.autoSellSettings.get(playerId) ?? { enabled: false, maxQualityBps: 10_000 }) };
+    return {
+      ...(this.autoSellSettings.get(playerId) ?? { enabled: false, maxQualityBps: 10_000 }),
+    };
   }
 
   async setAutoSellSettings(

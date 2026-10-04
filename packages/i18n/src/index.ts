@@ -84,7 +84,8 @@ const messages = {
     "autosell.on": "Đang bật",
     "autosell.off": "Đang tắt",
     "autosell.threshold": "Tự bán đến phẩm chất",
-    "autosell.help": "Chỉ áp dụng cho trang bị mới nhận hoặc mới chế tạo. Trang bị đã khóa hoặc đang mặc không bao giờ bị tự bán.",
+    "autosell.help":
+      "Chỉ áp dụng cho trang bị mới nhận hoặc mới chế tạo. Trang bị đã khóa hoặc đang mặc không bao giờ bị tự bán.",
     "craft.title": "Chế tạo",
     "craft.craft": "Chế tạo",
     "craft.qualityNote": "Phẩm chất chế tạo là ngẫu nhiên theo bảng closed-beta trong game-data.",
@@ -179,7 +180,8 @@ const messages = {
     "autosell.on": "On",
     "autosell.off": "Off",
     "autosell.threshold": "Auto-sell up to quality",
-    "autosell.help": "Only applies to newly acquired or crafted equipment. Locked or equipped items are never auto-sold.",
+    "autosell.help":
+      "Only applies to newly acquired or crafted equipment. Locked or equipped items are never auto-sold.",
     "craft.title": "Crafting",
     "craft.craft": "Craft",
     "craft.qualityNote":

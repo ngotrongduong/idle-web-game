@@ -1138,9 +1138,7 @@ export function buildServer(options?: { store?: GameStore }) {
         const autoSell = await store.getAutoSellSettings(playerId);
         const shouldAutoSell = autoSell.enabled && item.qualityBps <= autoSell.maxQualityBps;
         const autoSellGold = shouldAutoSell
-          ? Math.floor(
-              (itemSellGold(spec) * item.qualityBps) / equipmentConfig.baseQualityBps,
-            )
+          ? Math.floor((itemSellGold(spec) * item.qualityBps) / equipmentConfig.baseQualityBps)
           : 0;
 
         if (shouldAutoSell) {
@@ -1158,9 +1156,7 @@ export function buildServer(options?: { store?: GameStore }) {
           ok: true,
           version: nextState.version,
           patch:
-            equipmentConfig.craftGoldCost > 0 || autoSellGold > 0
-              ? { gold: nextState.gold }
-              : {},
+            equipmentConfig.craftGoldCost > 0 || autoSellGold > 0 ? { gold: nextState.gold } : {},
           events: [
             {
               type: "item_crafted",
