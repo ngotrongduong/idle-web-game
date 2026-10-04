@@ -22,6 +22,11 @@ const FAMILY_ADVANTAGE = Object.fromEntries(
   foundationGameData.classFamilies.map((family) => [family.id, family.advantageFamilyId]),
 );
 
+export const CURRENT_DUNGEON_BATTLE_RULES: BattleRules = {
+  ...DEFAULT_BATTLE_RULES,
+  familyAdvantage: FAMILY_ADVANTAGE,
+};
+
 function applyBps(value: number, multiplierBps: number): number {
   return Math.max(1, Math.floor((value * multiplierBps) / BPS));
 }
