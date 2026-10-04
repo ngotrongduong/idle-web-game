@@ -7,12 +7,13 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #184 passed on commit `3e4fcbe7f6e49ba6165903c7e4dc3cde9e3ab82f`.
-- The verified flow now includes M1.2B backend, Team & Dungeon UI, client-side replay hash checks, and a real Chromium E2E path: guest → Tavern refresh → recruit 3 heroes → save Team 1 → start a 6-wave dungeon → verify 6/6 client hashes match the persisted server hashes.
-- Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
-- PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
+- GitHub Actions CI run #203 passed on commit `88c475ba57e30262ca0a567347a758127c012127`.
+- The verified browser/PostgreSQL flow now covers guest → Tavern refresh → recruit 3 heroes → save Team 1 → start a deterministic 6-wave dungeon → verify 6/6 client replay hashes → simulate +3 hours offline → accrue exactly 168 cycles → claim exact gold + EXP → reset pending rewards to zero.
+- Idle timing now matches the balancing document: 8 seconds per wave × 6 waves = 48-second nominal cycle; at 75% offline efficiency that becomes 64 seconds per credited cycle, capped at 8 hours.
+- Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, dungeon E2E, build and Docker Compose validation are green.
+- PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence, heroes, teams, dungeon replay persistence and idle reward fields.
 - Temporary format-once workflows have been removed; CI is read-only again.
-- Keep PR #2 draft while M1 continues. Do not merge unfinished M1.2 work.
+- Keep PR #2 draft while M1 continues. Do not merge unfinished M1 work.
 
 ## Completed in this branch
 - M0.1 monorepo workspace paths: `apps/*`, `packages/*`, `tools/*`.
@@ -57,12 +58,27 @@ M1 — Core loop.
   - browser client replays every wave from persisted snapshots + seed + battle-rule snapshot
   - visible per-wave hash match/mismatch state
   - Chromium E2E drives the full real UI/API/PostgreSQL flow and verifies all six client hashes match the server
+- M1.3 idle/offline catch-up + claim:
+  - data-driven 48-second six-wave cycle, 75% passive/offline efficiency and 8-hour cap
+  - pure game-core accrual math preserves partial-cycle time and discards time older than the cap
+  - PostgreSQL persists `lastAccruedAt`, pending cycles/gold/EXP and completed cycle count
+  - server-authoritative `claim_dungeon_rewards` with player row locking, versioning and command idempotency
+  - rewards are paid only on claim; replay reward metadata is never double-paid
+  - EXP is paid to hero IDs stored in the run snapshot, not whichever heroes happen to be in the team later
+  - React UI shows pending cycles/gold/EXP, total cycles, player gold and hero EXP; dungeon progress polls without overwriting unsaved team drafts
+  - Chromium/PostgreSQL E2E backdates a run exactly three hours, verifies 168 credited cycles and exact reward math, then claims through the real UI and verifies pending rewards reset to zero
 
 ## Next implementation work
-1. Add idle cycle accumulation and claim using expected rewards without double-paying replay metadata.
-2. Decide and implement cross-wave HP/MP carryover semantics before longer dungeon progression depends on them.
-3. Add reward payout/progression integration for completed dungeon cycles.
-4. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+1. M1.4: turn raw hero EXP into level progression using the documented XP curve and tier level caps.
+2. M1.4: implement T1 → T2 → T3 branch selection/promotion plus the 20% retained-potential rule; promotion-seal inventory must be integrated cleanly rather than bypassed.
+3. Decide cross-wave HP/MP carryover semantics before deeper dungeon difficulty/progression depends on them.
+4. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
+5. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+
+## Known M1.3 limitations
+- Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
+- Heroes receive persistent raw EXP on claim, but automatic level-up and tier-cap handling belong to M1.4 and are not implemented yet.
+- Cross-wave HP/MP carryover is still not implemented; each stored wave currently begins from its persisted full-stat snapshot.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
