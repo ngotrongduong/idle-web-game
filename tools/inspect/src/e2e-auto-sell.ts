@@ -131,6 +131,17 @@ try {
   }
 
   const toggle = autoSellCard.getByRole("checkbox");
+  await page.waitForFunction(
+    () => {
+      const checkbox = document.querySelector(
+        ".auto-sell-card input[type='checkbox']",
+      );
+      return checkbox instanceof HTMLInputElement && !checkbox.disabled;
+    },
+    undefined,
+    { timeout: 10_000 },
+  );
+
   const [toggleResponse] = await Promise.all([
     page.waitForResponse(
       (candidate) =>
