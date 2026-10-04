@@ -8,6 +8,19 @@ export const UPGRADE_PITY_STEP_BPS = 500;
 export const UPGRADE_SAFE_LEVEL = 5;
 export const UPGRADE_MAX_LEVEL = UPGRADE_SUCCESS_BPS.length;
 
+/** Tunable enhancement table; callers pass the validated game-data values. */
+export type UpgradeRules = {
+  successBps: readonly number[];
+  pityStepBps: number;
+  safeLevel: number;
+};
+
+export const DEFAULT_UPGRADE_RULES: UpgradeRules = {
+  successBps: UPGRADE_SUCCESS_BPS,
+  pityStepBps: UPGRADE_PITY_STEP_BPS,
+  safeLevel: UPGRADE_SAFE_LEVEL,
+};
+
 export type UpgradeState = {
   level: number;
   pityFailures: number;
@@ -22,9 +35,9 @@ export type UpgradeAttemptResult = {
   pityFailures: number;
 };
 
-function assertLevel(level: number): void {
-  if (!Number.isInteger(level) || level < 0 || level > UPGRADE_MAX_LEVEL) {
-    throw new Error(`upgrade level must be an integer from 0 to ${UPGRADE_MAX_LEVEL}`);
+function assertLevel(level: number, maxLevel: number): void {
+  if (!Number.isInteger(level) || level < 0 || level > maxLevel) {
+    throw new Error(`upgrade level must be an integer from 0 to ${maxLevel}`);
   }
 }
 
@@ -34,27 +47,37 @@ function assertPityFailures(value: number): void {
   }
 }
 
-export function getUpgradeSuccessBps(targetLevel: number, pityFailures = 0): number {
-  if (!Number.isInteger(targetLevel) || targetLevel < 1 || targetLevel > UPGRADE_MAX_LEVEL) {
-    throw new Error(`targetLevel must be an integer from 1 to ${UPGRADE_MAX_LEVEL}`);
+export function getUpgradeSuccessBps(
+  targetLevel: number,
+  pityFailures = 0,
+  rules: UpgradeRules = DEFAULT_UPGRADE_RULES,
+): number {
+  const maxLevel = rules.successBps.length;
+  if (!Number.isInteger(targetLevel) || targetLevel < 1 || targetLevel > maxLevel) {
+    throw new Error(`targetLevel must be an integer from 1 to ${maxLevel}`);
   }
   assertPityFailures(pityFailures);
 
-  const base = UPGRADE_SUCCESS_BPS[targetLevel - 1]!;
-  return Math.min(10_000, base + pityFailures * UPGRADE_PITY_STEP_BPS);
+  const base = rules.successBps[targetLevel - 1]!;
+  return Math.min(10_000, base + pityFailures * rules.pityStepBps);
 }
 
-export function resolveUpgradeAttempt(state: UpgradeState, rng: SeededRng): UpgradeAttemptResult {
-  assertLevel(state.level);
+export function resolveUpgradeAttempt(
+  state: UpgradeState,
+  rng: SeededRng,
+  rules: UpgradeRules = DEFAULT_UPGRADE_RULES,
+): UpgradeAttemptResult {
+  const maxLevel = rules.successBps.length;
+  assertLevel(state.level, maxLevel);
   assertPityFailures(state.pityFailures);
 
-  if (state.level >= UPGRADE_MAX_LEVEL) {
+  if (state.level >= maxLevel) {
     throw new Error("item is already at maximum upgrade level");
   }
 
   const beforeLevel = state.level;
   const targetLevel = beforeLevel + 1;
-  const successBps = getUpgradeSuccessBps(targetLevel, state.pityFailures);
+  const successBps = getUpgradeSuccessBps(targetLevel, state.pityFailures, rules);
   const success = rng.nextInt(10_000) < successBps;
 
   if (success) {
@@ -69,9 +92,7 @@ export function resolveUpgradeAttempt(state: UpgradeState, rng: SeededRng): Upgr
   }
 
   const afterLevel =
-    targetLevel >= UPGRADE_SAFE_LEVEL + 1
-      ? Math.max(UPGRADE_SAFE_LEVEL, beforeLevel - 1)
-      : beforeLevel;
+    targetLevel >= rules.safeLevel + 1 ? Math.max(rules.safeLevel, beforeLevel - 1) : beforeLevel;
 
   return {
     beforeLevel,

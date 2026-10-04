@@ -51,7 +51,9 @@ export {
   type TavernRarityRoll,
   type TavernRarityRules,
 } from "./tavern.js";
+export { rollCraftQualityBps, type WeightedQualityTier } from "./crafting.js";
 export {
+  DEFAULT_UPGRADE_RULES,
   getUpgradeSuccessBps,
   resolveUpgradeAttempt,
   simulateUpgradeJourney,
@@ -60,6 +62,7 @@ export {
   UPGRADE_SAFE_LEVEL,
   UPGRADE_SUCCESS_BPS,
   type UpgradeAttemptResult,
+  type UpgradeRules,
   type UpgradeState,
 } from "./upgrade.js";
 

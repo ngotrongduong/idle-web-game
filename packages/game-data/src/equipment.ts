@@ -18,6 +18,7 @@ export const EquipmentConfigSchema = z.object({
   enhanceBonusBps: z.array(z.number().int().nonnegative()).length(6),
   enhanceGoldCosts: z.array(z.number().int().nonnegative()).length(5),
   enhanceSuccessBps: z.array(z.number().int().min(0).max(10_000)).length(5),
+  enhancePityStepBps: z.number().int().min(0).max(10_000),
 });
 
 export type EquipmentConfig = z.infer<typeof EquipmentConfigSchema>;
@@ -44,6 +45,7 @@ export const equipmentConfig = EquipmentConfigSchema.parse({
   enhanceBonusBps: [0, 600, 1_200, 1_900, 2_700, 3_600],
   enhanceGoldCosts: [100, 160, 256, 410, 655],
   enhanceSuccessBps: [10_000, 9_500, 9_000, 8_000, 7_000],
+  enhancePityStepBps: 500,
 });
 
 const totalQualityWeight = equipmentConfig.qualityTiers.reduce(

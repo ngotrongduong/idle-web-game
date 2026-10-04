@@ -15,11 +15,13 @@ import {
   TavernResponseSchema,
   TeamsResponseSchema,
   type ApiError,
+  type DungeonRun,
   type FoundationPlayerState,
 } from "@idle/api-contract";
 import {
   calculateHeroStats,
   resolveUpgradeAttempt,
+  rollCraftQualityBps,
   SeededRng,
   HALL_MAX_LEVEL,
   hallUpgradeGoldCost,
@@ -110,24 +112,48 @@ async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now =
   return accruedRuns;
 }
 
+function snapshotHeroIds(runs: readonly DungeonRun[], include: (run: DungeonRun) => boolean) {
+  return new Set(
+    runs.filter(include).flatMap((run) => run.waves[0]?.allies.map((ally) => ally.id) ?? []),
+  );
+}
+
+/** Heroes whose combat snapshot (including equipped items) is farming in an active run. */
+function heroIdsInActiveRuns(runs: readonly DungeonRun[]): Set<string> {
+  return snapshotHeroIds(runs, (run) => run.status === "active");
+}
+
+/**
+ * Heroes that cannot change class yet: still farming, or owed EXP from a stopped run. Claiming
+ * that EXP after promotion would skip the "EXP beyond the tier cap is discarded" rule.
+ */
+function heroIdsBlockedFromPromotion(runs: readonly DungeonRun[]): Set<string> {
+  return snapshotHeroIds(runs, (run) => run.status === "active" || run.pendingCycles > 0);
+}
+
 function createEquipmentSeed(): number {
   return randomBytes(4).readUInt32BE(0);
 }
 
-function rollCraftQualityBps(seed = createEquipmentSeed()): number {
-  const rng = new SeededRng(seed);
-  const roll = rng.nextInt(10_000);
-  let cursor = 0;
-  for (const tier of equipmentConfig.qualityTiers) {
-    cursor += tier.weightBps;
-    if (roll < cursor) return tier.multiplierBps;
-  }
-  return equipmentConfig.baseQualityBps;
-}
+const enhancementRules = {
+  successBps: equipmentConfig.enhanceSuccessBps,
+  pityStepBps: equipmentConfig.enhancePityStepBps,
+  safeLevel: equipmentConfig.maxEnhanceLevel,
+};
 
 export function buildServer(options?: { store?: GameStore }) {
   const app = Fastify({ logger: false });
   const store = options?.store ?? createConfiguredGameStore();
+
+  app.setErrorHandler((error, _request, reply) => {
+    const statusCode = (error as { statusCode?: number }).statusCode ?? 500;
+    if (statusCode < 500) {
+      // Client errors (bad JSON, unsupported media type…) keep Fastify's default response.
+      return reply.send(error);
+    }
+    // Never echo internal error text (SQL, stack details) back to clients.
+    return reply.code(500).send(apiError("INTERNAL_ERROR", "Internal server error"));
+  });
 
   app.addHook("onClose", async () => {
     await store.close?.();
@@ -176,6 +202,7 @@ export function buildServer(options?: { store?: GameStore }) {
       enhanceBonusBps: equipmentConfig.enhanceBonusBps,
       enhanceGoldCosts: equipmentConfig.enhanceGoldCosts,
       enhanceSuccessBps: equipmentConfig.enhanceSuccessBps,
+      enhancePityStepBps: equipmentConfig.enhancePityStepBps,
     },
   });
   app.get("/api/v1/catalog", async () => catalog);
@@ -255,11 +282,7 @@ export function buildServer(options?: { store?: GameStore }) {
       store.listDungeonRuns(playerId),
       store.listMaterials(playerId),
     ]);
-    const activeHeroIds = new Set(
-      runs
-        .filter((run) => run.status === "active")
-        .flatMap((run) => run.waves[0]?.allies.map((ally) => ally.id) ?? []),
-    );
+    const busyHeroIds = heroIdsBlockedFromPromotion(runs);
 
     return PromotionStateResponseSchema.parse({
       ok: true,
@@ -285,7 +308,7 @@ export function buildServer(options?: { store?: GameStore }) {
           currentTier: heroClass.tier,
           levelCap: levelCapForTier(heroClass.tier),
           atLevelCap: hero.level === levelCapForTier(heroClass.tier),
-          busy: activeHeroIds.has(hero.id),
+          busy: busyHeroIds.has(hero.id),
           targets,
           rule: rule
             ? {
@@ -660,7 +683,8 @@ export function buildServer(options?: { store?: GameStore }) {
           return emptyTeam;
         }
 
-        const activeRun = (await store.listDungeonRuns(playerId)).find(
+        const existingRuns = await store.listDungeonRuns(playerId);
+        const activeRun = existingRuns.find(
           (run) => run.teamSlot === teamSlot && run.status === "active",
         );
         if (activeRun) {
@@ -674,6 +698,21 @@ export function buildServer(options?: { store?: GameStore }) {
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, alreadyActive);
           return alreadyActive;
+        }
+
+        const farmingHeroIds = heroIdsInActiveRuns(existingRuns);
+        const farmingHeroId = team.heroIds.find((heroId) => farmingHeroIds.has(heroId));
+        if (farmingHeroId) {
+          const heroBusy: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_BUSY",
+              `Hero ${farmingHeroId} is already farming in another active dungeon run`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, heroBusy);
+          return heroBusy;
         }
 
         const heroesById = new Map(
@@ -942,17 +981,15 @@ export function buildServer(options?: { store?: GameStore }) {
           return invalidBranch;
         }
 
-        const isBusy = (await store.listDungeonRuns(playerId)).some(
-          (run) =>
-            run.status === "active" &&
-            (run.waves[0]?.allies.some((ally) => ally.id === hero.id) ?? false),
+        const isBusy = heroIdsBlockedFromPromotion(await store.listDungeonRuns(playerId)).has(
+          hero.id,
         );
         if (isBusy) {
           const busy: StoredCommandOutcome = {
             statusCode: 409,
             body: apiError(
               "HERO_BUSY",
-              "Hero cannot be promoted while an active dungeon run uses its snapshot",
+              "Hero cannot be promoted while a dungeon run uses its snapshot or still owes it rewards",
               state.version,
             ),
           };
@@ -1129,7 +1166,11 @@ export function buildServer(options?: { store?: GameStore }) {
         const item = await store.createItem(playerId, {
           itemId: spec.id,
           slot: spec.slot,
-          qualityBps: rollCraftQualityBps(),
+          qualityBps: rollCraftQualityBps(
+            new SeededRng(createEquipmentSeed()),
+            equipmentConfig.qualityTiers,
+            equipmentConfig.baseQualityBps,
+          ),
           enhanceLevel: 0,
           enhancePityFailures: 0,
           locked: false,
@@ -1221,6 +1262,7 @@ export function buildServer(options?: { store?: GameStore }) {
         const result = resolveUpgradeAttempt(
           { level: item.enhanceLevel, pityFailures: item.enhancePityFailures },
           new SeededRng(createEquipmentSeed()),
+          enhancementRules,
         );
         const enhancedItem = await store.setItem(playerId, {
           ...item,
@@ -1257,9 +1299,10 @@ export function buildServer(options?: { store?: GameStore }) {
 
       if (envelope.command.type === "equip_item") {
         const { itemInstanceId, heroId } = envelope.command;
-        const [items, heroes] = await Promise.all([
+        const [items, heroes, runs] = await Promise.all([
           store.listItems(playerId),
           store.listHeroes(playerId),
+          store.listDungeonRuns(playerId),
         ]);
         const item = items.find((candidate) => candidate.id === itemInstanceId);
         if (!item) {
@@ -1289,6 +1332,18 @@ export function buildServer(options?: { store?: GameStore }) {
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, equipped);
           return equipped;
+        }
+        if (heroIdsInActiveRuns(runs).has(heroId)) {
+          const heroBusy: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_BUSY",
+              "Equipment cannot change while the hero is farming in an active dungeon run",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, heroBusy);
+          return heroBusy;
         }
 
         const replaced = items.find(
@@ -1336,6 +1391,21 @@ export function buildServer(options?: { store?: GameStore }) {
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, missing);
           return missing;
+        }
+        if (
+          item.equippedHeroId &&
+          heroIdsInActiveRuns(await store.listDungeonRuns(playerId)).has(item.equippedHeroId)
+        ) {
+          const heroBusy: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_BUSY",
+              "Equipment cannot change while the hero is farming in an active dungeon run",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, heroBusy);
+          return heroBusy;
         }
 
         const unequipped = await store.setItem(playerId, {

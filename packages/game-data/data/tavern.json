@@ -14,5 +14,7 @@
   "rarePityRefreshes": 40,
   "legendaryPityRefreshes": 200,
   "legendarySoftPityStart": 150,
-  "legendarySoftPityStepBps": 10
+  "legendarySoftPityStepBps": 10,
+  "refreshCooldownSeconds": 7200,
+  "offersPerRefresh": 3
 }

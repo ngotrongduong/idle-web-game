@@ -16,6 +16,8 @@ export const TavernConfigSchema = z
     legendaryPityRefreshes: z.number().int().positive(),
     legendarySoftPityStart: z.number().int().positive(),
     legendarySoftPityStepBps: z.number().int().nonnegative(),
+    refreshCooldownSeconds: z.number().int().positive(),
+    offersPerRefresh: z.number().int().positive(),
   })
   .superRefine((config, context) => {
     const total = Object.values(config.baseRarityBps).reduce((sum, value) => sum + value, 0);

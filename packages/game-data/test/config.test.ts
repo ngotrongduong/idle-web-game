@@ -99,6 +99,28 @@ describe("game-data pipeline", () => {
     expect(() => validateGameData(invalid)).toThrow("references missing material missing_material");
   });
 
+  it("rejects a recipe that lists the same material twice", () => {
+    const item = foundationGameData.items[0]!;
+    const invalid = {
+      ...foundationGameData,
+      items: [{ ...item, recipe: [item.recipe[0]!, item.recipe[0]!] }],
+    };
+
+    expect(() => validateGameData(invalid)).toThrow("more than once");
+  });
+
+  it("rejects a dungeon without a full normal/elite/boss enemy set", () => {
+    const dungeonId = foundationGameData.dungeons[0]!.id;
+    const invalid = {
+      ...foundationGameData,
+      enemies: foundationGameData.enemies.filter(
+        (enemy) => !(enemy.dungeonId === dungeonId && enemy.rank === "boss"),
+      ),
+    };
+
+    expect(() => validateGameData(invalid)).toThrow("1 boss enemy");
+  });
+
   it("rejects broken CSV references before generation", () => {
     expect(() =>
       loadGameDataFromCsv({

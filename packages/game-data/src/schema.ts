@@ -127,10 +127,17 @@ export function validateGameData(input: unknown): GameData {
   const classById = new Map(data.classes.map((entry) => [entry.id, entry]));
 
   for (const item of data.items) {
+    const recipeMaterials = new Set<string>();
     for (const ingredient of item.recipe) {
       if (!materialIds.has(ingredient.materialId)) {
         throw new Error(`Item ${item.id} references missing material ${ingredient.materialId}`);
       }
+      // Crafting charges each recipe line against the starting balance, so a repeated material
+      // would only be paid once.
+      if (recipeMaterials.has(ingredient.materialId)) {
+        throw new Error(`Item ${item.id} lists material ${ingredient.materialId} more than once`);
+      }
+      recipeMaterials.add(ingredient.materialId);
     }
   }
 
@@ -184,6 +191,19 @@ export function validateGameData(input: unknown): GameData {
   for (const enemy of data.enemies) {
     if (!dungeonIds.has(enemy.dungeonId)) {
       throw new Error(`Enemy ${enemy.id} references missing dungeon ${enemy.dungeonId}`);
+    }
+  }
+
+  // Waves are built from two normals, then a normal + elite, then the boss.
+  for (const dungeon of data.dungeons) {
+    const enemies = data.enemies.filter((entry) => entry.dungeonId === dungeon.id);
+    const normals = enemies.filter((entry) => entry.rank === "normal").length;
+    const elites = enemies.filter((entry) => entry.rank === "elite").length;
+    const bosses = enemies.filter((entry) => entry.rank === "boss").length;
+    if (normals < 2 || elites < 1 || bosses < 1) {
+      throw new Error(
+        `Dungeon ${dungeon.id} needs at least 2 normal, 1 elite and 1 boss enemy for its waves`,
+      );
     }
   }
 

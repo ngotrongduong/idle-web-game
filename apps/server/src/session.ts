@@ -20,7 +20,12 @@ export function readCookie(request: FastifyRequest, name: string): string | unde
     if (separator < 0) continue;
     const key = part.slice(0, separator).trim();
     if (key !== name) continue;
-    return decodeURIComponent(part.slice(separator + 1).trim());
+    try {
+      return decodeURIComponent(part.slice(separator + 1).trim());
+    } catch {
+      // A malformed cookie is treated as no session rather than a server error.
+      return undefined;
+    }
   }
 
   return undefined;

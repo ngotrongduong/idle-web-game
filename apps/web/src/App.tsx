@@ -166,6 +166,7 @@ type EquipmentRules = {
   enhanceBonusBps: number[];
   enhanceGoldCosts: number[];
   enhanceSuccessBps: number[];
+  enhancePityStepBps: number;
 };
 
 type AutoSellSettings = {
@@ -1024,7 +1025,11 @@ export function App() {
               const currentSuccess =
                 baseSuccess === undefined
                   ? undefined
-                  : Math.min(10_000, baseSuccess + item.enhancePityFailures * 500);
+                  : Math.min(
+                      10_000,
+                      baseSuccess +
+                        item.enhancePityFailures * (catalog?.equipment.enhancePityStepBps ?? 0),
+                    );
 
               return (
                 <article

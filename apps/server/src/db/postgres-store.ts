@@ -10,7 +10,7 @@ import type {
   TavernOffer,
   Team,
 } from "@idle/api-contract";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, asc, eq, gt, lt } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
 import {
@@ -232,7 +232,8 @@ export class PostgresGameStore implements GameStore {
         potential: heroes.potential,
       })
       .from(heroes)
-      .where(eq(heroes.playerId, playerId));
+      .where(eq(heroes.playerId, playerId))
+      .orderBy(asc(heroes.createdAt), asc(heroes.id));
   }
 
   async createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero> {
@@ -348,7 +349,8 @@ export class PostgresGameStore implements GameStore {
         equippedHeroId: playerItems.equippedHeroId,
       })
       .from(playerItems)
-      .where(eq(playerItems.playerId, playerId));
+      .where(eq(playerItems.playerId, playerId))
+      .orderBy(asc(playerItems.createdAt), asc(playerItems.id));
   }
 
   async createItem(playerId: string, input: Omit<InventoryItem, "id">): Promise<InventoryItem> {
@@ -488,7 +490,8 @@ export class PostgresGameStore implements GameStore {
         completedCycles: dungeonRuns.completedCycles,
       })
       .from(dungeonRuns)
-      .where(eq(dungeonRuns.playerId, playerId));
+      .where(eq(dungeonRuns.playerId, playerId))
+      .orderBy(asc(dungeonRuns.startedAt), asc(dungeonRuns.id));
 
     return rows.map((row) => ({
       id: row.id,
@@ -621,6 +624,7 @@ export class PostgresGameStore implements GameStore {
 
   async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
+    let releaseError: Error | undefined;
 
     try {
       await client.query("BEGIN");
@@ -630,10 +634,16 @@ export class PostgresGameStore implements GameStore {
       await client.query("COMMIT");
       return result;
     } catch (error) {
-      await client.query("ROLLBACK");
+      try {
+        await client.query("ROLLBACK");
+      } catch (rollbackError) {
+        // Keep the original failure; a connection that cannot roll back must not be reused.
+        releaseError =
+          rollbackError instanceof Error ? rollbackError : new Error(String(rollbackError));
+      }
       throw error;
     } finally {
-      client.release();
+      client.release(releaseError);
     }
   }
 

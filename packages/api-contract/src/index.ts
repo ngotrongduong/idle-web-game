@@ -151,6 +151,7 @@ export const EquipmentRulesViewSchema = z.object({
   enhanceBonusBps: z.array(z.number().int().nonnegative()).length(6),
   enhanceGoldCosts: z.array(z.number().int().nonnegative()).length(5),
   enhanceSuccessBps: z.array(z.number().int().min(0).max(10_000)).length(5),
+  enhancePityStepBps: z.number().int().min(0).max(10_000),
 });
 
 export const CatalogResponseSchema = z.object({
@@ -558,6 +559,7 @@ export const ApiErrorCodeSchema = z.enum([
   "ITEM_SLOT_CONFLICT",
   "ITEM_DEFINITION_NOT_FOUND",
   "ITEM_MAX_ENHANCE",
+  "INTERNAL_ERROR",
 ]);
 
 export const ApiErrorSchema = z.object({

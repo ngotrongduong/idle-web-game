@@ -9,7 +9,7 @@ import {
 import { foundationGameData, tavernConfig } from "@idle/game-data";
 import type { StoredTavernState } from "./store.js";
 
-export const TAVERN_REFRESH_MS = 2 * 60 * 60 * 1_000;
+export const TAVERN_REFRESH_MS = tavernConfig.refreshCooldownSeconds * 1_000;
 
 const rarityRules: TavernRarityRules = {
   baseRarityBps: tavernConfig.baseRarityBps,
@@ -23,8 +23,10 @@ const recruitableClassIds = foundationGameData.classes
   .filter((heroClass: { tier: number }) => heroClass.tier === 1)
   .map((heroClass: { id: string }) => heroClass.id);
 
-if (recruitableClassIds.length < 3) {
-  throw new Error("Tavern requires at least three recruitable T1 classes");
+if (recruitableClassIds.length < tavernConfig.offersPerRefresh) {
+  throw new Error(
+    `Tavern requires at least ${tavernConfig.offersPerRefresh} recruitable T1 classes`,
+  );
 }
 
 export function emptyTavernState(): StoredTavernState {
@@ -54,7 +56,7 @@ export function refreshTavernOffers(
   const availableClasses = [...recruitableClassIds];
   const offers: TavernOffer[] = [];
 
-  for (let index = 0; index < 3; index += 1) {
+  for (let index = 0; index < tavernConfig.offersPerRefresh; index += 1) {
     const classIndex = rng.nextInt(availableClasses.length);
     const classId = availableClasses.splice(classIndex, 1)[0]!;
     const rarity =
@@ -76,9 +78,12 @@ export function refreshTavernOffers(
     });
   }
 
+  // Pity counts refreshes without a hit, so a rare/legendary in any offer slot resets it.
+  const anyLegendary = offers.some((offer) => offer.rarity === "legendary");
+  const anyRarePlus = anyLegendary || offers.some((offer) => offer.rarity === "rare");
   return {
-    refreshesSinceRarePlus: featured.nextPity.refreshesSinceRarePlus,
-    refreshesSinceLegendary: featured.nextPity.refreshesSinceLegendary,
+    refreshesSinceRarePlus: anyRarePlus ? 0 : featured.nextPity.refreshesSinceRarePlus,
+    refreshesSinceLegendary: anyLegendary ? 0 : featured.nextPity.refreshesSinceLegendary,
     nextFreeRefreshAt: new Date(now.getTime() + TAVERN_REFRESH_MS),
     offers,
   };

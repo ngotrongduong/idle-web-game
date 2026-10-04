@@ -34,7 +34,8 @@ const messages = {
     "promotion.seals": "Ấn thăng cấp",
     "promotion.requirement": "Yêu cầu",
     "promotion.needCap": "Cần đạt",
-    "promotion.busy": "Đang chạy hầm — cần dừng trước khi thăng cấp",
+    "promotion.busy":
+      "Đang chạy hầm hoặc còn thưởng chưa nhận — dừng và nhận thưởng trước khi thăng cấp",
     "promotion.promote": "Thăng",
     "dungeon.title": "Đội & Hầm",
     "dungeon.subtitle": "Xếp đội và chạy hầm ngục",
@@ -69,7 +70,7 @@ const messages = {
     "equipment.help":
       "Trang bị chỉ thay đổi chỉ số cho lần chạy hầm tiếp theo. Run đang hoạt động giữ nguyên snapshot cũ để replay luôn khớp.",
     "equipment.empty": "Kho trang bị đang trống",
-    "equipment.emptyHint": "M1.6 sẽ cho phép chế tạo trang bị từ nguyên liệu hầm ngục.",
+    "equipment.emptyHint": "Chưa có trang bị. Chế tạo ở Lò Rèn bằng nguyên liệu nhặt từ hầm ngục.",
     "equipment.lock": "Khóa",
     "equipment.unlock": "Mở khóa",
     "equipment.equippedBy": "Đang mặc bởi",
@@ -130,7 +131,7 @@ const messages = {
     "promotion.seals": "Promotion seals",
     "promotion.requirement": "Requires",
     "promotion.needCap": "Reach",
-    "promotion.busy": "Active in a dungeon — stop the run before promotion",
+    "promotion.busy": "In a dungeon or owed rewards — stop the run and claim before promotion",
     "promotion.promote": "Promote",
     "dungeon.title": "Teams & Dungeons",
     "dungeon.subtitle": "Build teams and run dungeons",
@@ -165,7 +166,7 @@ const messages = {
     "equipment.help":
       "Equipment changes stats for the next dungeon run only. Active runs keep their original snapshots so replay remains deterministic.",
     "equipment.empty": "Equipment inventory is empty",
-    "equipment.emptyHint": "M1.6 will let you craft equipment from dungeon materials.",
+    "equipment.emptyHint": "No equipment yet. Craft some at the Forge from dungeon materials.",
     "equipment.lock": "Lock",
     "equipment.unlock": "Unlock",
     "equipment.equippedBy": "Equipped by",
