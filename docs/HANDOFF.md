@@ -7,7 +7,8 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #203 passed on commit `88c475ba57e30262ca0a567347a758127c012127`.
+- GitHub Actions CI run #214 passed on commit `cc7f03d24dc220429e5f5942393fe73ccbb5315c`.
+- M1.4A hero EXP → level progression is verified end-to-end: dungeon claim now applies the documented XP curve, persists level/EXP consistently in memory and PostgreSQL, and discards EXP beyond the current class tier cap.
 - The verified browser/PostgreSQL flow now covers guest → Tavern refresh → recruit 3 heroes → save Team 1 → start a deterministic 6-wave dungeon → verify 6/6 client replay hashes → simulate +3 hours offline → accrue exactly 168 cycles → claim exact gold + EXP → reset pending rewards to zero.
 - Idle timing now matches the balancing document: 8 seconds per wave × 6 waves = 48-second nominal cycle; at 75% offline efficiency that becomes 64 seconds per credited cycle, capped at 8 hours.
 - Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, dungeon E2E, build and Docker Compose validation are green.
@@ -67,17 +68,23 @@ M1 — Core loop.
   - EXP is paid to hero IDs stored in the run snapshot, not whichever heroes happen to be in the team later
   - React UI shows pending cycles/gold/EXP, total cycles, player gold and hero EXP; dungeon progress polls without overwriting unsaved team drafts
   - Chromium/PostgreSQL E2E backdates a run exactly three hours, verifies 168 credited cycles and exact reward math, then claims through the real UI and verifies pending rewards reset to zero
+- M1.4A hero level progression:
+  - `xpToNext(level, tier) = round((20 + 18 * level^1.7) * 1.6^(tier-1))`
+  - tier level caps are 10/20/30 for T1/T2/T3
+  - multi-level gains carry in-tier EXP remainder
+  - reaching the current tier cap forces EXP to zero and discards additional EXP until promotion
+  - server progression service derives tier from validated class data; DB adapters only persist level/EXP
+  - Chromium E2E independently re-computes expected T1 progression instead of calling production helpers
 
 ## Next implementation work
-1. M1.4: turn raw hero EXP into level progression using the documented XP curve and tier level caps.
-2. M1.4: implement T1 → T2 → T3 branch selection/promotion plus the 20% retained-potential rule; promotion-seal inventory must be integrated cleanly rather than bypassed.
+1. M1.4B: implement T1 → T2 → T3 branch selection/promotion plus the 20% retained-potential rule; promotion-seal inventory must be integrated cleanly rather than bypassed.
+2. Define promotion-seal material IDs/costs in game-data and persist player material inventory before exposing promotion commands.
 3. Decide cross-wave HP/MP carryover semantics before deeper dungeon difficulty/progression depends on them.
 4. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 5. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Known M1.3 limitations
 - Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
-- Heroes receive persistent raw EXP on claim, but automatic level-up and tier-cap handling belong to M1.4 and are not implemented yet.
 - Cross-wave HP/MP carryover is still not implemented; each stored wave currently begins from its persisted full-stat snapshot.
 
 ## Important constraints
