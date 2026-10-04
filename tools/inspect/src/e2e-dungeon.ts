@@ -139,7 +139,7 @@ try {
     throw new Error("Expected one active dungeon run before idle catch-up");
   }
 
-  const expectedCycles = 135;
+  const expectedCycles = 168;
   const goldPerCycle = activeRun.waves.reduce(
     (sum, wave) => sum + wave.rewardGold,
     0,

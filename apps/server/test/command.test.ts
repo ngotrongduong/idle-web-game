@@ -349,14 +349,14 @@ describe("server-authoritative command pipeline", () => {
     expect(claim.json()).toMatchObject({
       ok: true,
       version: 2,
-      patch: { gold: 1_000 + goldPerCycle * 7 },
+      patch: { gold: 1_000 + goldPerCycle * 9 },
       events: [
         {
           type: "dungeon_rewards_claimed",
           runId: run.id,
-          cycles: 7,
-          gold: goldPerCycle * 7,
-          expPerHero: expPerCycle * 7,
+          cycles: 9,
+          gold: goldPerCycle * 9,
+          expPerHero: expPerCycle * 9,
           heroIds: [hero.id],
         },
       ],
@@ -364,7 +364,7 @@ describe("server-authoritative command pipeline", () => {
 
     expect(await store.listHeroes(guest.state.id)).toContainEqual({
       ...hero,
-      exp: expPerCycle * 7,
+      exp: expPerCycle * 9,
     });
 
     const [claimedRun] = await store.listDungeonRuns(guest.state.id);
@@ -372,7 +372,7 @@ describe("server-authoritative command pipeline", () => {
       pendingCycles: 0,
       pendingGold: 0,
       pendingExpPerHero: 0,
-      completedCycles: 7,
+      completedCycles: 9,
     });
 
     const duplicate = await app.inject({

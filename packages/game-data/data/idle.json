@@ -1,5 +1,5 @@
 {
-  "cycleDurationSeconds": 60,
+  "cycleDurationSeconds": 48,
   "offlineCapHours": 8,
   "offlineEfficiencyBps": 7500
 }
