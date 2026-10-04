@@ -1,4 +1,5 @@
 name: Lockfile refresh
+# temporary workflow; remove after committing generated lockfile
 
 on:
   push:
