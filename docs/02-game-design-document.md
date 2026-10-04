@@ -85,7 +85,7 @@
 
 | Công trình | Tác dụng | Lv tối đa MVP |
 |---|---|---|
-| Sảnh Hội (Hall) | số hero tối đa (3 + Lv), số đội song song (1 → 4) | 10 |
+| Sảnh Hội (Hall) | số hero tối đa (3 + Lv), số đội song song (1 → 4: mở ở Lv1 / Lv3 / Lv6 / Lv9) | 10 |
 | Quán Rượu (Tavern) | số ứng viên, tỉ lệ ứng viên hiếm, giảm thời gian refresh | 10 |
 | Kho (Storage) | số ô item; mở công thức tier cao | 10 |
 | Lò Rèn (Forge) | mở cường hóa, tăng tỉ lệ phẩm chất khi chế tạo | 10 |
@@ -106,14 +106,16 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Mỗi class có: đòn đánh thường, **1 ULT** (đầy 100 MP), **1 nội tại**. Từ T4 thêm 1 kỹ năng chủ động thứ hai (Later).
 - **Khắc hệ** vòng tròn giữa các họ: ×1.2 / ×0.85.
 - **Thăng tier**: đạt level cap (10 × tier) + **Ấn Thăng Cấp** + vàng. Level reset về 1 nhưng giữ **20% chỉ số cũ** dạng "tiềm năng", để thăng tier không cảm giác bị yếu đi.
+  - Đã chốt: hệ số cấp **nối tiếp qua các tier** (T2 Lv1 tính như T1 Lv10, T3 Lv1 như T2 Lv20; xem [03 §2](03-economy-balancing.md#2-công-thức-chỉ-số)), nên hero sau khi thăng luôn mạnh hơn hoặc bằng trước khi thăng.
   - Đã cài (M1.4B): T1→T2 cần 1 Ấn Thăng Cấp I + 500 vàng, Ấn I rơi từ boss hầm 1–2; T2→T3 cần 2 Ấn Thăng Cấp II + 3000 vàng, Ấn II rơi từ boss hầm 3–4. Chỉ được chọn class con trực tiếp, và hero không được đang ở trong một lượt chạy hầm.
 
 ### 5.4 Hầm ngục và chiến đấu
 
 - Mỗi hầm: 5 wave thường (2–3 quái) + **wave 6 là boss hầm** (mỗi 10 vòng). Đội lặp lại liên tục.
   - Bản M1 hiện tại: boss xuất hiện ở wave 6 của **mọi** vòng, nên tỉ lệ rơi ở [03 §8](03-economy-balancing.md#8-loot) được tính cho từng vòng.
-- **Đã chốt: mỗi wave bắt đầu với HP/MP đầy**, không mang sát thương sang wave sau. Mỗi wave replay độc lập từ snapshot đầy đủ chỉ số. Chỉ xem lại nếu cần cơ chế hao mòn để tăng độ khó hầm.
-- Mở khóa hầm theo quest chính / tiến độ. MVP 4 hầm (Lv đề xuất 1 / 10 / 20 / 30).
+- **Đã chốt: mỗi wave bắt đầu với HP đầy và 50% MP**, không mang sát thương sang wave sau. Mỗi wave replay độc lập từ snapshot đầy đủ chỉ số; 50% MP giúp ULT (kể cả ULT hồi máu) dùng được giữa trận.
+- **Đã chốt: mở khóa hầm theo tiến độ**: hầm N mở khi đã hạ boss hầm N−1 (ghi nhận lúc nhận thưởng). MVP 4 hầm (Lv đề xuất 1 / 10 / 20 / 30). Quest chính có thể thêm điều kiện sau.
+- Một vòng chạy hầm dừng ở wave thua đầu tiên; thưởng idle là giá trị kỳ vọng của 30 vòng mẫu (xem [04 §6](04-technical-architecture.md#6-tính-toán-idle--offline)).
 - **Độ khó hầm (Difficulty)** 1–10 trong mỗi hầm: tăng chỉ số quái và tỉ lệ rơi, tạo ngưỡng mục tiêu dài hạn với cùng một bộ asset.
 - Chiến đấu: theo lượt, thứ tự theo SPD, MP +10/lượt và +5 khi trúng, ULT tự động khi đầy. Cap 60 lượt mỗi wave; quá cap thì **hòa** (rút lui, không cộng thưởng) thay vì "cả đội chết".
 - Mục tiêu: ưu tiên theo vai trò (tank khiêu khích, sát thủ đánh máu thấp, pháp sư AoE), **mọi lựa chọn ngẫu nhiên đều dùng RNG có seed**.

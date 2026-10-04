@@ -28,6 +28,7 @@ power (lực chiến) = HP·0.5 + (ATK+MATK)·2 + (DEF+MDEF)·1.5 + SPD·4 + CRI
 
 - So với fworldgm (× (1 + (L² + 19L)/200), tức L40 ×12.8): đầu game tăng nhanh hơn (L5 ×1.54 so với ×1.60), cuối game tương đương. Đường cong mượt hơn, không có bậc nhảy.
 - `rarityMult` của ứng viên: Thường 1.00, Tinh anh 1.08, Hiếm 1.18, Huyền thoại 1.30.
+- **Đã cài**: level reset về 1 khi thăng tier, nên `levelMult` dùng **cấp tổng** nối tiếp qua các tier: T1 Lv1–10 = L1–10, T2 Lv1–20 trải đều L10–20, T3 Lv1–30 trải đều L20–30 (T2 Lv1 ×2.40, T2 Lv20 ×4.72, T3 Lv30 ×7.84). Cấp tổng (1–30) cũng là `L_attacker` trong công thức sát thương và là thang cấp của quái (`recommended_level`). Chỉ số gốc class trong CSV giữ nguyên.
 
 ## 3. Công thức sát thương
 
@@ -49,6 +50,8 @@ dmg = max(1, round(dmg))
 | 400 | 1.200 | 40 | 96.2 | 25.0 |
 
 DEF luôn có ích nhưng không tạo "bức tường" bất khả xâm phạm. K tăng theo level để tỉ lệ giảm sát thương ổn định qua các giai đoạn.
+
+**Đã cài (công thức v2)**: hằng số nằm ở `packages/game-data/data/battle.json` (K = 60 + 8·L, dao động ±5%, crit gốc 5% (+5% họ tầm xa), crit ×1.5, cap 75%, làm tròn một lần ở cuối). Mỗi wave bắt đầu với 50% MP. Mỗi lượt chạy lưu kèm `formulaVersion`; lượt chạy cũ (không có version) vẫn replay bằng công thức v1 cũ để hash không đổi. Hệ số chỉ số quái theo từng hầm cũng nằm trong `battle.json` và được kiểm bằng test dải tỉ lệ thắng (`tools/sim/test/balance.test.ts`).
 
 **Né / chính xác**: `dodge = clamp(5% + dodgeBonus − accuracyBonus − max(0, SPD_atk − SPD_def)/20 %, 0, 40%)`, boss tối đa 25%.
 
@@ -119,6 +122,7 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 
 - Refresh miễn phí mỗi 2 giờ (cấp quán giảm còn 1 giờ). Refresh thủ công bằng Thẻ Chiêu Mộ (quest/sự kiện/shop).
 - Kỳ vọng không pity: 1 Hiếm+ / 20 lượt refresh. Chi phí quy đổi thẻ ↔ Ngọc định ở 06 §2.
+- **Đã cài**: mỗi lượt refresh có 3 ứng viên; chỉ ứng viên 1 roll theo bảng trên kèm pity, ứng viên 2–3 chỉ ra Thường/Tinh anh (`tavern.json` `secondaryOfferRarityBps`). Có pity cứng ở lượt 40 nên tỉ lệ thực tế ≈ 1 Hiếm+ / 17,4 lượt (≈5,7%).
 - Công bố tỉ lệ trong game (bắt buộc nếu lên App Store/Google Play; nên làm từ đầu).
 
 ## 8. Loot

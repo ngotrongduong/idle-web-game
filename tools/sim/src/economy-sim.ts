@@ -1,4 +1,4 @@
-import { getUpgradeSuccessBps, UPGRADE_PITY_STEP_BPS } from "@idle/game-core";
+import { getUpgradeSuccessBps } from "@idle/game-core";
 import {
   equipmentConfig,
   enhancementGoldCost,
@@ -103,17 +103,24 @@ function expectedLootForDungeon(dungeonId: string): Record<string, number> {
   );
 }
 
+// The same enhancement table the server rolls with (game-data equipment config).
+const ENHANCEMENT_RULES = {
+  successBps: equipmentConfig.enhanceSuccessBps,
+  pityStepBps: equipmentConfig.enhancePityStepBps,
+  safeLevel: equipmentConfig.maxEnhanceLevel,
+};
+
 function expectedAttemptsForLevel(level: number): number {
   let survival = 1;
   let expected = 0;
 
   for (let pityFailures = 0; pityFailures < 100 && survival > 1e-12; pityFailures += 1) {
     expected += survival;
-    const successBps = getUpgradeSuccessBps(level + 1, pityFailures);
+    const successBps = getUpgradeSuccessBps(level + 1, pityFailures, ENHANCEMENT_RULES);
     survival *= 1 - successBps / 10_000;
 
     if (successBps >= 10_000) break;
-    if (UPGRADE_PITY_STEP_BPS <= 0 && pityFailures > 20) break;
+    if (ENHANCEMENT_RULES.pityStepBps <= 0 && pityFailures > 20) break;
   }
 
   return expected;

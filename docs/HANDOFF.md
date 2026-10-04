@@ -4,9 +4,10 @@
 `chatgpt/m0-foundation`
 
 ## Current milestone
-M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tuning in progress).
+M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle rewards and dungeon progression landed; next M1.7 buildings).
 
 ## Verified status
+- Review follow-up (commits `50696c0`…`0fa1927`) is green on GitHub Actions and locally: lint, Prettier, typecheck, 165 unit/integration tests with PostgreSQL, migrations run twice, Chromium goldens v1 `c080875a` + v2 `fce81aeb`, and the dungeon, promotion, equipment and auto-sell E2Es.
 - M1.5B auto-sell browser E2E and the full pipeline passed GitHub Actions CI #301 on commit `a2b876c2ab2b45d2885be0c29200fa2ccd1ce832`: settings persist across reload, a matching new craft is removed atomically, and the exact quality-scaled manual-sell-equivalent gold is credited.
 - M1.5B persisted quality-threshold auto-sell backend/DB/UI passed full GitHub Actions CI #291 on commit `7b901ffb9a8534bfe24970d1348645029990fa61`.
 - Forge equipment browser E2E passed GitHub Actions CI #282 on commit `ccf6a5a15bf4e9339576d69cbd1ffcb56516ebc6`: baseline dungeon → craft → guaranteed +1 → equip → stronger fresh dungeon snapshot → replay match.
@@ -118,18 +119,23 @@ M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tun
 - Content re-theme to western high fantasy: display names in `dungeons/enemies/materials/items/classes.csv` changed (Thornwood Forest, Mistmoor Marsh, Sunken Abbey, Dragonfire Crags, goblins, lizardfolk, liches, wyrms…). All ids and stats are unchanged.
 
 ## Decisions
-- HP/MP fully reset at the start of every wave (each wave replays from the persisted full-stat snapshot). This is the intended M1 rule, not a missing feature; revisit only if dungeon difficulty needs attrition.
+- Every wave starts from the persisted full-HP snapshot with **50% MP** (`battle.json` `startingMpBps`), so ULTs and heals fire mid-fight. No HP/MP carries over between waves.
+- Battle formula v2 (docs/03 §3) is selected by `battleRules.formulaVersion: 2`; runs persisted earlier have no version and replay with the original v1 code path, bit-for-bit (fixture test in `apps/web/src/replay.test.ts`). Never change v1 or `DEFAULT_BATTLE_RULES`; add a new version instead.
+- Stats use one continuous level multiplier across tiers (T2 Lv1 = T1 Lv10, T3 Lv1 = T2 Lv20) and a 1–30 combat level for K; class base stats are unchanged. Promotion therefore never weakens a hero (test over every parent → child pair).
+- Idle rewards are the expected value of `rewardSampleCycles` (30) sampled cycles stored on the run; each cycle stops at its first lost wave, cycle c pays sample c % 30, and the run seed hashes player + dungeon + team snapshot + rules so restarting with the same team cannot reroll.
+- Dungeons unlock in order (`dungeons.csv` `unlock_after`) once a claim includes a boss kill in the previous dungeon. Parallel teams are capped by Hall level (1/1/2/2/2/3/3/3/4/4); team 2 now needs Hall Lv3 (1,080 gold), later than the docs/03 §4 "team 2 at 6 minutes" milestone — revisit with the M1.7 build timers.
+- Tavern: only offer 1 can be rare+ (with pity); offers 2–3 roll common/elite. Craft quality tops out at ×1.30.
 - Setting is western high fantasy. Ids such as `bamboo_grove`, `sunken_shrine`, `storm_scribe` are legacy internal identifiers kept for replay/test stability and must never be shown to players; the UI reads names from `/api/v1/catalog`.
 - A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run **or a stopped run still owes it rewards**, so the player stops, claims, promotes and restarts. Otherwise EXP earned at the old tier cap would be paid into the new tier.
 - A hero whose snapshot is farming in an active run is "busy": it cannot start a second run from another team slot, and its equipment cannot be equipped/unequipped until the run stops (one item must not boost several runs).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. Verify the M1 economy tuning in CI: dungeon gold/hour must remain within ±20% of targets and the first craft must remain ≤3.6 minutes expected online.
-2. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
-3. Then move to the next roadmap slice (M1.7 buildings) unless online-presence semantics are prioritized first.
-5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
-6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+1. M1.7 buildings: Hall/Forge build timers and Forge level (quality odds, enhancement unlock), then decide when team 2 should open in the FTUE.
+2. Economy sim: weight gold/EXP/loot by the sampled win rate of a reference team per dungeon instead of assuming every wave is won.
+3. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
+4. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
+5. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Known limitations
 - Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
@@ -145,14 +151,17 @@ Review of everything up to `a2b876c` against docs/02–04 and docs/07. Fixed on 
 - PostgreSQL lists of heroes, items and runs now have a stable `ORDER BY` (equipping used to reshuffle inventory cards under the cursor).
 - game-data validation rejects recipes that repeat a material and dungeons without 2 normal + 1 elite + 1 boss enemies.
 
-Open, needs a design decision (not changed yet):
-- Combat constants differ from docs/03 §3: fixed K=100 (spec 60+8·L), ±10% variance (±5%), crit 10%/×2.0 with no cap (5%/×1.5, cap 75%); constants are hard-coded instead of game-data.
-- MP starts at 0 every wave, so ULTs almost never fire (0 in 1,800 Thornwood waves) and healers never heal.
-- Idle rewards come from one fixed replay: restarting until the boss wins pays that win for 8h, and waves after a loss still pay. docs/04 §6 describes expected values from sampled win rates.
-- Content is too easy for the new `levelMult` scaling (4 Lv.1 commons clear the Lv.20 dungeon) and dungeons are not unlocked by progress; promotion leaves heroes weaker (Ward Squire Lv10 → Iron Guard Lv1: HP 504 → 380).
-- Each of the 3 tavern offers rolls the full rarity table (≈14% of refreshes contain a rare+, docs/03 §7 expects 1 per 20).
-- Craft quality reaches +50% (GDD §5.6 says +0–30%); there is no Forge building level yet; Hall parallel-team limit (GDD §5.1) and build timers (M1.7) are missing.
-- `tools/sim` does not use the server's hero/enemy formulas, so it cannot be used for the economy pass until it does.
+Design decisions taken by the user and implemented afterwards:
+- Combat follows docs/03 §3 with 50% starting MP (`50696c0` safety nets, `646b2c0` formula v2 + v2 golden, constants in `battle.json`).
+- Idle rewards = expected value of sampled cycles (`31b7c0e`, migration `0012`).
+- Dungeon unlock + Hall team limit (`0fa1927`, migration `0013` with a one-shot backfill); enemy stats rebalanced per dungeon in `battle.json` with win-rate band tests for every T1 trio (`tools/sim/test/balance.test.ts`).
+- Promotion keeps strength via the continuous tier multiplier (instead of raising T2/T3 base stats, which compounded to T3 ≈26× T1).
+- Tavern offers 2–3 common/elite only; craft quality capped at ×1.30 (`8167936`, migration `0011`).
+- `tools/sim` builds teams and enemies with the server's own builders (`buildHeroCombatant`, `buildEnemyCombatant`, `selectWaveEnemies`).
+
+Still open:
+- Forge building level, dismantle/Forge Dust and Hall build timers (M1.7).
+- The economy sim still assumes every wave is won; with sampled rewards, real gold/hour also depends on the team's win rate, and the server always pays the 75% passive rate (no online presence yet).
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
