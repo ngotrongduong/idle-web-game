@@ -9,6 +9,14 @@ export {
   type HeroExperienceState,
 } from "./progression.js";
 export {
+  HERO_RARITY_MULTIPLIER_BPS,
+  calculateHeroStats,
+  levelMultiplierBps,
+  type HeroComputedStats,
+  type HeroStatPotential,
+  type HeroStatRarity,
+} from "./hero-stats.js";
+export {
   DEFAULT_BATTLE_RULES,
   scaleStat,
   simulateWave,

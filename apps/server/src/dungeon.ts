@@ -2,21 +2,12 @@ import { randomBytes } from "node:crypto";
 import type { BattleUnitSnapshot, DungeonWaveReplay, Hero } from "@idle/api-contract";
 import { foundationGameData } from "@idle/game-data";
 import {
+  calculateHeroStats,
   DEFAULT_BATTLE_RULES,
-  scaleStat,
   simulateWave,
   type BattleRules,
   type Combatant,
 } from "@idle/game-core";
-
-const STAT_GROWTH_BPS_PER_LEVEL = 400;
-const BPS = 10_000;
-const RARITY_MULTIPLIER_BPS = {
-  common: 10_000,
-  elite: 10_800,
-  rare: 11_800,
-  legendary: 13_000,
-} as const;
 
 const FAMILY_ADVANTAGE = Object.fromEntries(
   foundationGameData.classFamilies.map((family) => [family.id, family.advantageFamilyId]),
@@ -26,10 +17,6 @@ export const CURRENT_DUNGEON_BATTLE_RULES: BattleRules = {
   ...DEFAULT_BATTLE_RULES,
   familyAdvantage: FAMILY_ADVANTAGE,
 };
-
-function applyBps(value: number, multiplierBps: number): number {
-  return Math.max(1, Math.floor((value * multiplierBps) / BPS));
-}
 
 export function createDungeonSeed(): number {
   return randomBytes(4).readUInt32BE(0);
@@ -50,19 +37,21 @@ export function heroToCombatant(hero: Hero): BattleUnitSnapshot {
     throw new Error(`Unknown class family: ${heroClass.familyId}`);
   }
 
-  const rarityBps = RARITY_MULTIPLIER_BPS[hero.rarity];
+  const stats = calculateHeroStats({
+    baseHp: heroClass.baseHp,
+    baseAttack: heroClass.baseAttack,
+    baseDefense: heroClass.baseDefense,
+    baseSpeed: heroClass.baseSpeed,
+    level: hero.level,
+    rarity: hero.rarity,
+  });
+
   return {
     id: hero.id,
-    hp: applyBps(scaleStat(heroClass.baseHp, hero.level, STAT_GROWTH_BPS_PER_LEVEL), rarityBps),
-    attack: applyBps(
-      scaleStat(heroClass.baseAttack, hero.level, STAT_GROWTH_BPS_PER_LEVEL),
-      rarityBps,
-    ),
-    defense: applyBps(
-      scaleStat(Math.max(1, heroClass.baseDefense), hero.level, STAT_GROWTH_BPS_PER_LEVEL),
-      rarityBps,
-    ),
-    speed: heroClass.baseSpeed,
+    hp: stats.hp,
+    attack: stats.attack,
+    defense: stats.defense,
+    speed: stats.speed,
     critBps: family.archetype === "ranged" ? 1_500 : 1_000,
     familyId: family.id,
     targeting: heroClass.targeting,
