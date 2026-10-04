@@ -7,8 +7,9 @@
 M0 — Nền móng.
 
 ## Verified status
-- GitHub Actions CI run #59 passed on commit `144037725fc50b32a38b80953f1c119db2fa827d`.
-- Frozen lockfile install, typecheck, tests and build are verified for the current gameplay and async persistence-seam changes through that commit.
+- GitHub Actions CI run #82 passed on commit `5d5ddc181ff8930e5a9810e365ab542dfc56c980`.
+- Frozen install, PostgreSQL migration, typecheck, unit/integration tests and build are green through that commit.
+- PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback and real row-lock serialization.
 - Keep PR #2 draft while M0 work continues; do not merge partial DB/staging work.
 
 ## Completed in this branch
@@ -27,7 +28,7 @@ M0 — Nền móng.
 2. Expand M0.3 schema with class families/classes and enemy definitions, keeping content original.
 3. Verify M0.6b in CI against the PostgreSQL service and fix any migration/type/transaction issues.
 4. Add named skill IDs/effects beyond the generic damage/heal ULT model.
-5. M0.7: Docker Compose + Caddy + staging deployment now that DB persistence exists.
+5. M0.7 infrastructure scaffold: Docker Compose + Caddy + server/web Dockerfiles. Actual VPS/domain deployment is still pending.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
