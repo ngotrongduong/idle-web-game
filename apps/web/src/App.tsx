@@ -72,12 +72,8 @@ export function App() {
       throw new Error(t("vi", "tavern.loadError"));
     }
 
-    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(
-      tavernResponse,
-    );
-    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(
-      heroesResponse,
-    );
+    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(tavernResponse);
+    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
@@ -97,9 +93,7 @@ export function App() {
           method: "POST",
           credentials: "include",
         });
-        const guest = await readJson<{ ok: true; state: PlayerState }>(
-          stateResponse,
-        );
+        const guest = await readJson<{ ok: true; state: PlayerState }>(stateResponse);
         setPlayer(guest.state);
       } else {
         if (!stateResponse.ok) {
@@ -126,9 +120,7 @@ export function App() {
   }, []);
 
   const heroCapacity = player ? 3 + player.hallLevel : 0;
-  const nextRefreshTime = tavern
-    ? new Date(tavern.nextFreeRefreshAt).getTime()
-    : 0;
+  const nextRefreshTime = tavern ? new Date(tavern.nextFreeRefreshAt).getTime() : 0;
   const canRefresh = Boolean(player && tavern && nextRefreshTime <= now);
 
   const nextRefreshLabel = useMemo(() => {
