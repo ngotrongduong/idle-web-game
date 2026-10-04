@@ -324,6 +324,7 @@ export class PostgresGameStore implements GameStore {
         dungeonId: run.dungeonId,
         teamSlot: run.teamSlot,
         seed: run.seed,
+        battleRules: run.battleRules,
         status: run.status,
         waves: run.waves,
         startedAt: new Date(run.startedAt),
