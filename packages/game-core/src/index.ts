@@ -55,6 +55,8 @@ export {
   HALL_UPGRADE_GOLD_COST,
   hallUpgradeGoldCost,
   heroCapacityForHall,
+  HALL_PARALLEL_TEAM_UNLOCK_LEVELS,
+  teamLimitForHall,
 } from "./economy.js";
 export {
   rollSecondaryOfferRarity,

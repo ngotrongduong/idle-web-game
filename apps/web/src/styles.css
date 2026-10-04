@@ -660,3 +660,16 @@ h2 {
     width: 100%;
   }
 }
+
+.hall-stats {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.hall-card small {
+  display: block;
+  margin-top: 8px;
+}

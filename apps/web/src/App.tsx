@@ -5,7 +5,8 @@ import { verifyDungeonRunReplay } from "./replay";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
 const teamSlots = [1, 2, 3, 4] as const;
-const dungeonOptions = ["bamboo_grove", "misty_riverbank", "sunken_shrine", "ember_ridge"] as const;
+/** Used until the catalog loads; the catalog's order and unlock chain are authoritative. */
+const FALLBACK_DUNGEON_IDS = ["bamboo_grove"] as const;
 
 type Tab = (typeof tabs)[number];
 
@@ -14,6 +15,7 @@ type PlayerState = {
   version: number;
   gold: number;
   hallLevel: number;
+  clearedDungeonIds: string[];
 };
 
 type TavernOffer = {
@@ -155,7 +157,7 @@ type DungeonRewardsClaimedEvent = {
 type CommandSuccess = {
   ok: true;
   version: number;
-  patch: Partial<Pick<PlayerState, "gold" | "hallLevel">>;
+  patch: Partial<Pick<PlayerState, "gold" | "hallLevel" | "clearedDungeonIds">>;
   events: Array<{ type: string } | DungeonRewardsClaimedEvent>;
 };
 
@@ -205,15 +207,29 @@ type InventoryItem = {
   equippedHeroId: string | null;
 };
 
+type DungeonCatalogEntry = CatalogEntry & {
+  recommendedLevel: number;
+  unlockAfterDungeonId: string | null;
+};
+
+type HallLevel = {
+  level: number;
+  heroCapacity: number;
+  teamLimit: number;
+  upgradeGoldCost: number | null;
+};
+
 type Catalog = {
   classes: CatalogEntry[];
-  dungeons: CatalogEntry[];
+  dungeons: DungeonCatalogEntry[];
+  hall: HallLevel[];
   materials: CatalogEntry[];
   items: ItemCatalogEntry[];
   equipment: EquipmentRules;
 };
 
 type GameCommand =
+  | { type: "upgrade_hall" }
   | { type: "refresh_tavern" }
   | { type: "recruit_hero"; offerId: string }
   | { type: "set_team"; slot: number; heroIds: string[] }
@@ -266,10 +282,10 @@ export function App() {
   });
   const [teamDrafts, setTeamDrafts] = useState<Record<number, string[]>>({});
   const [selectedDungeons, setSelectedDungeons] = useState<Record<number, string>>({
-    1: dungeonOptions[0],
-    2: dungeonOptions[0],
-    3: dungeonOptions[0],
-    4: dungeonOptions[0],
+    1: FALLBACK_DUNGEON_IDS[0],
+    2: FALLBACK_DUNGEON_IDS[0],
+    3: FALLBACK_DUNGEON_IDS[0],
+    4: FALLBACK_DUNGEON_IDS[0],
   });
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [lastClaim, setLastClaim] = useState<DungeonRewardsClaimedEvent | null>(null);
@@ -414,7 +430,14 @@ export function App() {
     return () => window.clearInterval(timer);
   }, [activeTab, loadDungeonProgress, player]);
 
-  const heroCapacity = player ? 3 + player.hallLevel : 0;
+  const hallInfo = catalog?.hall.find((entry) => entry.level === player?.hallLevel);
+  const heroCapacity = hallInfo?.heroCapacity ?? 0;
+  const teamLimit = hallInfo?.teamLimit ?? 1;
+  const activeRunCount = runs.filter((run) => run.status === "active").length;
+  const dungeonChoices = catalog?.dungeons ?? [];
+  const isDungeonUnlocked = (dungeon: DungeonCatalogEntry) =>
+    dungeon.unlockAfterDungeonId === null ||
+    Boolean(player?.clearedDungeonIds.includes(dungeon.unlockAfterDungeonId));
   const nextRefreshTime = tavern ? new Date(tavern.nextFreeRefreshAt).getTime() : 0;
   const canRefresh = Boolean(player && tavern && nextRefreshTime <= now);
 
@@ -793,11 +816,22 @@ export function App() {
                       }))
                     }
                   >
-                    {dungeonOptions.map((dungeonId) => (
-                      <option key={dungeonId} value={dungeonId}>
-                        {catalogName(catalog, "dungeons", dungeonId)}
-                      </option>
-                    ))}
+                    {dungeonChoices.length
+                      ? dungeonChoices.map((dungeon) => (
+                          <option
+                            key={dungeon.id}
+                            value={dungeon.id}
+                            disabled={!isDungeonUnlocked(dungeon)}
+                          >
+                            {dungeon.nameVi}
+                            {isDungeonUnlocked(dungeon) ? "" : ` (${t("vi", "dungeon.locked")})`}
+                          </option>
+                        ))
+                      : FALLBACK_DUNGEON_IDS.map((dungeonId) => (
+                          <option key={dungeonId} value={dungeonId}>
+                            {catalogName(catalog, "dungeons", dungeonId)}
+                          </option>
+                        ))}
                   </select>
 
                   {activeRun ? (
@@ -818,11 +852,14 @@ export function App() {
                     <button
                       className="primary-button"
                       type="button"
-                      disabled={busy || selectedHeroIds.length === 0}
+                      title={
+                        activeRunCount >= teamLimit ? t("vi", "dungeon.teamLimitHint") : undefined
+                      }
+                      disabled={busy || selectedHeroIds.length === 0 || activeRunCount >= teamLimit}
                       onClick={() =>
                         void sendCommand({
                           type: "start_dungeon",
-                          dungeonId: selectedDungeons[slot] ?? dungeonOptions[0],
+                          dungeonId: selectedDungeons[slot] ?? FALLBACK_DUNGEON_IDS[0],
                           teamSlot: slot,
                         })
                       }
@@ -1204,6 +1241,48 @@ export function App() {
               <p>{t("vi", "equipment.emptyHint")}</p>
             </section>
           )}
+        </section>
+      ) : activeTab === "guild" ? (
+        <section className="stack">
+          <section className="card hall-card">
+            <span className="section-kicker">{t("vi", "guild.hall")}</span>
+            <h2>
+              {t("vi", "guild.level")} {player?.hallLevel ?? 1}
+            </h2>
+            <ul className="hall-stats">
+              <li>
+                {t("vi", "guild.heroCapacity")}: <strong>{heroCapacity}</strong>
+              </li>
+              <li>
+                {t("vi", "guild.teamLimit")}: <strong>{teamLimit}</strong>
+              </li>
+              <li>
+                {t("vi", "dungeon.playerGold")}: <strong>{player?.gold ?? 0}</strong>
+              </li>
+            </ul>
+            {hallInfo?.upgradeGoldCost ? (
+              <button
+                className="primary-button"
+                type="button"
+                disabled={busy || !player || player.gold < hallInfo.upgradeGoldCost}
+                onClick={() => void sendCommand({ type: "upgrade_hall" })}
+              >
+                {t("vi", "guild.upgrade")} ({hallInfo.upgradeGoldCost} gold)
+              </button>
+            ) : (
+              <p>{t("vi", "guild.maxLevel")}</p>
+            )}
+            {(() => {
+              const next = catalog?.hall.find(
+                (entry) => entry.level > (player?.hallLevel ?? 1) && entry.teamLimit > teamLimit,
+              );
+              return next ? (
+                <small>
+                  {t("vi", "guild.nextTeamAt")} {next.level}
+                </small>
+              ) : null;
+            })()}
+          </section>
         </section>
       ) : (
         <section className="card empty-state">

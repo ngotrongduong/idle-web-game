@@ -671,6 +671,7 @@
         "slime_gel",
         "river_stone"
       ],
+      "unlockAfterDungeonId": null,
       "nameVi": "Rừng Gai Thornwood",
       "nameEn": "Thornwood Forest"
     },
@@ -684,6 +685,7 @@
         "driftwood_core",
         "river_stone"
       ],
+      "unlockAfterDungeonId": "bamboo_grove",
       "nameVi": "Đầm Lầy Sương Mù",
       "nameEn": "Mistmoor Marsh"
     },
@@ -697,6 +699,7 @@
         "shrine_fragment",
         "tide_crystal"
       ],
+      "unlockAfterDungeonId": "misty_riverbank",
       "nameVi": "Tu Viện Chìm",
       "nameEn": "Sunken Abbey"
     },
@@ -711,6 +714,7 @@
         "ridge_herb",
         "obsidian_shard"
       ],
+      "unlockAfterDungeonId": "sunken_shrine",
       "nameVi": "Vách Đá Lửa Rồng",
       "nameEn": "Dragonfire Crags"
     }

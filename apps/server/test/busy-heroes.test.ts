@@ -59,6 +59,8 @@ describe("heroes busy in a dungeon run", () => {
 
   it("cannot swap equipment on a hero whose snapshot is farming", async () => {
     const { store, playerId, send } = await setup();
+    // Two parallel teams need Hall Lv3 (GDD §5.1).
+    await store.setPlayer({ ...(await store.getPlayer(playerId))!, hallLevel: 3 });
     const [first, second] = await Promise.all([
       store.createHero(playerId, { classId: "ward_squire", rarity: "common", level: 5, exp: 0 }),
       store.createHero(playerId, { classId: "trail_archer", rarity: "common", level: 5, exp: 0 }),

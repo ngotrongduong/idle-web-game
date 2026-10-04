@@ -28,6 +28,7 @@ import {
   heroCapacityForHall,
   levelCapForTier,
   retainHeroPotential,
+  teamLimitForHall,
 } from "@idle/game-core";
 import {
   enhancementGoldCost,
@@ -53,7 +54,7 @@ import {
   heroToCombatant,
   sampleDungeonCycles,
 } from "./dungeon.js";
-import { accrueDungeonRunRewards } from "./idle.js";
+import { accrueDungeonRunRewards, bossKillsInCycles } from "./idle.js";
 import { grantHeroExperience } from "./progression.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
@@ -183,7 +184,24 @@ export function buildServer(options?: { store?: GameStore }) {
   const catalog = CatalogResponseSchema.parse({
     ok: true,
     classes: foundationGameData.classes.map(({ id, nameVi, nameEn }) => ({ id, nameVi, nameEn })),
-    dungeons: foundationGameData.dungeons.map(({ id, nameVi, nameEn }) => ({ id, nameVi, nameEn })),
+    dungeons: foundationGameData.dungeons.map(
+      ({ id, nameVi, nameEn, recommendedLevel, unlockAfterDungeonId }) => ({
+        id,
+        nameVi,
+        nameEn,
+        recommendedLevel,
+        unlockAfterDungeonId,
+      }),
+    ),
+    hall: Array.from({ length: HALL_MAX_LEVEL }, (_, index) => {
+      const level = index + 1;
+      return {
+        level,
+        heroCapacity: heroCapacityForHall(level),
+        teamLimit: teamLimitForHall(level),
+        upgradeGoldCost: level < HALL_MAX_LEVEL ? hallUpgradeGoldCost(level) : null,
+      };
+    }),
     materials: foundationGameData.materials.map(({ id, nameVi, nameEn }) => ({
       id,
       nameVi,
@@ -661,6 +679,21 @@ export function buildServer(options?: { store?: GameStore }) {
           await store.setCommandOutcome(playerId, envelope.cmdId, missingDungeon);
           return missingDungeon;
         }
+        if (
+          dungeon.unlockAfterDungeonId !== null &&
+          !state.clearedDungeonIds.includes(dungeon.unlockAfterDungeonId)
+        ) {
+          const locked: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_LOCKED",
+              `Defeat the boss of ${dungeon.unlockAfterDungeonId} to unlock ${dungeonId}`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, locked);
+          return locked;
+        }
 
         const teams = await store.listTeams(playerId);
         const team = teams.find((entry) => entry.slot === teamSlot);
@@ -732,6 +765,21 @@ export function buildServer(options?: { store?: GameStore }) {
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, staleTeam);
           return staleTeam;
+        }
+
+        const activeRunCount = existingRuns.filter((run) => run.status === "active").length;
+        const teamLimit = teamLimitForHall(state.hallLevel);
+        if (activeRunCount >= teamLimit) {
+          const limitReached: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_LIMIT_REACHED",
+              `Hall level ${state.hallLevel} supports ${teamLimit} parallel dungeon team(s)`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, limitReached);
+          return limitReached;
         }
 
         const startedAt = new Date().toISOString();
@@ -902,17 +950,27 @@ export function buildServer(options?: { store?: GameStore }) {
           pendingMaterials: [],
         });
 
+        // The claimed cycles are the last `pendingCycles` ones accrued for this run.
+        const firstClaimedCycle = run.completedCycles - claimedCycles;
+        const newlyCleared =
+          !state.clearedDungeonIds.includes(run.dungeonId) &&
+          bossKillsInCycles(run, firstClaimedCycle, claimedCycles) > 0;
         const nextState: FoundationPlayerState = {
           ...state,
           version: state.version + 1,
           gold: state.gold + claimedGold,
+          clearedDungeonIds: newlyCleared
+            ? [...state.clearedDungeonIds, run.dungeonId]
+            : state.clearedDungeonIds,
         };
         await store.setPlayer(nextState);
 
         const success = CommandSuccessSchema.parse({
           ok: true,
           version: nextState.version,
-          patch: { gold: nextState.gold },
+          patch: newlyCleared
+            ? { gold: nextState.gold, clearedDungeonIds: nextState.clearedDungeonIds }
+            : { gold: nextState.gold },
           events: [
             {
               type: "dungeon_rewards_claimed",
@@ -922,6 +980,7 @@ export function buildServer(options?: { store?: GameStore }) {
               expPerHero: claimedExpPerHero,
               heroIds,
               materials: claimedMaterials,
+              clearedDungeonId: newlyCleared ? run.dungeonId : null,
             },
           ],
         });

@@ -13,6 +13,8 @@ export const FoundationPlayerStateSchema = z.object({
   version: z.number().int().nonnegative(),
   gold: z.number().int().nonnegative(),
   hallLevel: z.number().int().min(1).max(10),
+  /** Dungeons whose boss this player has beaten; each one unlocks the next (GDD §5.4). */
+  clearedDungeonIds: z.array(z.string().min(1)).default([]),
 });
 
 export type FoundationPlayerState = z.infer<typeof FoundationPlayerStateSchema>;
@@ -154,10 +156,24 @@ export const EquipmentRulesViewSchema = z.object({
   enhancePityStepBps: z.number().int().min(0).max(10_000),
 });
 
+export const DungeonCatalogEntrySchema = CatalogEntrySchema.extend({
+  recommendedLevel: z.number().int().positive(),
+  unlockAfterDungeonId: z.string().min(1).nullable(),
+});
+
+export const HallCatalogLevelSchema = z.object({
+  level: z.number().int().min(1).max(10),
+  heroCapacity: z.number().int().positive(),
+  teamLimit: z.number().int().min(1).max(4),
+  /** Gold to upgrade from this level; null at the maximum level. */
+  upgradeGoldCost: z.number().int().positive().nullable(),
+});
+
 export const CatalogResponseSchema = z.object({
   ok: z.literal(true),
   classes: z.array(CatalogEntrySchema),
-  dungeons: z.array(CatalogEntrySchema),
+  dungeons: z.array(DungeonCatalogEntrySchema),
+  hall: z.array(HallCatalogLevelSchema),
   materials: z.array(CatalogEntrySchema),
   items: z.array(ItemCatalogEntrySchema),
   equipment: EquipmentRulesViewSchema,
@@ -417,6 +433,7 @@ export type CommandEnvelope = z.infer<typeof CommandEnvelopeSchema>;
 export const CommandPatchSchema = z.object({
   gold: z.number().int().nonnegative().optional(),
   hallLevel: z.number().int().min(1).max(10).optional(),
+  clearedDungeonIds: z.array(z.string().min(1)).optional(),
 });
 
 const HallUpgradedEventSchema = z.object({
@@ -460,6 +477,8 @@ const DungeonRewardsClaimedEventSchema = z.object({
   expPerHero: z.number().int().nonnegative(),
   heroIds: z.array(z.string().uuid()).min(1).max(4),
   materials: z.array(MaterialBalanceSchema).default([]),
+  /** Set when these cycles included the first boss kill in this dungeon (unlocks the next one). */
+  clearedDungeonId: z.string().min(1).nullable().default(null),
 });
 
 const HeroPromotedEventSchema = z.object({
@@ -582,6 +601,8 @@ export const ApiErrorCodeSchema = z.enum([
   "ITEM_DEFINITION_NOT_FOUND",
   "ITEM_MAX_ENHANCE",
   "INTERNAL_ERROR",
+  "DUNGEON_LOCKED",
+  "TEAM_LIMIT_REACHED",
 ]);
 
 export const ApiErrorSchema = z.object({

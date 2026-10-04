@@ -63,6 +63,7 @@ export class PostgresGameStore implements GameStore {
       version: 0,
       gold: 1_000,
       hallLevel: 1,
+      clearedDungeonIds: [],
     };
     const now = new Date();
     const expiresAt = new Date(now.getTime() + SESSION_TTL_MS);
@@ -73,6 +74,7 @@ export class PostgresGameStore implements GameStore {
         version: player.version,
         gold: player.gold,
         hallLevel: player.hallLevel,
+        clearedDungeonIds: player.clearedDungeonIds,
         createdAt: now,
         updatedAt: now,
       });
@@ -105,12 +107,13 @@ export class PostgresGameStore implements GameStore {
         version: players.version,
         gold: players.gold,
         hallLevel: players.hallLevel,
+        clearedDungeonIds: players.clearedDungeonIds,
       })
       .from(players)
       .where(eq(players.id, playerId))
       .limit(1);
 
-    return row ? { ...row } : undefined;
+    return row ? { ...row, clearedDungeonIds: [...row.clearedDungeonIds] } : undefined;
   }
 
   async setPlayer(player: FoundationPlayerState): Promise<void> {
@@ -120,6 +123,7 @@ export class PostgresGameStore implements GameStore {
         version: player.version,
         gold: player.gold,
         hallLevel: player.hallLevel,
+        clearedDungeonIds: player.clearedDungeonIds,
         updatedAt: new Date(),
       })
       .where(eq(players.id, player.id));

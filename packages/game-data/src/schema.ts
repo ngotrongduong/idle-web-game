@@ -29,6 +29,8 @@ export const DungeonSchema = z
     recommendedLevel: z.number().int().positive(),
     waveCount: z.number().int().positive().max(20),
     lootMaterialIds: z.array(IdSchema).min(1),
+    /** Dungeon whose boss must be beaten first; null for the starting dungeon. */
+    unlockAfterDungeonId: IdSchema.nullable(),
   })
   .and(LocalizedNameSchema);
 
@@ -191,6 +193,25 @@ export function validateGameData(input: unknown): GameData {
   for (const enemy of data.enemies) {
     if (!dungeonIds.has(enemy.dungeonId)) {
       throw new Error(`Enemy ${enemy.id} references missing dungeon ${enemy.dungeonId}`);
+    }
+  }
+
+  const dungeonById = new Map(data.dungeons.map((dungeon) => [dungeon.id, dungeon]));
+  const starting = data.dungeons.filter((dungeon) => dungeon.unlockAfterDungeonId === null);
+  if (starting.length !== 1) {
+    throw new Error(`Exactly one dungeon must be open from the start, got ${starting.length}`);
+  }
+  for (const dungeon of data.dungeons) {
+    const seen = new Set<string>([dungeon.id]);
+    let cursor = dungeon.unlockAfterDungeonId;
+    while (cursor !== null) {
+      const previous = dungeonById.get(cursor);
+      if (!previous) {
+        throw new Error(`Dungeon ${dungeon.id} unlocks after missing dungeon ${cursor}`);
+      }
+      if (seen.has(previous.id)) throw new Error(`Dungeon unlock chain loops at ${previous.id}`);
+      seen.add(previous.id);
+      cursor = previous.unlockAfterDungeonId;
     }
   }
 

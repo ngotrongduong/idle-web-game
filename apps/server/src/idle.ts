@@ -66,6 +66,19 @@ export function sampleKills(dungeonId: string, sample: DungeonCycleSample): Loot
   );
 }
 
+export function bossKillsInCycles(
+  run: Pick<DungeonRun, "waves" | "cycleSamples">,
+  firstCycleIndex: number,
+  cycles: number,
+): number {
+  const samples = runCycleSamples(run);
+  let kills = 0;
+  for (let cycle = firstCycleIndex; cycle < firstCycleIndex + cycles; cycle += 1) {
+    kills += samples[cycle % samples.length]!.kills.boss;
+  }
+  return kills;
+}
+
 /** Rewards for cycles [firstCycleIndex, firstCycleIndex + cycles): cycle c pays sample c % N. */
 export function cycleRewards(
   run: Pick<DungeonRun, "dungeonId" | "seed" | "waves" | "cycleSamples">,

@@ -146,6 +146,7 @@ export function loadGameDataFromCsv(sources: CsvSources, version = "m0.3"): Game
       recommendedLevel: parseIntField(row, "recommended_level", context),
       waveCount: parseIntField(row, "wave_count", context),
       lootMaterialIds: parseList(requireValue(row, "loot_material_ids", context)),
+      unlockAfterDungeonId: optionalValue(row, "unlock_after"),
     };
   });
 

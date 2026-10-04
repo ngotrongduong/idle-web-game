@@ -32,7 +32,19 @@ describe("GET /api/v1/catalog", () => {
       id: "bamboo_grove",
       nameVi: "Rừng Gai Thornwood",
       nameEn: "Thornwood Forest",
+      recommendedLevel: 1,
+      unlockAfterDungeonId: null,
     });
+    expect(body.dungeons[1]).toMatchObject({ unlockAfterDungeonId: "bamboo_grove" });
+    expect(body.hall[0]).toEqual({
+      level: 1,
+      heroCapacity: 4,
+      teamLimit: 1,
+      upgradeGoldCost: 300,
+    });
+    expect(body.hall.map((level: { teamLimit: number }) => level.teamLimit)).toEqual([
+      1, 1, 2, 2, 2, 3, 3, 3, 4, 4,
+    ]);
     expect(body.materials.map((entry: { id: string }) => entry.id)).toContain("promotion_seal_t1");
     expect(body.classes.length).toBeGreaterThan(0);
   });

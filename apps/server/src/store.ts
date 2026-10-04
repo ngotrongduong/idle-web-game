@@ -102,6 +102,7 @@ export class InMemoryGameStore implements GameStore {
       version: 0,
       gold: 1_000,
       hallLevel: 1,
+      clearedDungeonIds: [],
     };
 
     this.players.set(player.id, player);
@@ -115,11 +116,11 @@ export class InMemoryGameStore implements GameStore {
 
   async getPlayer(playerId: string): Promise<FoundationPlayerState | undefined> {
     const player = this.players.get(playerId);
-    return player ? { ...player } : undefined;
+    return player ? { ...player, clearedDungeonIds: [...player.clearedDungeonIds] } : undefined;
   }
 
   async setPlayer(player: FoundationPlayerState): Promise<void> {
-    this.players.set(player.id, { ...player });
+    this.players.set(player.id, { ...player, clearedDungeonIds: [...player.clearedDungeonIds] });
   }
 
   async getCommandOutcome(
