@@ -57,6 +57,7 @@ jobs:
           apps/server/test/command.test.ts
           apps/server/test/postgres-store.test.ts
           packages/api-contract/src/index.ts
+          apps/web/src/App.tsx
 
       - name: Commit M1.1 formatting
         if: github.event_name == 'pull_request'
@@ -66,7 +67,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/server/src/app.ts apps/server/src/db/postgres-store.ts apps/server/src/db/schema.ts apps/server/src/store.ts apps/server/test/command.test.ts apps/server/test/postgres-store.test.ts packages/api-contract/src/index.ts
+          git add apps/server/src/app.ts apps/server/src/db/postgres-store.ts apps/server/src/db/schema.ts apps/server/src/store.ts apps/server/test/command.test.ts apps/server/test/postgres-store.test.ts packages/api-contract/src/index.ts apps/web/src/App.tsx
           git commit -m "Format M1.1 tavern server files"
           git push origin HEAD:chatgpt/m0-foundation
 
