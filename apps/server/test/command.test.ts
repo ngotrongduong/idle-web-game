@@ -52,7 +52,7 @@ describe("server-authoritative command pipeline", () => {
     expect(response.json().code).toBe("UNAUTHORIZED");
   });
 
-  it("creates a guest and upgrades the hall by intent", async () => {
+  it("creates a guest and starts a hall upgrade by intent", async () => {
     const app = createApp();
     const guest = await createGuest(app);
 
@@ -60,12 +60,14 @@ describe("server-authoritative command pipeline", () => {
       version: 0,
       gold: 1000,
       hallLevel: 1,
+      forgeLevel: 1,
+      construction: null,
     });
 
     const command = {
       cmdId: randomUUID(),
       expectVersion: 0,
-      command: { type: "upgrade_hall" },
+      command: { type: "upgrade_building", building: "hall" },
     };
 
     const first = await app.inject({
@@ -76,10 +78,11 @@ describe("server-authoritative command pipeline", () => {
     });
 
     expect(first.statusCode).toBe(200);
+    // The gold is paid now; the level only changes when the build timer runs out.
     expect(first.json()).toMatchObject({
       ok: true,
       version: 1,
-      patch: { gold: 700, hallLevel: 2 },
+      patch: { gold: 700, hallLevel: 1, construction: { building: "hall", targetLevel: 2 } },
     });
 
     const retry = await app.inject({
@@ -186,7 +189,7 @@ describe("server-authoritative command pipeline", () => {
     const makeCommand = () => ({
       cmdId: randomUUID(),
       expectVersion: 0,
-      command: { type: "upgrade_hall" },
+      command: { type: "upgrade_building", building: "hall" },
     });
 
     const [left, right] = await Promise.all([
@@ -916,6 +919,9 @@ describe("server-authoritative command pipeline", () => {
     const guest = await createGuest(app);
     await store.setMaterialQuantity(guest.state.id, "bamboo_fiber", 10);
     await store.setMaterialQuantity(guest.state.id, "river_stone", 10);
+    // Enhancement needs a level 2 Forge and Forge Dust (covered in buildings.test.ts).
+    await store.setPlayer({ ...(await store.getPlayer(guest.state.id))!, forgeLevel: 2 });
+    await store.setMaterialQuantity(guest.state.id, "forge_dust", 1);
 
     const craft = await app.inject({
       method: "POST",
@@ -969,9 +975,14 @@ describe("server-authoritative command pipeline", () => {
           beforeLevel: 0,
           targetLevel: 1,
           goldCost: 100,
+          dustCost: 1,
           item: { enhanceLevel: 1, enhancePityFailures: 0 },
         },
       ],
+    });
+    expect(await store.listMaterials(guest.state.id)).toContainEqual({
+      materialId: "forge_dust",
+      qty: 0,
     });
   });
 });

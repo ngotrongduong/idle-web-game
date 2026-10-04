@@ -1,5 +1,6 @@
 import {
   ApiErrorSchema,
+  BuildingsResponseSchema,
   CommandEnvelopeSchema,
   CommandSuccessSchema,
   DungeonRunsResponseSchema,
@@ -24,15 +25,22 @@ import {
   rollCraftQualityBps,
   SeededRng,
   HALL_MAX_LEVEL,
-  hallUpgradeGoldCost,
   heroCapacityForHall,
   levelCapForTier,
   retainHeroPotential,
+  settleConstruction,
+  speedUpConstruction,
   teamLimitForHall,
 } from "@idle/game-core";
 import {
+  buildingUpgrade,
+  buildingsConfig,
+  dismantleDustForQuality,
+  enhancementDustCost,
   enhancementGoldCost,
   equipmentConfig,
+  forgeMaxEnhanceLevel,
+  forgeQualityTiers,
   foundationGameData,
   idleConfig,
   itemSellGold,
@@ -100,7 +108,7 @@ async function creditMaterials(
   }
 }
 
-async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now = new Date()) {
+async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now: Date) {
   const runs = await store.listDungeonRuns(playerId);
   const accruedRuns = [];
 
@@ -144,9 +152,11 @@ const enhancementRules = {
   safeLevel: equipmentConfig.maxEnhanceLevel,
 };
 
-export function buildServer(options?: { store?: GameStore }) {
+export function buildServer(options?: { store?: GameStore; now?: () => Date }) {
   const app = Fastify({ logger: false });
   const store = options?.store ?? createConfiguredGameStore();
+  /** Server clock; tests inject one to move build timers without waiting. */
+  const clock = options?.now ?? (() => new Date());
 
   app.setErrorHandler((error, _request, reply) => {
     const statusCode = (error as { statusCode?: number }).statusCode ?? 500;
@@ -195,13 +205,32 @@ export function buildServer(options?: { store?: GameStore }) {
     ),
     hall: Array.from({ length: HALL_MAX_LEVEL }, (_, index) => {
       const level = index + 1;
+      const upgrade = buildingUpgrade("hall", level);
       return {
         level,
         heroCapacity: heroCapacityForHall(level),
         teamLimit: teamLimitForHall(level),
-        upgradeGoldCost: level < HALL_MAX_LEVEL ? hallUpgradeGoldCost(level) : null,
+        upgradeGoldCost: upgrade?.goldCost ?? null,
+        buildSeconds: upgrade?.buildSeconds ?? null,
+        upgradeMaterials: upgrade?.materials ?? [],
       };
     }),
+    forge: Array.from({ length: buildingsConfig.maxLevel }, (_, index) => {
+      const level = index + 1;
+      const upgrade = buildingUpgrade("forge", level);
+      return {
+        level,
+        maxEnhanceLevel: forgeMaxEnhanceLevel(level),
+        qualityWeightsBps: forgeQualityTiers(level).map((tier) => tier.weightBps),
+        upgradeGoldCost: upgrade?.goldCost ?? null,
+        buildSeconds: upgrade?.buildSeconds ?? null,
+        upgradeMaterials: upgrade?.materials ?? [],
+      };
+    }),
+    buildings: {
+      speedUpMaterialId: buildingsConfig.speedUp.materialId,
+      speedUpSecondsPerItem: buildingsConfig.speedUp.secondsPerItem,
+    },
     materials: foundationGameData.materials.map(({ id, nameVi, nameEn }) => ({
       id,
       nameVi,
@@ -221,6 +250,8 @@ export function buildServer(options?: { store?: GameStore }) {
       qualityTiers: equipmentConfig.qualityTiers,
       enhanceBonusBps: equipmentConfig.enhanceBonusBps,
       enhanceGoldCosts: equipmentConfig.enhanceGoldCosts,
+      enhanceDustCosts: equipmentConfig.enhanceDustCosts,
+      forgeDustMaterialId: equipmentConfig.forgeDustMaterialId,
       enhanceSuccessBps: equipmentConfig.enhanceSuccessBps,
       enhancePityStepBps: equipmentConfig.enhancePityStepBps,
     },
@@ -238,7 +269,30 @@ export function buildServer(options?: { store?: GameStore }) {
       return reply.code(404).send(apiError("NOT_FOUND", "Player state was not found"));
     }
 
-    return FoundationPlayerStateSchema.parse(state);
+    // A finished build shows up here without a write; the next command persists it.
+    return FoundationPlayerStateSchema.parse(settleConstruction(state, clock().getTime()));
+  });
+
+  app.get("/api/v1/buildings", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    const stored = await store.getPlayer(playerId);
+    if (!stored) {
+      return reply.code(404).send(apiError("NOT_FOUND", "Player state was not found"));
+    }
+
+    const serverTime = clock();
+    const state = settleConstruction(stored, serverTime.getTime());
+    return BuildingsResponseSchema.parse({
+      ok: true,
+      serverTime: serverTime.toISOString(),
+      hallLevel: state.hallLevel,
+      forgeLevel: state.forgeLevel,
+      construction: state.construction,
+    });
   });
 
   app.get("/api/v1/tavern", async (request, reply) => {
@@ -361,7 +415,7 @@ export function buildServer(options?: { store?: GameStore }) {
     }
 
     const runs = await store.withPlayerLock(playerId, () =>
-      accrueActiveDungeonRuns(store, playerId),
+      accrueActiveDungeonRuns(store, playerId, clock()),
     );
 
     return DungeonRunsResponseSchema.parse({
@@ -398,8 +452,8 @@ export function buildServer(options?: { store?: GameStore }) {
       const cached = await store.getCommandOutcome(playerId, envelope.cmdId);
       if (cached) return cached;
 
-      const state = await store.getPlayer(playerId);
-      if (!state) {
+      const storedState = await store.getPlayer(playerId);
+      if (!storedState) {
         const missing: StoredCommandOutcome = {
           statusCode: 404,
           body: apiError("NOT_FOUND", "Player state was not found"),
@@ -408,41 +462,81 @@ export function buildServer(options?: { store?: GameStore }) {
         return missing;
       }
 
-      if (state.version !== envelope.expectVersion) {
+      if (storedState.version !== envelope.expectVersion) {
         const conflict: StoredCommandOutcome = {
           statusCode: 409,
-          body: apiError("VERSION_CONFLICT", "Player state version does not match", state.version),
+          body: apiError(
+            "VERSION_CONFLICT",
+            "Player state version does not match",
+            storedState.version,
+          ),
         };
         await store.setCommandOutcome(playerId, envelope.cmdId, conflict);
         return conflict;
       }
 
-      if (envelope.command.type === "upgrade_hall") {
-        if (state.hallLevel >= HALL_MAX_LEVEL) {
-          const maxed: StoredCommandOutcome = {
+      // Every command sees building levels as of now. Settling does not bump the version (it is
+      // not a player action); the levels are persisted with the next state a command writes.
+      const commandTime = clock();
+      const state = settleConstruction(storedState, commandTime.getTime());
+
+      if (envelope.command.type === "upgrade_building") {
+        const { building } = envelope.command;
+        const fail = async (code: ApiError["code"], message: string) => {
+          const failure: StoredCommandOutcome = {
             statusCode: 409,
-            body: apiError("MAX_LEVEL", "Hall is already at maximum level"),
+            body: apiError(code, message, state.version),
           };
-          await store.setCommandOutcome(playerId, envelope.cmdId, maxed);
-          return maxed;
+          await store.setCommandOutcome(playerId, envelope.cmdId, failure);
+          return failure;
+        };
+
+        // One builder (docs/03 §6): a second upgrade waits for the running one.
+        if (state.construction) {
+          return fail("BUILDER_BUSY", "The builder is still working on another upgrade");
         }
 
-        const goldCost = hallUpgradeGoldCost(state.hallLevel);
-        if (state.gold < goldCost) {
-          const insufficient: StoredCommandOutcome = {
-            statusCode: 409,
-            body: apiError("INSUFFICIENT_GOLD", "Not enough gold to upgrade the hall"),
-          };
-          await store.setCommandOutcome(playerId, envelope.cmdId, insufficient);
-          return insufficient;
+        const fromLevel = building === "hall" ? state.hallLevel : state.forgeLevel;
+        const upgrade = buildingUpgrade(building, fromLevel);
+        if (!upgrade) {
+          return fail("MAX_LEVEL", "Building is already at maximum level");
+        }
+        if (state.gold < upgrade.goldCost) {
+          return fail("INSUFFICIENT_GOLD", "Not enough gold to upgrade the building");
         }
 
-        const fromLevel = state.hallLevel;
+        const balances = new Map(
+          (await store.listMaterials(playerId)).map((entry) => [entry.materialId, entry.qty]),
+        );
+        const missingMaterial = upgrade.materials.find(
+          (entry) => (balances.get(entry.materialId) ?? 0) < entry.qty,
+        );
+        if (missingMaterial) {
+          return fail(
+            "INSUFFICIENT_MATERIAL",
+            `Not enough ${missingMaterial.materialId} to upgrade the building`,
+          );
+        }
+
+        for (const entry of upgrade.materials) {
+          await store.setMaterialQuantity(
+            playerId,
+            entry.materialId,
+            (balances.get(entry.materialId) ?? 0) - entry.qty,
+          );
+        }
+
+        const construction = {
+          building,
+          targetLevel: fromLevel + 1,
+          startedAt: commandTime.toISOString(),
+          completesAt: new Date(commandTime.getTime() + upgrade.buildSeconds * 1_000).toISOString(),
+        };
         const nextState: FoundationPlayerState = {
           ...state,
           version: state.version + 1,
-          gold: state.gold - goldCost,
-          hallLevel: state.hallLevel + 1,
+          gold: state.gold - upgrade.goldCost,
+          construction,
         };
         await store.setPlayer(nextState);
 
@@ -452,13 +546,18 @@ export function buildServer(options?: { store?: GameStore }) {
           patch: {
             gold: nextState.gold,
             hallLevel: nextState.hallLevel,
+            forgeLevel: nextState.forgeLevel,
+            construction,
           },
           events: [
             {
-              type: "hall_upgraded",
+              type: "building_upgrade_started",
+              building,
               fromLevel,
-              toLevel: nextState.hallLevel,
-              goldCost,
+              toLevel: construction.targetLevel,
+              goldCost: upgrade.goldCost,
+              consumedMaterials: upgrade.materials,
+              construction,
             },
           ],
         });
@@ -471,9 +570,79 @@ export function buildServer(options?: { store?: GameStore }) {
         return stored;
       }
 
+      if (envelope.command.type === "speed_up_construction") {
+        const fail = async (code: ApiError["code"], message: string) => {
+          const failure: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(code, message, state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, failure);
+          return failure;
+        };
+
+        const running = state.construction;
+        if (!running) {
+          return fail("NO_CONSTRUCTION", "No construction is in progress");
+        }
+
+        const { materialId, secondsPerItem } = buildingsConfig.speedUp;
+        const available =
+          (await store.listMaterials(playerId)).find((entry) => entry.materialId === materialId)
+            ?.qty ?? 0;
+        const spedUp = speedUpConstruction({
+          completesAtMs: Date.parse(running.completesAt),
+          nowMs: commandTime.getTime(),
+          secondsPerItem,
+          requestedItems: envelope.command.items,
+          availableItems: available,
+        });
+        if (spedUp.itemsUsed === 0) {
+          return fail("INSUFFICIENT_MATERIAL", `Not enough ${materialId} to speed up`);
+        }
+
+        await store.setMaterialQuantity(playerId, materialId, available - spedUp.itemsUsed);
+        const nextState: FoundationPlayerState = {
+          ...settleConstruction(
+            {
+              ...state,
+              construction: {
+                ...running,
+                completesAt: new Date(spedUp.completesAtMs).toISOString(),
+              },
+            },
+            commandTime.getTime(),
+          ),
+          version: state.version + 1,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {
+            hallLevel: nextState.hallLevel,
+            forgeLevel: nextState.forgeLevel,
+            construction: nextState.construction,
+          },
+          events: [
+            {
+              type: "construction_sped_up",
+              building: running.building,
+              materialId,
+              itemsUsed: spedUp.itemsUsed,
+              completed: nextState.construction === null,
+              construction: nextState.construction,
+            },
+          ],
+        });
+        const stored: StoredCommandOutcome = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
       if (envelope.command.type === "refresh_tavern") {
         const currentTavern = (await store.getTavernState(playerId)) ?? emptyTavernState();
-        const now = new Date();
+        const now = commandTime;
 
         if (currentTavern.nextFreeRefreshAt.getTime() > now.getTime()) {
           const cooldown: StoredCommandOutcome = {
@@ -782,7 +951,7 @@ export function buildServer(options?: { store?: GameStore }) {
           return limitReached;
         }
 
-        const startedAt = new Date().toISOString();
+        const startedAt = commandTime.toISOString();
         const equipment = await store.listItems(playerId);
         const runHeroes = teamHeroes.filter((hero) => hero !== undefined);
         const seed = deriveRunSeed({
@@ -837,11 +1006,11 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "stop_dungeon") {
-        await accrueActiveDungeonRuns(store, playerId);
+        await accrueActiveDungeonRuns(store, playerId, commandTime);
         const run = await store.stopDungeonRun(
           playerId,
           envelope.command.runId,
-          new Date().toISOString(),
+          commandTime.toISOString(),
         );
         if (!run) {
           const missingRun: StoredCommandOutcome = {
@@ -889,7 +1058,7 @@ export function buildServer(options?: { store?: GameStore }) {
           return missingRun;
         }
 
-        const accrued = accrueDungeonRunRewards(existing);
+        const accrued = accrueDungeonRunRewards(existing, commandTime);
         const run =
           accrued === existing ? existing : await store.updateDungeonRun(playerId, accrued);
 
@@ -1238,7 +1407,7 @@ export function buildServer(options?: { store?: GameStore }) {
           slot: spec.slot,
           qualityBps: rollCraftQualityBps(
             new SeededRng(createEquipmentSeed()),
-            equipmentConfig.qualityTiers,
+            forgeQualityTiers(state.forgeLevel),
             equipmentConfig.baseQualityBps,
           ),
           enhanceLevel: 0,
@@ -1319,6 +1488,21 @@ export function buildServer(options?: { store?: GameStore }) {
           return maxed;
         }
 
+        // The Forge level caps enhancement (GDD §5.1); items above the cap keep their level.
+        const forgeCap = forgeMaxEnhanceLevel(state.forgeLevel);
+        if (item.enhanceLevel >= forgeCap) {
+          const forgeTooLow: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "FORGE_LEVEL_TOO_LOW",
+              `Forge level ${state.forgeLevel} enhances up to +${forgeCap}; upgrade the Forge first`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, forgeTooLow);
+          return forgeTooLow;
+        }
+
         const goldCost = enhancementGoldCost(item.enhanceLevel);
         if (state.gold < goldCost) {
           const insufficient: StoredCommandOutcome = {
@@ -1327,6 +1511,32 @@ export function buildServer(options?: { store?: GameStore }) {
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, insufficient);
           return insufficient;
+        }
+
+        const dustCost = enhancementDustCost(item.enhanceLevel);
+        const dustBalance =
+          (await store.listMaterials(playerId)).find(
+            (entry) => entry.materialId === equipmentConfig.forgeDustMaterialId,
+          )?.qty ?? 0;
+        if (dustBalance < dustCost) {
+          const insufficientDust: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "INSUFFICIENT_MATERIAL",
+              `Not enough ${equipmentConfig.forgeDustMaterialId} to enhance item`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficientDust);
+          return insufficientDust;
+        }
+        // Dust is spent on every attempt, like the gold: a failed roll only keeps the pity.
+        if (dustCost > 0) {
+          await store.setMaterialQuantity(
+            playerId,
+            equipmentConfig.forgeDustMaterialId,
+            dustBalance - dustCost,
+          );
         }
 
         const result = resolveUpgradeAttempt(
@@ -1359,6 +1569,7 @@ export function buildServer(options?: { store?: GameStore }) {
               targetLevel: result.targetLevel,
               successBps: result.successBps,
               goldCost,
+              dustCost,
             },
           ],
         });
@@ -1579,6 +1790,62 @@ export function buildServer(options?: { store?: GameStore }) {
               type: "item_sold",
               itemInstanceId: item.id,
               gold: sellGold,
+            },
+          ],
+        });
+        const stored = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "dismantle_item") {
+        const { itemInstanceId } = envelope.command;
+        const item = (await store.listItems(playerId)).find(
+          (candidate) => candidate.id === itemInstanceId,
+        );
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+        // Same protection as selling: a locked or worn item is never destroyed.
+        if (item.locked) {
+          const locked: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_LOCKED", "Locked items cannot be dismantled", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, locked);
+          return locked;
+        }
+        if (item.equippedHeroId) {
+          const equipped: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_EQUIPPED", "Equipped items cannot be dismantled", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, equipped);
+          return equipped;
+        }
+
+        const dust = dismantleDustForQuality(item.qualityBps);
+        await store.deleteItem(playerId, item.id);
+        await creditMaterials(store, playerId, [
+          { materialId: equipmentConfig.forgeDustMaterialId, qty: dust },
+        ]);
+        const nextState = { ...state, version: state.version + 1 };
+        await store.setPlayer(nextState);
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [
+            {
+              type: "item_dismantled",
+              itemInstanceId: item.id,
+              materialId: equipmentConfig.forgeDustMaterialId,
+              dust,
             },
           ],
         });

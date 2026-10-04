@@ -85,6 +85,16 @@
       "id": "promotion_seal_t2",
       "nameVi": "Ấn Thăng Cấp II",
       "nameEn": "Promotion Seal II"
+    },
+    {
+      "id": "forge_dust",
+      "nameVi": "Bụi Rèn",
+      "nameEn": "Forge Dust"
+    },
+    {
+      "id": "builders_hourglass",
+      "nameVi": "Đồng Hồ Cát Thợ Xây",
+      "nameEn": "Builder's Hourglass"
     }
   ],
   "items": [

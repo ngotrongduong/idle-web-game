@@ -12,7 +12,7 @@ describe("game-data pipeline", () => {
 
   it("loads the complete first MVP content slice", () => {
     expect(foundationGameData.version).toBe("m0.3-content-v3");
-    expect(foundationGameData.materials).toHaveLength(17);
+    expect(foundationGameData.materials).toHaveLength(19);
     expect(foundationGameData.items).toHaveLength(30);
     expect(foundationGameData.dungeons).toHaveLength(4);
     expect(foundationGameData.classFamilies).toHaveLength(4);

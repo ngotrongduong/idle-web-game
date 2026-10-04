@@ -8,16 +8,40 @@ export const HealthResponseSchema = z.object({
 
 export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 
+export const BuildingIdSchema = z.enum(["hall", "forge"]);
+export type BuildingId = z.infer<typeof BuildingIdSchema>;
+
+/** The one upgrade the builder is working on; the level applies once `completesAt` has passed. */
+export const ConstructionSchema = z.object({
+  building: BuildingIdSchema,
+  targetLevel: z.number().int().min(2).max(10),
+  startedAt: z.string().datetime(),
+  completesAt: z.string().datetime(),
+});
+export type Construction = z.infer<typeof ConstructionSchema>;
+
 export const FoundationPlayerStateSchema = z.object({
   id: z.string().uuid(),
   version: z.number().int().nonnegative(),
   gold: z.number().int().nonnegative(),
   hallLevel: z.number().int().min(1).max(10),
+  forgeLevel: z.number().int().min(1).max(10).default(1),
+  construction: ConstructionSchema.nullable().default(null),
   /** Dungeons whose boss this player has beaten; each one unlocks the next (GDD §5.4). */
   clearedDungeonIds: z.array(z.string().min(1)).default([]),
 });
 
 export type FoundationPlayerState = z.infer<typeof FoundationPlayerStateSchema>;
+
+/** Building levels as of `serverTime`, with a finished construction already applied. */
+export const BuildingsResponseSchema = z.object({
+  ok: z.literal(true),
+  serverTime: z.string().datetime(),
+  hallLevel: z.number().int().min(1).max(10),
+  forgeLevel: z.number().int().min(1).max(10),
+  construction: ConstructionSchema.nullable(),
+});
+export type BuildingsResponse = z.infer<typeof BuildingsResponseSchema>;
 
 export const GuestAuthResponseSchema = z.object({
   ok: z.literal(true),
@@ -146,12 +170,17 @@ export const CraftQualityTierSchema = z.object({
   nameEn: z.string().min(1),
   weightBps: z.number().int().min(0).max(10_000),
   multiplierBps: z.number().int().min(10_000).max(20_000),
+  /** Forge Dust returned when an item of this quality is dismantled. */
+  dismantleDust: z.number().int().positive(),
 });
 
 export const EquipmentRulesViewSchema = z.object({
+  /** Base (Forge level 1) odds; `forge[].qualityWeightsBps` has the odds of every Forge level. */
   qualityTiers: z.array(CraftQualityTierSchema).min(1),
   enhanceBonusBps: z.array(z.number().int().nonnegative()).length(6),
   enhanceGoldCosts: z.array(z.number().int().nonnegative()).length(5),
+  enhanceDustCosts: z.array(z.number().int().nonnegative()).length(5),
+  forgeDustMaterialId: z.string().min(1),
   enhanceSuccessBps: z.array(z.number().int().min(0).max(10_000)).length(5),
   enhancePityStepBps: z.number().int().min(0).max(10_000),
 });
@@ -167,6 +196,25 @@ export const HallCatalogLevelSchema = z.object({
   teamLimit: z.number().int().min(1).max(4),
   /** Gold to upgrade from this level; null at the maximum level. */
   upgradeGoldCost: z.number().int().positive().nullable(),
+  /** Seconds the upgrade from this level takes; null at the maximum level. */
+  buildSeconds: z.number().int().positive().nullable(),
+  upgradeMaterials: z.array(RecipeIngredientViewSchema),
+});
+
+export const ForgeCatalogLevelSchema = z.object({
+  level: z.number().int().min(1).max(10),
+  /** Highest enhancement level this Forge level allows; 0 means enhancement is still locked. */
+  maxEnhanceLevel: z.number().int().min(0).max(5),
+  /** Craft quality odds at this level, in `equipment.qualityTiers` order. */
+  qualityWeightsBps: z.array(z.number().int().min(0).max(10_000)).min(1),
+  upgradeGoldCost: z.number().int().positive().nullable(),
+  buildSeconds: z.number().int().positive().nullable(),
+  upgradeMaterials: z.array(RecipeIngredientViewSchema),
+});
+
+export const BuildingRulesViewSchema = z.object({
+  speedUpMaterialId: z.string().min(1),
+  speedUpSecondsPerItem: z.number().int().positive(),
 });
 
 export const CatalogResponseSchema = z.object({
@@ -174,6 +222,8 @@ export const CatalogResponseSchema = z.object({
   classes: z.array(CatalogEntrySchema),
   dungeons: z.array(DungeonCatalogEntrySchema),
   hall: z.array(HallCatalogLevelSchema),
+  forge: z.array(ForgeCatalogLevelSchema),
+  buildings: BuildingRulesViewSchema,
   materials: z.array(CatalogEntrySchema),
   items: z.array(ItemCatalogEntrySchema),
   equipment: EquipmentRulesViewSchema,
@@ -323,8 +373,16 @@ export const DungeonRunsResponseSchema = z.object({
   runs: z.array(DungeonRunSchema),
 });
 
-export const UpgradeHallCommandSchema = z.object({
-  type: z.literal("upgrade_hall"),
+/** Pays for the next level and starts the build timer; the level applies when it runs out. */
+export const UpgradeBuildingCommandSchema = z.object({
+  type: z.literal("upgrade_building"),
+  building: BuildingIdSchema,
+});
+
+/** Spends up to `items` speed-up items; the server never uses more than the timer needs. */
+export const SpeedUpConstructionCommandSchema = z.object({
+  type: z.literal("speed_up_construction"),
+  items: z.number().int().min(1).max(1_000),
 });
 
 export const RefreshTavernCommandSchema = z.object({
@@ -386,6 +444,11 @@ export const SellItemCommandSchema = z.object({
   itemInstanceId: z.string().uuid(),
 });
 
+export const DismantleItemCommandSchema = z.object({
+  type: z.literal("dismantle_item"),
+  itemInstanceId: z.string().uuid(),
+});
+
 export const CraftItemCommandSchema = z.object({
   type: z.literal("craft_item"),
   itemId: z.string().min(1),
@@ -403,7 +466,9 @@ export const SetAutoSellCommandSchema = z.object({
 });
 
 export const CommandSchema = z.discriminatedUnion("type", [
-  UpgradeHallCommandSchema,
+  UpgradeBuildingCommandSchema,
+  SpeedUpConstructionCommandSchema,
+  DismantleItemCommandSchema,
   RefreshTavernCommandSchema,
   RecruitHeroCommandSchema,
   SetTeamCommandSchema,
@@ -433,14 +498,36 @@ export type CommandEnvelope = z.infer<typeof CommandEnvelopeSchema>;
 export const CommandPatchSchema = z.object({
   gold: z.number().int().nonnegative().optional(),
   hallLevel: z.number().int().min(1).max(10).optional(),
+  forgeLevel: z.number().int().min(1).max(10).optional(),
+  construction: ConstructionSchema.nullable().optional(),
   clearedDungeonIds: z.array(z.string().min(1)).optional(),
 });
 
-const HallUpgradedEventSchema = z.object({
-  type: z.literal("hall_upgraded"),
+const BuildingUpgradeStartedEventSchema = z.object({
+  type: z.literal("building_upgrade_started"),
+  building: BuildingIdSchema,
   fromLevel: z.number().int().min(1).max(9),
   toLevel: z.number().int().min(2).max(10),
   goldCost: z.number().int().positive(),
+  consumedMaterials: z.array(MaterialBalanceSchema),
+  construction: ConstructionSchema,
+});
+
+const ConstructionSpedUpEventSchema = z.object({
+  type: z.literal("construction_sped_up"),
+  building: BuildingIdSchema,
+  materialId: z.string().min(1),
+  itemsUsed: z.number().int().positive(),
+  /** True when the items finished the build; the patch then carries the new level. */
+  completed: z.boolean(),
+  construction: ConstructionSchema.nullable(),
+});
+
+const ItemDismantledEventSchema = z.object({
+  type: z.literal("item_dismantled"),
+  itemInstanceId: z.string().uuid(),
+  materialId: z.string().min(1),
+  dust: z.number().int().positive(),
 });
 
 const TavernRefreshedEventSchema = z.object({
@@ -528,6 +615,7 @@ const ItemEnhancedEventSchema = z.object({
   targetLevel: z.number().int().min(1).max(5),
   successBps: z.number().int().min(0).max(10_000),
   goldCost: z.number().int().nonnegative(),
+  dustCost: z.number().int().nonnegative().default(0),
 });
 
 const AutoSellSettingsUpdatedEventSchema = z.object({
@@ -542,7 +630,9 @@ const ItemAutoSoldEventSchema = z.object({
 });
 
 export const CommandEventSchema = z.discriminatedUnion("type", [
-  HallUpgradedEventSchema,
+  BuildingUpgradeStartedEventSchema,
+  ConstructionSpedUpEventSchema,
+  ItemDismantledEventSchema,
   TavernRefreshedEventSchema,
   HeroRecruitedEventSchema,
   TeamUpdatedEventSchema,
@@ -603,6 +693,9 @@ export const ApiErrorCodeSchema = z.enum([
   "INTERNAL_ERROR",
   "DUNGEON_LOCKED",
   "TEAM_LIMIT_REACHED",
+  "BUILDER_BUSY",
+  "NO_CONSTRUCTION",
+  "FORGE_LEVEL_TOO_LOW",
 ]);
 
 export const ApiErrorSchema = z.object({

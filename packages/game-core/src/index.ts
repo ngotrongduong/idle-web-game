@@ -51,9 +51,14 @@ export {
   type TargetingMode,
 } from "./battle.js";
 export {
+  settleConstruction,
+  speedUpConstruction,
+  type BuildingId,
+  type BuildingState,
+  type Construction,
+} from "./buildings.js";
+export {
   HALL_MAX_LEVEL,
-  HALL_UPGRADE_GOLD_COST,
-  hallUpgradeGoldCost,
   heroCapacityForHall,
   HALL_PARALLEL_TEAM_UNLOCK_LEVELS,
   teamLimitForHall,

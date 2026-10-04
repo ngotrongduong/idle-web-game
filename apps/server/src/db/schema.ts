@@ -14,6 +14,7 @@ import {
 import type {
   AutoSellSettings,
   BattleRulesSnapshot,
+  Construction,
   DungeonCycleSample,
   DungeonRun,
   DungeonWaveReplay,
@@ -30,6 +31,8 @@ export const players = pgTable("players", {
   version: integer("version").notNull().default(0),
   gold: integer("gold").notNull().default(1_000),
   hallLevel: integer("hall_level").notNull().default(1),
+  forgeLevel: integer("forge_level").notNull().default(1),
+  construction: jsonb("construction").$type<Construction>(),
   clearedDungeonIds: jsonb("cleared_dungeon_ids").$type<string[]>().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

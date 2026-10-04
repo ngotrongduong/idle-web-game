@@ -415,6 +415,38 @@
       "chanceBps": 150,
       "minQty": 1,
       "maxQty": 1
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "materialId": "builders_hourglass",
+      "chanceBps": 200,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "builders_hourglass",
+      "chanceBps": 200,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "builders_hourglass",
+      "chanceBps": 200,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "builders_hourglass",
+      "chanceBps": 200,
+      "minQty": 1,
+      "maxQty": 1
     }
   ]
 }

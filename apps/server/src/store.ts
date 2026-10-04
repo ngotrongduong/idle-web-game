@@ -60,6 +60,14 @@ export interface GameStore {
   close?(): Promise<void>;
 }
 
+function copyPlayer(player: FoundationPlayerState): FoundationPlayerState {
+  return {
+    ...player,
+    construction: player.construction ? { ...player.construction } : null,
+    clearedDungeonIds: [...player.clearedDungeonIds],
+  };
+}
+
 function copyTavernState(state: StoredTavernState): StoredTavernState {
   return {
     ...state,
@@ -102,12 +110,14 @@ export class InMemoryGameStore implements GameStore {
       version: 0,
       gold: 1_000,
       hallLevel: 1,
+      forgeLevel: 1,
+      construction: null,
       clearedDungeonIds: [],
     };
 
     this.players.set(player.id, player);
     this.sessions.set(sessionHash, player.id);
-    return { ...player };
+    return copyPlayer(player);
   }
 
   async findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined> {
@@ -116,11 +126,11 @@ export class InMemoryGameStore implements GameStore {
 
   async getPlayer(playerId: string): Promise<FoundationPlayerState | undefined> {
     const player = this.players.get(playerId);
-    return player ? { ...player, clearedDungeonIds: [...player.clearedDungeonIds] } : undefined;
+    return player ? copyPlayer(player) : undefined;
   }
 
   async setPlayer(player: FoundationPlayerState): Promise<void> {
-    this.players.set(player.id, { ...player, clearedDungeonIds: [...player.clearedDungeonIds] });
+    this.players.set(player.id, copyPlayer(player));
   }
 
   async getCommandOutcome(

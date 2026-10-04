@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { foundationGameData, lootConfig, promotionConfig, validateLootConfig } from "./index";
+import {
+  buildingsConfig,
+  foundationGameData,
+  lootConfig,
+  promotionConfig,
+  validateLootConfig,
+} from "./index";
 
 describe("loot config", () => {
   it("covers every dungeon rank with loot from that dungeon's material list", () => {
+    // Boss-only extras that are not crafting materials of the dungeon.
+    const isSpecialDrop = (materialId: string) =>
+      materialId.startsWith("promotion_seal_") || materialId === buildingsConfig.speedUp.materialId;
+
     for (const dungeon of foundationGameData.dungeons) {
       for (const rank of ["normal", "elite", "boss"] as const) {
         const rules = lootConfig.rules.filter(
@@ -11,10 +21,20 @@ describe("loot config", () => {
         expect(rules.length).toBeGreaterThan(0);
       }
       const regular = lootConfig.rules.filter(
-        (rule) => rule.dungeonId === dungeon.id && !rule.materialId.startsWith("promotion_seal_"),
+        (rule) => rule.dungeonId === dungeon.id && !isSpecialDrop(rule.materialId),
       );
       expect(regular.every((rule) => dungeon.lootMaterialIds.includes(rule.materialId))).toBe(true);
     }
+  });
+
+  it("drops the build speed-up item from every dungeon boss and nowhere else", () => {
+    const sources = lootConfig.rules.filter(
+      (rule) => rule.materialId === buildingsConfig.speedUp.materialId,
+    );
+    expect(sources.map((rule) => rule.dungeonId).sort()).toEqual(
+      foundationGameData.dungeons.map((dungeon) => dungeon.id).sort(),
+    );
+    expect(sources.every((rule) => rule.rank === "boss")).toBe(true);
   });
 
   it("drops every promotion seal from a boss so promotion is reachable", () => {

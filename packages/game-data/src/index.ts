@@ -4,6 +4,8 @@ import { validateLootConfig } from "./loot.js";
 import { promotionConfig } from "./promotion.js";
 import { validateGameData } from "./schema.js";
 import { battleConfig } from "./battle.js";
+import { assertBuildingMaterialsExist, buildingsConfig } from "./buildings.js";
+import { equipmentConfig } from "./equipment.js";
 
 export { loadGameDataFromCsv, parseCsv, type CsvSources } from "./csv.js";
 export {
@@ -77,7 +79,9 @@ export const combatantSetup = {
 export {
   CraftQualityTierSchema,
   EquipmentConfigSchema,
+  dismantleDustForQuality,
   enhancementBonusBps,
+  enhancementDustCost,
   enhancementGoldCost,
   equipmentConfig,
   equipmentStatValue,
@@ -85,6 +89,25 @@ export {
   type CraftQualityTier,
   type EquipmentConfig,
 } from "./equipment.js";
+export {
+  BuildingIdSchema,
+  BuildingsConfigSchema,
+  buildingUpgrade,
+  buildingsConfig,
+  forgeMaxEnhanceLevel,
+  forgeQualityTiers,
+  validateBuildingsConfig,
+  type BuildingId,
+  type BuildingUpgrade,
+  type BuildingsConfig,
+} from "./buildings.js";
+
+assertBuildingMaterialsExist(buildingsConfig, foundationGameData);
+if (
+  !foundationGameData.materials.some((entry) => entry.id === equipmentConfig.forgeDustMaterialId)
+) {
+  throw new Error(`Forge Dust material ${equipmentConfig.forgeDustMaterialId} is not defined`);
+}
 export { IdleConfigSchema, idleConfig, type IdleConfig } from "./idle.js";
 export { BattleConfigSchema, battleConfig, type BattleConfig } from "./battle.js";
 export {

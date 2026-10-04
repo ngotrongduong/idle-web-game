@@ -41,6 +41,27 @@ describe("GET /api/v1/catalog", () => {
       heroCapacity: 4,
       teamLimit: 1,
       upgradeGoldCost: 300,
+      buildSeconds: 60,
+      upgradeMaterials: [],
+    });
+    expect(body.hall[9]).toMatchObject({ level: 10, upgradeGoldCost: null, buildSeconds: null });
+    expect(body.forge).toHaveLength(10);
+    expect(body.forge[0]).toEqual({
+      level: 1,
+      maxEnhanceLevel: 0,
+      qualityWeightsBps: [7_000, 2_500, 450, 50],
+      upgradeGoldCost: 240,
+      buildSeconds: 48,
+      upgradeMaterials: [{ materialId: "river_stone", qty: 3 }],
+    });
+    expect(body.forge[4].maxEnhanceLevel).toBe(5);
+    expect(body.buildings).toEqual({
+      speedUpMaterialId: "builders_hourglass",
+      speedUpSecondsPerItem: 300,
+    });
+    expect(body.equipment).toMatchObject({
+      enhanceDustCosts: [1, 2, 3, 4, 5],
+      forgeDustMaterialId: "forge_dust",
     });
     expect(body.hall.map((level: { teamLimit: number }) => level.teamLimit)).toEqual([
       1, 1, 2, 2, 2, 3, 3, 3, 4, 4,
