@@ -11,11 +11,7 @@ export default tseslint.config(
   },
   ...tseslint.configs.recommended,
   {
-    files: [
-      "apps/**/*.{ts,tsx}",
-      "packages/**/*.{ts,tsx}",
-      "tools/sim/**/*.{ts,tsx}",
-    ],
+    files: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}", "tools/sim/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
