@@ -1,7 +1,7 @@
-import generatedConfig from "../generated/config.json";
-import { validateGameData } from "./schema";
+import generatedConfig from "../generated/config.json" with { type: "json" };
+import { validateGameData } from "./schema.js";
 
-export { loadGameDataFromCsv, parseCsv, type CsvSources } from "./csv";
+export { loadGameDataFromCsv, parseCsv, type CsvSources } from "./csv.js";
 export {
   ClassFamilySchema,
   DungeonSchema,
@@ -17,4 +17,4 @@ export {
 
 export const foundationGameData = validateGameData(generatedConfig);
 
-export { TavernConfigSchema, tavernConfig, type TavernConfig } from "./tavern";
+export { TavernConfigSchema, tavernConfig, type TavernConfig } from "./tavern.js";

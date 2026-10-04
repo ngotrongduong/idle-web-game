@@ -1,4 +1,4 @@
-import { validateGameData, type GameData } from "./schema";
+import { validateGameData, type GameData } from "./schema.js";
 
 export type CsvSources = {
   materials: string;

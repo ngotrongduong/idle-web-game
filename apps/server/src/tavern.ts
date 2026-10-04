@@ -20,8 +20,8 @@ const rarityRules: TavernRarityRules = {
 };
 
 const recruitableClassIds = foundationGameData.classes
-  .filter((heroClass) => heroClass.tier === 1)
-  .map((heroClass) => heroClass.id);
+  .filter((heroClass: { tier: number }) => heroClass.tier === 1)
+  .map((heroClass: { id: string }) => heroClass.id);
 
 if (recruitableClassIds.length < 3) {
   throw new Error("Tavern requires at least three recruitable T1 classes");

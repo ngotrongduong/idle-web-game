@@ -1,5 +1,5 @@
 import { z } from "zod";
-import rawTavernConfig from "../data/tavern.json";
+import rawTavernConfig from "../data/tavern.json" with { type: "json" };
 
 const RarityBpsSchema = z.object({
   common: z.number().int().nonnegative(),
