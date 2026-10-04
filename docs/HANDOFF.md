@@ -7,28 +7,38 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #82 passed on commit `5d5ddc181ff8930e5a9810e365ab542dfc56c980`.
-- Frozen install, PostgreSQL migration, typecheck, unit/integration tests and build are green through that commit.
-- PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback and real row-lock serialization.
-- Keep PR #2 draft while M0 work continues; do not merge partial DB/staging work.
+- GitHub Actions CI run #131 passed on commit `017b65998b8854cefd3988f2073ae9dae85a55ff`.
+- Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
+- PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
+- Temporary format-once workflows have been removed; CI is read-only again.
+- Keep PR #2 draft while M1 continues. Do not merge unfinished M1.2 work.
 
 ## Completed in this branch
 - M0.1 monorepo workspace paths: `apps/*`, `packages/*`, `tools/*`.
-- `apps/web`: React 19 + Vite mobile-first placeholder shell.
-- `apps/server`: Fastify server foundation.
-- M0.2 partial: GitHub Actions CI with frozen lockfile, typecheck, test and build.
-- M0.3: CSV → JSON pipeline, Zod validation and cross-reference checks; original MVP slice includes 4 class families, 24 T1–T3 classes with explicit targeting/ULT metadata, 4 dungeons, 16 enemies, 15 materials and 30 craftable items.
-- M0.4: seeded RNG, integer/BPS combat math, deterministic `simulateWave`, replay hash and golden test; MP/ULT supports deterministic damage or healing, role-aware targeting and class-family counters while preserving the legacy golden hash when optional features are unused.
-- M0.5: enhancement model with +5 safety floor and pity; battle/enhancement Monte Carlo tools. Battle scenarios now derive progression teams, dungeon waves and gold/EXP rewards from validated game-data instead of hard-coded encounters.
-- M0.6a: guest session + HttpOnly cookie, intent-only `/api/v1/cmd`, expected-version checks, per-player async lock, idempotent `cmdId`, and first `upgrade_hall` command.
-- M0.6b implementation: Drizzle schema + PostgreSQL migration + `PostgresGameStore`; hashed sessions persist with expiry, command outcomes have a 24h retention window, and `withPlayerLock` uses a real transaction with `SELECT ... FOR UPDATE`. Server selects PostgreSQL via `DATABASE_URL` and falls back to in-memory locally.
-- M1.1 implementation in progress: Tavern now has persistent 2-hour refresh cooldown, 3 offers, refresh-based pity, Hall-capacity enforcement, persisted heroes, and server-authoritative `refresh_tavern` / `recruit_hero` commands.
+- M0.2 CI: frozen lockfile, ESLint, Prettier, typecheck, tests, Chromium deterministic golden check, build.
+- M0.3 validated original game-data pipeline and MVP content slice.
+- M0.4 deterministic seeded battle engine with MP/ULT, healing, targeting, counters and replay hashes.
+- M0.5 battle, enhancement and gacha simulation tools.
+- M0.6 Fastify + Drizzle/PostgreSQL persistence, guest auth, server-authoritative `/cmd`, version checks, idempotency and real row locks.
+- M0.7 Docker Compose + Caddy/server/web Dockerfiles and compose validation. Real VPS/domain deployment remains external/pending.
+- M1.1 Tavern + Hero loop:
+  - refresh-based rarity/pity rules and Monte Carlo verification
+  - persistent 2-hour refresh cooldown
+  - 3 recruitment offers per refresh
+  - server-authoritative `refresh_tavern` and `recruit_hero` commands
+  - Hall-level hero capacity enforcement
+  - PostgreSQL tables/migration for Tavern state and heroes
+  - GET `/api/v1/tavern` and `/api/v1/heroes`
+  - playable React Tavern screen with guest bootstrap, pity/cooldown, refresh, recruit and roster
+  - Vite dev proxy to the Fastify API
 
 ## Next implementation work
-1. Verify M1.1 Tavern/hero persistence and command flow in CI; fix any migration/type/format regressions.
-2. Finish M1.1 client surface for viewing offers/heroes and issuing recruit/refresh intents.
-3. M1.2 team + dungeon assignment/start-stop/replay flow from the deterministic server seed.
-4. Actual staging VPS/domain deployment remains pending even though Docker/Caddy infrastructure is scaffolded.
+1. M1.2: persistent teams and hero assignment.
+2. Add dungeon run start/stop commands using server-generated deterministic battle seeds.
+3. Generate the full 5 regular waves + boss wave from validated dungeon/enemy data and persist run/replay state.
+4. Add the web Team & Dungeon screen and replay the server result client-side from the same seed.
+5. Add end-to-end tests proving client/server replay results and hashes match.
+6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
