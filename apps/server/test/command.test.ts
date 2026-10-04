@@ -282,4 +282,72 @@ describe("server-authoritative command pipeline", () => {
     expect(reuseHero.statusCode).toBe(409);
     expect(reuseHero.json().code).toBe("TEAM_HERO_ALREADY_ASSIGNED");
   });
+  it("starts and stops a replay-safe six-wave dungeon run", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    await store.setTeam(guest.state.id, {
+      slot: 1,
+      heroIds: [hero.id],
+    });
+
+    const start = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: {
+          type: "start_dungeon",
+          dungeonId: "bamboo_grove",
+          teamSlot: 1,
+        },
+      },
+    });
+
+    expect(start.statusCode).toBe(200);
+    const run = start.json().events[0].run;
+    expect(run).toMatchObject({
+      dungeonId: "bamboo_grove",
+      teamSlot: 1,
+      status: "active",
+    });
+    expect(run.waves).toHaveLength(6);
+
+    const listed = await app.inject({
+      method: "GET",
+      url: "/api/v1/dungeon-runs",
+      headers: { cookie: guest.cookie },
+    });
+    expect(listed.statusCode).toBe(200);
+    expect(listed.json().runs).toHaveLength(1);
+
+    const stop = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: {
+          type: "stop_dungeon",
+          runId: run.id,
+        },
+      },
+    });
+
+    expect(stop.statusCode).toBe(200);
+    expect(stop.json().events[0].run.status).toBe("stopped");
+    expect(stop.json().events[0].run.stoppedAt).toBeTruthy();
+  });
+
 });

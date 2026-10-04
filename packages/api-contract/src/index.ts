@@ -75,6 +75,56 @@ export const TeamsResponseSchema = z.object({
   teams: z.array(TeamSchema).max(4),
 });
 
+
+export const BattleUnitSnapshotSchema = z.object({
+  id: z.string().min(1),
+  hp: z.number().int().positive(),
+  attack: z.number().int().positive(),
+  defense: z.number().int().nonnegative(),
+  speed: z.number().int().nonnegative(),
+  critBps: z.number().int().min(0).max(10_000).optional(),
+  familyId: z.string().min(1).optional(),
+  targeting: z.enum(["random", "lowest_hp", "highest_attack"]).optional(),
+  ultimatePowerBps: z.number().int().positive().optional(),
+  ultimateKind: z.enum(["damage", "heal"]).optional(),
+  ultimateTargeting: z.enum(["random", "lowest_hp", "highest_attack"]).optional(),
+  startingMp: z.number().int().nonnegative().optional(),
+});
+
+export type BattleUnitSnapshot = z.infer<typeof BattleUnitSnapshotSchema>;
+
+export const DungeonWaveReplaySchema = z.object({
+  wave: z.number().int().min(1).max(20),
+  seed: z.number().int().min(0).max(4_294_967_295),
+  result: z.enum(["win", "lose", "draw"]),
+  turns: z.number().int().nonnegative(),
+  hash: z.string().regex(/^[0-9a-f]{8}$/),
+  allies: z.array(BattleUnitSnapshotSchema).min(1).max(4),
+  enemies: z.array(BattleUnitSnapshotSchema).min(1),
+  rewardGold: z.number().int().nonnegative(),
+  rewardExp: z.number().int().nonnegative(),
+});
+
+export type DungeonWaveReplay = z.infer<typeof DungeonWaveReplaySchema>;
+
+export const DungeonRunSchema = z.object({
+  id: z.string().uuid(),
+  dungeonId: z.string().min(1),
+  teamSlot: z.number().int().min(1).max(4),
+  seed: z.number().int().min(0).max(4_294_967_295),
+  status: z.enum(["active", "stopped"]),
+  startedAt: z.string().datetime(),
+  stoppedAt: z.string().datetime().nullable(),
+  waves: z.array(DungeonWaveReplaySchema).min(1).max(20),
+});
+
+export type DungeonRun = z.infer<typeof DungeonRunSchema>;
+
+export const DungeonRunsResponseSchema = z.object({
+  ok: z.literal(true),
+  runs: z.array(DungeonRunSchema),
+});
+
 export const UpgradeHallCommandSchema = z.object({
   type: z.literal("upgrade_hall"),
 });
@@ -94,11 +144,24 @@ export const SetTeamCommandSchema = z.object({
   heroIds: z.array(z.string().uuid()).max(4),
 });
 
+export const StartDungeonCommandSchema = z.object({
+  type: z.literal("start_dungeon"),
+  dungeonId: z.string().min(1),
+  teamSlot: z.number().int().min(1).max(4),
+});
+
+export const StopDungeonCommandSchema = z.object({
+  type: z.literal("stop_dungeon"),
+  runId: z.string().uuid(),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
   RecruitHeroCommandSchema,
   SetTeamCommandSchema,
+  StartDungeonCommandSchema,
+  StopDungeonCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -139,11 +202,23 @@ const TeamUpdatedEventSchema = z.object({
   team: TeamSchema,
 });
 
+const DungeonStartedEventSchema = z.object({
+  type: z.literal("dungeon_started"),
+  run: DungeonRunSchema,
+});
+
+const DungeonStoppedEventSchema = z.object({
+  type: z.literal("dungeon_stopped"),
+  run: DungeonRunSchema,
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
   HeroRecruitedEventSchema,
   TeamUpdatedEventSchema,
+  DungeonStartedEventSchema,
+  DungeonStoppedEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -168,6 +243,11 @@ export const ApiErrorCodeSchema = z.enum([
   "TEAM_DUPLICATE_HERO",
   "TEAM_HERO_NOT_FOUND",
   "TEAM_HERO_ALREADY_ASSIGNED",
+  "TEAM_NOT_FOUND",
+  "TEAM_EMPTY",
+  "DUNGEON_NOT_FOUND",
+  "DUNGEON_RUN_ALREADY_ACTIVE",
+  "DUNGEON_RUN_NOT_FOUND",
 ]);
 
 export const ApiErrorSchema = z.object({

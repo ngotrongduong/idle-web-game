@@ -1,10 +1,24 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
-import type { FoundationPlayerState, Hero, TavernOffer, Team } from "@idle/api-contract";
+import type {
+  DungeonRun,
+  FoundationPlayerState,
+  Hero,
+  TavernOffer,
+  Team,
+} from "@idle/api-contract";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
-import { commandOutcomes, heroes, players, sessions, tavernStates, teams } from "./schema.js";
+import {
+  commandOutcomes,
+  dungeonRuns,
+  heroes,
+  players,
+  sessions,
+  tavernStates,
+  teams,
+} from "./schema.js";
 import * as schema from "./schema.js";
 import type { GameStore, StoredCommandOutcome, StoredTavernState } from "../store.js";
 
@@ -265,6 +279,100 @@ export class PostgresGameStore implements GameStore {
       });
 
     return { ...team, heroIds: [...team.heroIds] };
+  }
+
+  async listDungeonRuns(playerId: string): Promise<DungeonRun[]> {
+    const rows = await this.database()
+      .select({
+        id: dungeonRuns.id,
+        dungeonId: dungeonRuns.dungeonId,
+        teamSlot: dungeonRuns.teamSlot,
+        seed: dungeonRuns.seed,
+        status: dungeonRuns.status,
+        waves: dungeonRuns.waves,
+        startedAt: dungeonRuns.startedAt,
+        stoppedAt: dungeonRuns.stoppedAt,
+      })
+      .from(dungeonRuns)
+      .where(eq(dungeonRuns.playerId, playerId));
+
+    return rows.map((row) => ({
+      id: row.id,
+      dungeonId: row.dungeonId,
+      teamSlot: row.teamSlot,
+      seed: row.seed,
+      status: row.status,
+      waves: row.waves,
+      startedAt: row.startedAt.toISOString(),
+      stoppedAt: row.stoppedAt?.toISOString() ?? null,
+    }));
+  }
+
+  async createDungeonRun(
+    playerId: string,
+    input: Omit<DungeonRun, "id">,
+  ): Promise<DungeonRun> {
+    const run: DungeonRun = {
+      id: randomUUID(),
+      ...input,
+    };
+
+    await this.database().insert(dungeonRuns).values({
+      id: run.id,
+      playerId,
+      dungeonId: run.dungeonId,
+      teamSlot: run.teamSlot,
+      seed: run.seed,
+      status: run.status,
+      waves: run.waves,
+      startedAt: new Date(run.startedAt),
+      stoppedAt: run.stoppedAt ? new Date(run.stoppedAt) : null,
+    });
+
+    return run;
+  }
+
+  async stopDungeonRun(
+    playerId: string,
+    runId: string,
+    stoppedAt: string,
+  ): Promise<DungeonRun | undefined> {
+    const [row] = await this.database()
+      .update(dungeonRuns)
+      .set({
+        status: "stopped",
+        stoppedAt: new Date(stoppedAt),
+      })
+      .where(
+        and(
+          eq(dungeonRuns.playerId, playerId),
+          eq(dungeonRuns.id, runId),
+          eq(dungeonRuns.status, "active"),
+        ),
+      )
+      .returning({
+        id: dungeonRuns.id,
+        dungeonId: dungeonRuns.dungeonId,
+        teamSlot: dungeonRuns.teamSlot,
+        seed: dungeonRuns.seed,
+        status: dungeonRuns.status,
+        waves: dungeonRuns.waves,
+        startedAt: dungeonRuns.startedAt,
+        stoppedAt: dungeonRuns.stoppedAt,
+      });
+
+    return row
+      ? {
+          id: row.id,
+          dungeonId: row.dungeonId,
+          teamSlot: row.teamSlot,
+          seed: row.seed,
+          status: row.status,
+          waves: row.waves,
+          startedAt: row.startedAt.toISOString(),
+          stoppedAt: row.stoppedAt?.toISOString() ?? null,
+        }
+      : undefined;
   }
 
   async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {

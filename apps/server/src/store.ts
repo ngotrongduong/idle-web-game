@@ -1,5 +1,11 @@
 import { randomUUID } from "node:crypto";
-import type { FoundationPlayerState, Hero, TavernOffer, Team } from "@idle/api-contract";
+import type {
+  DungeonRun,
+  FoundationPlayerState,
+  Hero,
+  TavernOffer,
+  Team,
+} from "@idle/api-contract";
 
 export type StoredCommandOutcome = {
   statusCode: number;
@@ -26,6 +32,9 @@ export interface GameStore {
   createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
+  listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
+  createDungeonRun(playerId: string, input: Omit<DungeonRun, "id">): Promise<DungeonRun>;
+  stopDungeonRun(playerId: string, runId: string, stoppedAt: string): Promise<DungeonRun | undefined>;
   withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T>;
   close?(): Promise<void>;
 }
@@ -38,6 +47,18 @@ function copyTavernState(state: StoredTavernState): StoredTavernState {
   };
 }
 
+
+function copyDungeonRun(run: DungeonRun): DungeonRun {
+  return {
+    ...run,
+    waves: run.waves.map((wave) => ({
+      ...wave,
+      allies: wave.allies.map((unit) => ({ ...unit })),
+      enemies: wave.enemies.map((unit) => ({ ...unit })),
+    })),
+  };
+}
+
 export class InMemoryGameStore implements GameStore {
   private readonly players = new Map<string, FoundationPlayerState>();
   private readonly sessions = new Map<string, string>();
@@ -45,6 +66,7 @@ export class InMemoryGameStore implements GameStore {
   private readonly taverns = new Map<string, StoredTavernState>();
   private readonly heroes = new Map<string, Hero[]>();
   private readonly teams = new Map<string, Map<number, Team>>();
+  private readonly dungeonRuns = new Map<string, DungeonRun[]>();
   private readonly lockTails = new Map<string, Promise<void>>();
 
   async createGuest(sessionHash: string): Promise<FoundationPlayerState> {
@@ -132,6 +154,42 @@ export class InMemoryGameStore implements GameStore {
     const stored = { ...team, heroIds: [...team.heroIds] };
     playerTeams.set(team.slot, stored);
     return { ...stored, heroIds: [...stored.heroIds] };
+  }
+
+  async listDungeonRuns(playerId: string): Promise<DungeonRun[]> {
+    return (this.dungeonRuns.get(playerId) ?? []).map(copyDungeonRun);
+  }
+
+  async createDungeonRun(
+    playerId: string,
+    input: Omit<DungeonRun, "id">,
+  ): Promise<DungeonRun> {
+    const run: DungeonRun = {
+      id: randomUUID(),
+      ...input,
+    };
+    const runs = this.dungeonRuns.get(playerId) ?? [];
+    runs.push(copyDungeonRun(run));
+    this.dungeonRuns.set(playerId, runs);
+    return copyDungeonRun(run);
+  }
+
+  async stopDungeonRun(
+    playerId: string,
+    runId: string,
+    stoppedAt: string,
+  ): Promise<DungeonRun | undefined> {
+    const runs = this.dungeonRuns.get(playerId) ?? [];
+    const index = runs.findIndex((run) => run.id === runId && run.status === "active");
+    if (index < 0) return undefined;
+
+    const stopped: DungeonRun = {
+      ...runs[index]!,
+      status: "stopped",
+      stoppedAt,
+    };
+    runs[index] = copyDungeonRun(stopped);
+    return copyDungeonRun(stopped);
   }
 
   async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {

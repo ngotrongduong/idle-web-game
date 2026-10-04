@@ -7,7 +7,7 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #131 passed on commit `017b65998b8854cefd3988f2073ae9dae85a55ff`.
+- GitHub Actions CI run #152 passed on commit `4ce50244a3b3a1ec3756c86a804a32818ac8b134` for M1.2A teams.
 - Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
 - PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
 - Temporary format-once workflows have been removed; CI is read-only again.
@@ -39,12 +39,23 @@ M1 — Core loop.
   - GET `/api/v1/teams` + `set_team` command
   - PostgreSQL persistence migration
 
+- M1.2B dungeon run backend:
+  - server-generated uint32 root seeds
+  - deterministic per-wave seed derivation
+  - persisted hero/enemy combat snapshots and replay hashes
+  - five regular waves plus boss wave generated from validated game-data
+  - start/stop dungeon commands and GET `/api/v1/dungeon-runs`
+  - one active run per team slot enforced by PostgreSQL
+  - rewards stored as replay metadata only; payout/idle accumulation is intentionally deferred
+  - current M1 hero stat scaling uses the existing 4%/level simulator formula plus rarity multipliers
+  - each wave currently starts from its persisted full-stat snapshot; cross-wave HP/MP carryover is not implemented yet
+
 ## Next implementation work
-1. M1.2A: persistent team slots and hero assignment are implemented; verify CI and then continue dungeon runs/replay.
-2. Add dungeon run start/stop commands using server-generated deterministic battle seeds.
-3. Generate the full 5 regular waves + boss wave from validated dungeon/enemy data and persist run/replay state.
-4. Add the web Team & Dungeon screen and replay the server result client-side from the same seed.
-5. Add end-to-end tests proving client/server replay results and hashes match.
+1. Verify M1.2B through the full CI/PostgreSQL pipeline.
+2. Add the web Team & Dungeon screen.
+3. Replay the server snapshot client-side from the stored seed and compare hashes.
+4. Add end-to-end browser tests proving client/server replay hashes match.
+5. Add idle cycle accumulation/claim using expected rewards without double-paying replay metadata.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Important constraints

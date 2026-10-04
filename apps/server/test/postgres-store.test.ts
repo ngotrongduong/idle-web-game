@@ -195,4 +195,57 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
 
     expect(await store.listHeroes(player.id)).toContainEqual(hero);
   });
+  it("persists and stops dungeon run snapshots", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const startedAt = new Date().toISOString();
+    const run = await store.createDungeonRun(player.id, {
+      dungeonId: "bamboo_grove",
+      teamSlot: 1,
+      seed: 123,
+      status: "active",
+      startedAt,
+      stoppedAt: null,
+      waves: [
+        {
+          wave: 1,
+          seed: 456,
+          result: "win",
+          turns: 2,
+          hash: "1234abcd",
+          allies: [
+            {
+              id: crypto.randomUUID(),
+              hp: 100,
+              attack: 20,
+              defense: 10,
+              speed: 5,
+            },
+          ],
+          enemies: [
+            {
+              id: "bamboo_mite",
+              hp: 85,
+              attack: 22,
+              defense: 7,
+              speed: 11,
+            },
+          ],
+          rewardGold: 8,
+          rewardExp: 5,
+        },
+      ],
+    });
+
+    expect(await store.listDungeonRuns(player.id)).toContainEqual(run);
+
+    const stoppedAt = new Date().toISOString();
+    const stopped = await store.stopDungeonRun(player.id, run.id, stoppedAt);
+    expect(stopped).toMatchObject({
+      id: run.id,
+      status: "stopped",
+      stoppedAt,
+    });
+  });
+
 });

@@ -1,4 +1,5 @@
 import {
+  bigint,
   index,
   integer,
   jsonb,
@@ -9,7 +10,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import type { HeroRarity, TavernOffer } from "@idle/api-contract";
+import type { DungeonRun, DungeonWaveReplay, HeroRarity, TavernOffer } from "@idle/api-contract";
 
 export const players = pgTable("players", {
   id: uuid("id").primaryKey(),
@@ -95,4 +96,23 @@ export const teams = pgTable(
     primaryKey({ columns: [table.playerId, table.slot] }),
     index("teams_player_id_idx").on(table.playerId),
   ],
+);
+
+
+export const dungeonRuns = pgTable(
+  "dungeon_runs",
+  {
+    id: uuid("id").primaryKey(),
+    playerId: uuid("player_id")
+      .notNull()
+      .references(() => players.id, { onDelete: "cascade" }),
+    dungeonId: text("dungeon_id").notNull(),
+    teamSlot: integer("team_slot").notNull(),
+    seed: bigint("seed", { mode: "number" }).notNull(),
+    status: varchar("status", { length: 16 }).$type<DungeonRun["status"]>().notNull(),
+    waves: jsonb("waves").$type<DungeonWaveReplay[]>().notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+    stoppedAt: timestamp("stopped_at", { withTimezone: true }),
+  },
+  (table) => [index("dungeon_runs_player_id_idx").on(table.playerId)],
 );

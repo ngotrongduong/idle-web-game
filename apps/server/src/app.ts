@@ -2,6 +2,7 @@ import {
   ApiErrorSchema,
   CommandEnvelopeSchema,
   CommandSuccessSchema,
+  DungeonRunsResponseSchema,
   FoundationPlayerStateSchema,
   GuestAuthResponseSchema,
   HealthResponseSchema,
@@ -12,6 +13,7 @@ import {
   type FoundationPlayerState,
 } from "@idle/api-contract";
 import { HALL_MAX_LEVEL, hallUpgradeGoldCost, heroCapacityForHall } from "@idle/game-core";
+import { foundationGameData } from "@idle/game-data";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -20,6 +22,10 @@ import {
   SESSION_COOKIE,
   sessionCookieHeader,
 } from "./session.js";
+import {
+  createDungeonSeed,
+  simulateDungeonCycle,
+} from "./dungeon.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
 import { emptyTavernState, refreshTavernOffers, serializeTavernState } from "./tavern.js";
@@ -58,7 +64,7 @@ export function buildServer(options?: { store?: GameStore }) {
     HealthResponseSchema.parse({
       ok: true,
       service: "server",
-      version: "m1.1",
+      version: "m1.2",
     }),
   );
 
@@ -110,6 +116,18 @@ export function buildServer(options?: { store?: GameStore }) {
     return TeamsResponseSchema.parse({
       ok: true,
       teams: await store.listTeams(playerId),
+    });
+  });
+
+  app.get("/api/v1/dungeon-runs", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    return DungeonRunsResponseSchema.parse({
+      ok: true,
+      runs: await store.listDungeonRuns(playerId),
     });
   });
 
@@ -398,6 +416,160 @@ export function buildServer(options?: { store?: GameStore }) {
           version: nextState.version,
           patch: {},
           events: [{ type: "team_updated", team }],
+        });
+        const stored: StoredCommandOutcome = {
+          statusCode: 200,
+          body: success,
+        };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "start_dungeon") {
+        const { dungeonId, teamSlot } = envelope.command;
+        const dungeon = foundationGameData.dungeons.find(
+          (entry) => entry.id === dungeonId,
+        );
+        if (!dungeon) {
+          const missingDungeon: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_NOT_FOUND",
+              `Dungeon ${dungeonId} does not exist`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingDungeon);
+          return missingDungeon;
+        }
+
+        const teams = await store.listTeams(playerId);
+        const team = teams.find((entry) => entry.slot === teamSlot);
+        if (!team) {
+          const missingTeam: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_NOT_FOUND",
+              `Team slot ${teamSlot} has not been configured`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingTeam);
+          return missingTeam;
+        }
+        if (team.heroIds.length === 0) {
+          const emptyTeam: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_EMPTY",
+              `Team slot ${teamSlot} has no heroes`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, emptyTeam);
+          return emptyTeam;
+        }
+
+        const activeRun = (await store.listDungeonRuns(playerId)).find(
+          (run) => run.teamSlot === teamSlot && run.status === "active",
+        );
+        if (activeRun) {
+          const alreadyActive: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_RUN_ALREADY_ACTIVE",
+              `Team slot ${teamSlot} already has an active dungeon run`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, alreadyActive);
+          return alreadyActive;
+        }
+
+        const heroesById = new Map(
+          (await store.listHeroes(playerId)).map((hero) => [hero.id, hero]),
+        );
+        const teamHeroes = team.heroIds.map((heroId) => heroesById.get(heroId));
+        if (teamHeroes.some((hero) => hero === undefined)) {
+          const staleTeam: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_HERO_NOT_FOUND",
+              "Team contains a hero that no longer exists",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, staleTeam);
+          return staleTeam;
+        }
+
+        const seed = createDungeonSeed();
+        const startedAt = new Date().toISOString();
+        const waves = simulateDungeonCycle({
+          heroes: teamHeroes.filter((hero) => hero !== undefined),
+          dungeonId,
+          seed,
+        });
+        const run = await store.createDungeonRun(playerId, {
+          dungeonId,
+          teamSlot,
+          seed,
+          status: "active",
+          startedAt,
+          stoppedAt: null,
+          waves,
+        });
+
+        const nextState: FoundationPlayerState = {
+          ...state,
+          version: state.version + 1,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "dungeon_started", run }],
+        });
+        const stored: StoredCommandOutcome = {
+          statusCode: 200,
+          body: success,
+        };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "stop_dungeon") {
+        const run = await store.stopDungeonRun(
+          playerId,
+          envelope.command.runId,
+          new Date().toISOString(),
+        );
+        if (!run) {
+          const missingRun: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_RUN_NOT_FOUND",
+              "Active dungeon run was not found",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingRun);
+          return missingRun;
+        }
+
+        const nextState: FoundationPlayerState = {
+          ...state,
+          version: state.version + 1,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "dungeon_stopped", run }],
         });
         const stored: StoredCommandOutcome = {
           statusCode: 200,
