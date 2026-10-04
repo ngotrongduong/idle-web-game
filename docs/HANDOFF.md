@@ -4,7 +4,7 @@
 `chatgpt/m0-foundation`
 
 ## Current milestone
-M0 — Nền móng.
+M1 — Core loop.
 
 ## Verified status
 - GitHub Actions CI run #82 passed on commit `5d5ddc181ff8930e5a9810e365ab542dfc56c980`.
@@ -22,13 +22,13 @@ M0 — Nền móng.
 - M0.5: enhancement model with +5 safety floor and pity; battle/enhancement Monte Carlo tools. Battle scenarios now derive progression teams, dungeon waves and gold/EXP rewards from validated game-data instead of hard-coded encounters.
 - M0.6a: guest session + HttpOnly cookie, intent-only `/api/v1/cmd`, expected-version checks, per-player async lock, idempotent `cmdId`, and first `upgrade_hall` command.
 - M0.6b implementation: Drizzle schema + PostgreSQL migration + `PostgresGameStore`; hashed sessions persist with expiry, command outcomes have a 24h retention window, and `withPlayerLock` uses a real transaction with `SELECT ... FOR UPDATE`. Server selects PostgreSQL via `DATABASE_URL` and falls back to in-memory locally.
+- M1.1 implementation in progress: Tavern now has persistent 2-hour refresh cooldown, 3 offers, refresh-based pity, Hall-capacity enforcement, persisted heroes, and server-authoritative `refresh_tavern` / `recruit_hero` commands.
 
 ## Next implementation work
-1. Finish M0.2 with ESLint + Prettier once their dependencies can be added together with a regenerated frozen lockfile.
-2. Expand M0.3 schema with class families/classes and enemy definitions, keeping content original.
-3. Verify M0.6b in CI against the PostgreSQL service and fix any migration/type/transaction issues.
-4. Add named skill IDs/effects beyond the generic damage/heal ULT model.
-5. M0.7 infrastructure scaffold: Docker Compose + Caddy + server/web Dockerfiles. Actual VPS/domain deployment is still pending.
+1. Verify M1.1 Tavern/hero persistence and command flow in CI; fix any migration/type/format regressions.
+2. Finish M1.1 client surface for viewing offers/heroes and issuing recruit/refresh intents.
+3. M1.2 team + dungeon assignment/start-stop/replay flow from the deterministic server seed.
+4. Actual staging VPS/domain deployment remains pending even though Docker/Caddy infrastructure is scaffolded.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.

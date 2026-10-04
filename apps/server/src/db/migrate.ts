@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
@@ -9,13 +9,19 @@ if (!databaseUrl) {
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
-const migrationPath = resolve(here, "../../drizzle/0000_m0_persistence.sql");
-const sql = await readFile(migrationPath, "utf8");
+const migrationDir = resolve(here, "../../drizzle");
+const migrationFiles = (await readdir(migrationDir))
+  .filter((filename) => filename.endsWith(".sql"))
+  .sort();
+
 const pool = new Pool({ connectionString: databaseUrl });
 
 try {
-  await pool.query(sql);
-  console.log("database migration applied: 0000_m0_persistence.sql");
+  for (const filename of migrationFiles) {
+    const sql = await readFile(resolve(migrationDir, filename), "utf8");
+    await pool.query(sql);
+    console.log(`database migration applied: ${filename}`);
+  }
 } finally {
   await pool.end();
 }

@@ -22,11 +22,68 @@ export const GuestAuthResponseSchema = z.object({
   state: FoundationPlayerStateSchema,
 });
 
+export const HeroRaritySchema = z.enum([
+  "common",
+  "elite",
+  "rare",
+  "legendary",
+]);
+
+export const HeroSchema = z.object({
+  id: z.string().uuid(),
+  classId: z.string().min(1),
+  rarity: HeroRaritySchema,
+  level: z.number().int().positive(),
+  exp: z.number().int().nonnegative(),
+});
+
+export type Hero = z.infer<typeof HeroSchema>;
+
+export const TavernOfferSchema = z.object({
+  id: z.string().uuid(),
+  classId: z.string().min(1),
+  rarity: HeroRaritySchema,
+});
+
+export type TavernOffer = z.infer<typeof TavernOfferSchema>;
+
+export const TavernStateSchema = z.object({
+  refreshesSinceRarePlus: z.number().int().nonnegative(),
+  refreshesSinceLegendary: z.number().int().nonnegative(),
+  nextFreeRefreshAt: z.string().datetime(),
+  offers: z.array(TavernOfferSchema).max(3),
+});
+
+export type TavernState = z.infer<typeof TavernStateSchema>;
+
+export const TavernResponseSchema = z.object({
+  ok: z.literal(true),
+  tavern: TavernStateSchema,
+});
+
+export const HeroesResponseSchema = z.object({
+  ok: z.literal(true),
+  heroes: z.array(HeroSchema),
+});
+
 export const UpgradeHallCommandSchema = z.object({
   type: z.literal("upgrade_hall"),
 });
 
-export const CommandSchema = UpgradeHallCommandSchema;
+export const RefreshTavernCommandSchema = z.object({
+  type: z.literal("refresh_tavern"),
+});
+
+export const RecruitHeroCommandSchema = z.object({
+  type: z.literal("recruit_hero"),
+  offerId: z.string().uuid(),
+});
+
+export const CommandSchema = z.discriminatedUnion("type", [
+  UpgradeHallCommandSchema,
+  RefreshTavernCommandSchema,
+  RecruitHeroCommandSchema,
+]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
 
@@ -43,12 +100,29 @@ export const CommandPatchSchema = z.object({
   hallLevel: z.number().int().min(1).max(10).optional(),
 });
 
-export const CommandEventSchema = z.object({
+const HallUpgradedEventSchema = z.object({
   type: z.literal("hall_upgraded"),
   fromLevel: z.number().int().min(1).max(9),
   toLevel: z.number().int().min(2).max(10),
   goldCost: z.number().int().positive(),
 });
+
+const TavernRefreshedEventSchema = z.object({
+  type: z.literal("tavern_refreshed"),
+  tavern: TavernStateSchema,
+});
+
+const HeroRecruitedEventSchema = z.object({
+  type: z.literal("hero_recruited"),
+  hero: HeroSchema,
+  remainingOffers: z.array(TavernOfferSchema).max(2),
+});
+
+export const CommandEventSchema = z.discriminatedUnion("type", [
+  HallUpgradedEventSchema,
+  TavernRefreshedEventSchema,
+  HeroRecruitedEventSchema,
+]);
 
 export const CommandSuccessSchema = z.object({
   ok: z.literal(true),
@@ -66,6 +140,9 @@ export const ApiErrorCodeSchema = z.enum([
   "INSUFFICIENT_GOLD",
   "MAX_LEVEL",
   "NOT_FOUND",
+  "TAVERN_COOLDOWN",
+  "HERO_CAPACITY_FULL",
+  "OFFER_NOT_FOUND",
 ]);
 
 export const ApiErrorSchema = z.object({

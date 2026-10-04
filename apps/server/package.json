@@ -15,7 +15,8 @@
     "@idle/game-core": "workspace:*",
     "fastify": "^5.0.0",
     "drizzle-orm": "^0.45.3",
-    "pg": "^8.23.1"
+    "pg": "^8.23.1",
+    "@idle/game-data": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import crypto, { randomBytes } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 import { PostgresGameStore } from "../src/db/postgres-store.js";
@@ -139,4 +139,43 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       gold: 1_002,
     });
   });
+  it("persists tavern offers and recruited heroes", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const offerId = crypto.randomUUID();
+    await store.setTavernState(player.id, {
+      refreshesSinceRarePlus: 3,
+      refreshesSinceLegendary: 7,
+      nextFreeRefreshAt: new Date(Date.now() + 60_000),
+      offers: [
+        {
+          id: offerId,
+          classId: "ward_squire",
+          rarity: "rare",
+        },
+      ],
+    });
+
+    expect(await store.getTavernState(player.id)).toMatchObject({
+      refreshesSinceRarePlus: 3,
+      refreshesSinceLegendary: 7,
+      offers: [
+        {
+          id: offerId,
+          classId: "ward_squire",
+          rarity: "rare",
+        },
+      ],
+    });
+
+    const hero = await store.createHero(player.id, {
+      classId: "ward_squire",
+      rarity: "rare",
+      level: 1,
+      exp: 0,
+    });
+
+    expect(await store.listHeroes(player.id)).toContainEqual(hero);
+  });
+
 });
