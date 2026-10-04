@@ -44,7 +44,7 @@ export function heroToCombatant(hero: Hero): BattleUnitSnapshot {
     baseSpeed: heroClass.baseSpeed,
     level: hero.level,
     rarity: hero.rarity,
-    potential: hero.potential,
+    ...(hero.potential ? { potential: hero.potential } : {}),
   });
 
   return {
