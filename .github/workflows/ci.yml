@@ -79,6 +79,31 @@ jobs:
           fi
           pnpm --filter @idle/inspect golden:battle
 
+      - name: Dungeon UI replay E2E
+        run: |
+          pnpm --filter @idle/server exec tsx src/index.ts > /tmp/e2e-server.log 2>&1 &
+          SERVER_PID=$!
+          pnpm --filter @idle/web exec vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/e2e-web.log 2>&1 &
+          WEB_PID=$!
+          cleanup() {
+            kill "$WEB_PID" "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/health >/dev/null && curl -fsS http://127.0.0.1:5173/ >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/e2e-server.log
+            cat /tmp/e2e-web.log
+            exit 1
+          fi
+          pnpm --filter @idle/inspect e2e:dungeon
+
       - name: Build
         run: pnpm build
 

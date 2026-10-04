@@ -8,7 +8,7 @@ M1 — Core loop.
 
 ## Verified status
 - GitHub Actions CI run #175 passed on commit `b4a145bc9885a72f1b94a826a258d4721ef3962b` for M1.2B backend fixes plus the Team & Dungeon web screen.
-- Client-side replay hash verification is now implemented and awaiting its own full CI run.
+- Client-side replay hash verification passed full CI #182 on commit `8eb3eb72c26b4f0e426ac9a7c04a456ece878204`.
 - Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
 - PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
 - Temporary format-once workflows have been removed; CI is read-only again.
@@ -54,8 +54,7 @@ M1 — Core loop.
 
 ## Next implementation work
 1. Verify M1.2B through the full CI/PostgreSQL pipeline.
-2. Verify client-side replay of every persisted wave against the stored server hash.
-3. Add end-to-end browser tests proving client/server replay hashes match through the real UI/API flow.
+2. Verify the new end-to-end browser flow: guest → Tavern → recruit → team → dungeon → client/server replay hash match.
 5. Add idle cycle accumulation/claim using expected rewards without double-paying replay metadata.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
