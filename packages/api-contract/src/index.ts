@@ -24,6 +24,8 @@ export const GuestAuthResponseSchema = z.object({
 
 export const HeroRaritySchema = z.enum(["common", "elite", "rare", "legendary"]);
 
+export type HeroRarity = z.infer<typeof HeroRaritySchema>;
+
 export const HeroSchema = z.object({
   id: z.string().uuid(),
   classId: z.string().min(1),
