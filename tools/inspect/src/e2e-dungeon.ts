@@ -87,11 +87,17 @@ try {
   const firstTeam = page.locator(".team-card").first();
   await firstTeam.waitFor({ state: "visible", timeout: 10_000 });
 
+  // runCommand returns on the recruit response, before the client has reloaded the hero list, so
+  // wait for the third hero to render instead of counting immediately.
   const heroChoices = firstTeam.locator('input[type="checkbox"]');
-  const choiceCount = await heroChoices.count();
-  if (choiceCount < 3) {
-    throw new Error(`Expected at least 3 recruited heroes, got ${choiceCount}`);
-  }
+  await heroChoices
+    .nth(2)
+    .waitFor({ state: "attached", timeout: 10_000 })
+    .catch(async () => {
+      throw new Error(
+        `Expected at least 3 recruited heroes, got ${await heroChoices.count()}`,
+      );
+    });
 
   for (let index = 0; index < 3; index += 1) {
     await heroChoices.nth(index).check();
