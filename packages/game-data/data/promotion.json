@@ -1,0 +1,17 @@
+{
+  "retainedPotentialBps": 2000,
+  "rules": [
+    {
+      "fromTier": 1,
+      "sealMaterialId": "promotion_seal_t1",
+      "sealQty": 1,
+      "goldCost": 500
+    },
+    {
+      "fromTier": 2,
+      "sealMaterialId": "promotion_seal_t2",
+      "sealQty": 2,
+      "goldCost": 3000
+    }
+  ]
+}

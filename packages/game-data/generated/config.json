@@ -1,0 +1,1386 @@
+{
+  "version": "m0.3-content-v3",
+  "materials": [
+    {
+      "id": "bamboo_fiber",
+      "nameVi": "Vỏ Cây Gai",
+      "nameEn": "Thornwood Bark"
+    },
+    {
+      "id": "slime_gel",
+      "nameVi": "Mỡ Yêu Tinh",
+      "nameEn": "Goblin Tallow"
+    },
+    {
+      "id": "river_stone",
+      "nameVi": "Đá Lửa",
+      "nameEn": "Flint Pebble"
+    },
+    {
+      "id": "reed_thread",
+      "nameVi": "Sợi Cói Đầm Lầy",
+      "nameEn": "Marsh Reed Fiber"
+    },
+    {
+      "id": "mist_pearl",
+      "nameVi": "Ngọc Ma Trơi",
+      "nameEn": "Wisp Pearl"
+    },
+    {
+      "id": "driftwood_core",
+      "nameVi": "Lõi Gỗ Đầm",
+      "nameEn": "Bogwood Heart"
+    },
+    {
+      "id": "sunken_clay",
+      "nameVi": "Bụi Mộ",
+      "nameEn": "Grave Dust"
+    },
+    {
+      "id": "lotus_silk",
+      "nameVi": "Lụa Liệm",
+      "nameEn": "Shroud Silk"
+    },
+    {
+      "id": "shrine_fragment",
+      "nameVi": "Mảnh Thánh Tích",
+      "nameEn": "Relic Shard"
+    },
+    {
+      "id": "tide_crystal",
+      "nameVi": "Tinh Thể Linh Hồn",
+      "nameEn": "Soul Crystal"
+    },
+    {
+      "id": "ember_ore",
+      "nameVi": "Quặng Đá Than",
+      "nameEn": "Emberstone Ore"
+    },
+    {
+      "id": "ash_hide",
+      "nameVi": "Da Kỳ Nhông",
+      "nameEn": "Salamander Hide"
+    },
+    {
+      "id": "fireglass",
+      "nameVi": "Thủy Tinh Rồng",
+      "nameEn": "Dragonglass"
+    },
+    {
+      "id": "ridge_herb",
+      "nameVi": "Thảo Dược Hoa Lửa",
+      "nameEn": "Firebloom Herb"
+    },
+    {
+      "id": "obsidian_shard",
+      "nameVi": "Mảnh Hắc Diện",
+      "nameEn": "Obsidian Shard"
+    },
+    {
+      "id": "promotion_seal_t1",
+      "nameVi": "Ấn Thăng Cấp I",
+      "nameEn": "Promotion Seal I"
+    },
+    {
+      "id": "promotion_seal_t2",
+      "nameVi": "Ấn Thăng Cấp II",
+      "nameEn": "Promotion Seal II"
+    },
+    {
+      "id": "forge_dust",
+      "nameVi": "Bụi Rèn",
+      "nameEn": "Forge Dust"
+    },
+    {
+      "id": "builders_hourglass",
+      "nameVi": "Đồng Hồ Cát Thợ Xây",
+      "nameEn": "Builder's Hourglass"
+    }
+  ],
+  "items": [
+    {
+      "id": "bamboo_training_sword",
+      "slot": "weapon",
+      "attack": 12,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 3
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Kiếm Gỗ Sồi Tập Luyện",
+      "nameEn": "Oak Training Sword"
+    },
+    {
+      "id": "woven_guard",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 10,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 2
+        },
+        {
+          "materialId": "slime_gel",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Áo Độn Bông",
+      "nameEn": "Padded Jerkin"
+    },
+    {
+      "id": "riverstone_cap",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 7,
+      "recipe": [
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        },
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Mũ Đá Lửa",
+      "nameEn": "Flint Cap"
+    },
+    {
+      "id": "gel_charm",
+      "slot": "accessory",
+      "attack": 3,
+      "defense": 3,
+      "recipe": [
+        {
+          "materialId": "slime_gel",
+          "qty": 2
+        },
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Bùa Gỗ Gai",
+      "nameEn": "Thornwood Charm"
+    },
+    {
+      "id": "bamboo_spear",
+      "slot": "weapon",
+      "attack": 16,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "bamboo_fiber",
+          "qty": 4
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Thương Gỗ Gai",
+      "nameEn": "Thornwood Spear"
+    },
+    {
+      "id": "reed_guard",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 13,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 3
+        },
+        {
+          "materialId": "slime_gel",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Áo Đan Cói",
+      "nameEn": "Reedwoven Vest"
+    },
+    {
+      "id": "mistveil_hood",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 10,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 2
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Mũ Trùm Ma Trơi",
+      "nameEn": "Wispveil Hood"
+    },
+    {
+      "id": "driftwood_token",
+      "slot": "accessory",
+      "attack": 5,
+      "defense": 4,
+      "recipe": [
+        {
+          "materialId": "driftwood_core",
+          "qty": 2
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Bùa Gỗ Đầm",
+      "nameEn": "Bogwood Token"
+    },
+    {
+      "id": "riverhook_blade",
+      "slot": "weapon",
+      "attack": 22,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "driftwood_core",
+          "qty": 2
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Đao Móc Đầm Lầy",
+      "nameEn": "Fenhook Blade"
+    },
+    {
+      "id": "mistwoven_coat",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 18,
+      "recipe": [
+        {
+          "materialId": "reed_thread",
+          "qty": 3
+        },
+        {
+          "materialId": "mist_pearl",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Áo Dệt Đầm Lầy",
+      "nameEn": "Fenwoven Coat"
+    },
+    {
+      "id": "pearlguard_helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 15,
+      "recipe": [
+        {
+          "materialId": "mist_pearl",
+          "qty": 2
+        },
+        {
+          "materialId": "driftwood_core",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Mũ Ngọc Ma Trơi",
+      "nameEn": "Wisp-pearl Helm"
+    },
+    {
+      "id": "river_echo_charm",
+      "slot": "accessory",
+      "attack": 7,
+      "defense": 6,
+      "recipe": [
+        {
+          "materialId": "mist_pearl",
+          "qty": 1
+        },
+        {
+          "materialId": "reed_thread",
+          "qty": 2
+        },
+        {
+          "materialId": "river_stone",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Bùa Vọng Đầm",
+      "nameEn": "Marsh Echo Charm"
+    },
+    {
+      "id": "claybound_mace",
+      "slot": "weapon",
+      "attack": 30,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "sunken_clay",
+          "qty": 3
+        },
+        {
+          "materialId": "shrine_fragment",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Chùy Mộ Địa",
+      "nameEn": "Gravebound Mace"
+    },
+    {
+      "id": "lotus_scale_mail",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 25,
+      "recipe": [
+        {
+          "materialId": "lotus_silk",
+          "qty": 3
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Giáp Lụa Liệm",
+      "nameEn": "Shroudsilk Mail"
+    },
+    {
+      "id": "shrinekeeper_crown",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 20,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Vòng Trán Viện Trưởng",
+      "nameEn": "Abbot's Circlet"
+    },
+    {
+      "id": "tideglass_talisman",
+      "slot": "accessory",
+      "attack": 10,
+      "defense": 9,
+      "recipe": [
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Bùa Thủy Tinh Linh Hồn",
+      "nameEn": "Soulglass Talisman"
+    },
+    {
+      "id": "sunken_halberd",
+      "slot": "weapon",
+      "attack": 36,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Kích Tu Viện",
+      "nameEn": "Abbey Halberd"
+    },
+    {
+      "id": "lotus_warden_plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 31,
+      "recipe": [
+        {
+          "materialId": "lotus_silk",
+          "qty": 4
+        },
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Giáp Hiệp Sĩ Dòng",
+      "nameEn": "Templar Plate"
+    },
+    {
+      "id": "tidewatch_helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 26,
+      "recipe": [
+        {
+          "materialId": "tide_crystal",
+          "qty": 2
+        },
+        {
+          "materialId": "sunken_clay",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Mũ Canh Hầm Mộ",
+      "nameEn": "Cryptwatch Helm"
+    },
+    {
+      "id": "shrine_echo_relic",
+      "slot": "accessory",
+      "attack": 13,
+      "defense": 12,
+      "recipe": [
+        {
+          "materialId": "shrine_fragment",
+          "qty": 2
+        },
+        {
+          "materialId": "tide_crystal",
+          "qty": 1
+        },
+        {
+          "materialId": "lotus_silk",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Thánh Tích Vọng Âm",
+      "nameEn": "Saint's Echo Relic"
+    },
+    {
+      "id": "emberedge",
+      "slot": "weapon",
+      "attack": 44,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Lưỡi Than Hồng",
+      "nameEn": "Emberedge"
+    },
+    {
+      "id": "ashhide_cuirass",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 38,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 3
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Giáp Da Kỳ Nhông",
+      "nameEn": "Salamander Cuirass"
+    },
+    {
+      "id": "ridgewalker_helm",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 31,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Mũ Lữ Khách Vách Đá",
+      "nameEn": "Cragwalker Helm"
+    },
+    {
+      "id": "fireglass_pendant",
+      "slot": "accessory",
+      "attack": 16,
+      "defense": 14,
+      "recipe": [
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Mặt Dây Thủy Tinh Rồng",
+      "nameEn": "Dragonglass Pendant"
+    },
+    {
+      "id": "obsidian_glaive",
+      "slot": "weapon",
+      "attack": 52,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Đao Hắc Diện",
+      "nameEn": "Obsidian Glaive"
+    },
+    {
+      "id": "emberwarden_plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 45,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 3
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Giáp Hộ Lửa",
+      "nameEn": "Flamewarden Plate"
+    },
+    {
+      "id": "obsidian_circlet",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 37,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Vòng Trán Hắc Diện",
+      "nameEn": "Obsidian Circlet"
+    },
+    {
+      "id": "ridgeheart_relic",
+      "slot": "accessory",
+      "attack": 20,
+      "defense": 17,
+      "recipe": [
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 1
+        }
+      ],
+      "nameVi": "Thánh Tích Tâm Đá",
+      "nameEn": "Cragheart Relic"
+    },
+    {
+      "id": "vanguard_blade",
+      "slot": "weapon",
+      "attack": 58,
+      "defense": 0,
+      "recipe": [
+        {
+          "materialId": "obsidian_shard",
+          "qty": 3
+        },
+        {
+          "materialId": "fireglass",
+          "qty": 2
+        },
+        {
+          "materialId": "ember_ore",
+          "qty": 3
+        }
+      ],
+      "nameVi": "Kiếm Tiền Phong",
+      "nameEn": "Vanguard Blade"
+    },
+    {
+      "id": "mountain_oath_plate",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 50,
+      "recipe": [
+        {
+          "materialId": "ash_hide",
+          "qty": 4
+        },
+        {
+          "materialId": "obsidian_shard",
+          "qty": 2
+        },
+        {
+          "materialId": "ridge_herb",
+          "qty": 2
+        }
+      ],
+      "nameVi": "Giáp Thệ Rồng",
+      "nameEn": "Dragonoath Plate"
+    }
+  ],
+  "dungeons": [
+    {
+      "id": "bamboo_grove",
+      "recommendedLevel": 1,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "bamboo_fiber",
+        "slime_gel",
+        "river_stone"
+      ],
+      "unlockAfterDungeonId": null,
+      "nameVi": "Rừng Gai Thornwood",
+      "nameEn": "Thornwood Forest"
+    },
+    {
+      "id": "misty_riverbank",
+      "recommendedLevel": 10,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "reed_thread",
+        "mist_pearl",
+        "driftwood_core",
+        "river_stone"
+      ],
+      "unlockAfterDungeonId": "bamboo_grove",
+      "nameVi": "Đầm Lầy Sương Mù",
+      "nameEn": "Mistmoor Marsh"
+    },
+    {
+      "id": "sunken_shrine",
+      "recommendedLevel": 20,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "sunken_clay",
+        "lotus_silk",
+        "shrine_fragment",
+        "tide_crystal"
+      ],
+      "unlockAfterDungeonId": "misty_riverbank",
+      "nameVi": "Tu Viện Chìm",
+      "nameEn": "Sunken Abbey"
+    },
+    {
+      "id": "ember_ridge",
+      "recommendedLevel": 30,
+      "waveCount": 6,
+      "lootMaterialIds": [
+        "ember_ore",
+        "ash_hide",
+        "fireglass",
+        "ridge_herb",
+        "obsidian_shard"
+      ],
+      "unlockAfterDungeonId": "sunken_shrine",
+      "nameVi": "Vách Đá Lửa Rồng",
+      "nameEn": "Dragonfire Crags"
+    }
+  ],
+  "classFamilies": [
+    {
+      "id": "ironbound",
+      "archetype": "frontline",
+      "damageType": "physical",
+      "advantageFamilyId": "dawn_warden",
+      "nameVi": "Thiết Vệ",
+      "nameEn": "Ironbound"
+    },
+    {
+      "id": "windstrider",
+      "archetype": "ranged",
+      "damageType": "physical",
+      "advantageFamilyId": "ironbound",
+      "nameVi": "Phong Hành",
+      "nameEn": "Windstrider"
+    },
+    {
+      "id": "ember_sage",
+      "archetype": "caster",
+      "damageType": "magical",
+      "advantageFamilyId": "windstrider",
+      "nameVi": "Hỏa Thuật",
+      "nameEn": "Ember Sage"
+    },
+    {
+      "id": "dawn_warden",
+      "archetype": "support",
+      "damageType": "magical",
+      "advantageFamilyId": "ember_sage",
+      "nameVi": "Hộ Quang",
+      "nameEn": "Dawn Warden"
+    }
+  ],
+  "classes": [
+    {
+      "id": "ward_squire",
+      "familyId": "ironbound",
+      "tier": 1,
+      "parentClassId": null,
+      "role": "tank",
+      "baseHp": 210,
+      "baseAttack": 34,
+      "baseDefense": 32,
+      "baseSpeed": 9,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500,
+      "nameVi": "Tân Vệ",
+      "nameEn": "Ward Squire"
+    },
+    {
+      "id": "iron_guard",
+      "familyId": "ironbound",
+      "tier": 2,
+      "parentClassId": "ward_squire",
+      "role": "tank",
+      "baseHp": 280,
+      "baseAttack": 42,
+      "baseDefense": 46,
+      "baseSpeed": 8,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500,
+      "nameVi": "Thiết Giáp",
+      "nameEn": "Iron Guard"
+    },
+    {
+      "id": "blade_runner",
+      "familyId": "ironbound",
+      "tier": 2,
+      "parentClassId": "ward_squire",
+      "role": "damage",
+      "baseHp": 220,
+      "baseAttack": 58,
+      "baseDefense": 26,
+      "baseSpeed": 13,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Kiếm Du",
+      "nameEn": "Blade Runner"
+    },
+    {
+      "id": "bastion_captain",
+      "familyId": "ironbound",
+      "tier": 3,
+      "parentClassId": "iron_guard",
+      "role": "tank",
+      "baseHp": 365,
+      "baseAttack": 52,
+      "baseDefense": 64,
+      "baseSpeed": 8,
+      "targeting": "random",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 13500,
+      "nameVi": "Thành Lũy",
+      "nameEn": "Bastion Captain"
+    },
+    {
+      "id": "banner_knight",
+      "familyId": "ironbound",
+      "tier": 3,
+      "parentClassId": "iron_guard",
+      "role": "hybrid",
+      "baseHp": 315,
+      "baseAttack": 61,
+      "baseDefense": 49,
+      "baseSpeed": 10,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Kỵ Sĩ Chiến Kỳ",
+      "nameEn": "Banner Knight"
+    },
+    {
+      "id": "oathblade",
+      "familyId": "ironbound",
+      "tier": 3,
+      "parentClassId": "blade_runner",
+      "role": "damage",
+      "baseHp": 270,
+      "baseAttack": 76,
+      "baseDefense": 34,
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Kiếm Thệ",
+      "nameEn": "Oathblade"
+    },
+    {
+      "id": "trail_archer",
+      "familyId": "windstrider",
+      "tier": 1,
+      "parentClassId": null,
+      "role": "damage",
+      "baseHp": 150,
+      "baseAttack": 48,
+      "baseDefense": 15,
+      "baseSpeed": 15,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Cung Thủ Lữ Hành",
+      "nameEn": "Trail Archer"
+    },
+    {
+      "id": "gale_marksman",
+      "familyId": "windstrider",
+      "tier": 2,
+      "parentClassId": "trail_archer",
+      "role": "damage",
+      "baseHp": 185,
+      "baseAttack": 66,
+      "baseDefense": 19,
+      "baseSpeed": 17,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Xạ Thủ Cuồng Phong",
+      "nameEn": "Gale Marksman"
+    },
+    {
+      "id": "thorn_stalker",
+      "familyId": "windstrider",
+      "tier": 2,
+      "parentClassId": "trail_archer",
+      "role": "hybrid",
+      "baseHp": 205,
+      "baseAttack": 59,
+      "baseDefense": 24,
+      "baseSpeed": 16,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Thợ Săn Gai",
+      "nameEn": "Thorn Stalker"
+    },
+    {
+      "id": "sky_piercer",
+      "familyId": "windstrider",
+      "tier": 3,
+      "parentClassId": "gale_marksman",
+      "role": "damage",
+      "baseHp": 220,
+      "baseAttack": 88,
+      "baseDefense": 24,
+      "baseSpeed": 19,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Cung Thủ Xuyên Mây",
+      "nameEn": "Sky Piercer"
+    },
+    {
+      "id": "farshot_ranger",
+      "familyId": "windstrider",
+      "tier": 3,
+      "parentClassId": "gale_marksman",
+      "role": "damage",
+      "baseHp": 245,
+      "baseAttack": 80,
+      "baseDefense": 28,
+      "baseSpeed": 18,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Viễn Kích Du Hiệp",
+      "nameEn": "Farshot Ranger"
+    },
+    {
+      "id": "briar_hunter",
+      "familyId": "windstrider",
+      "tier": 3,
+      "parentClassId": "thorn_stalker",
+      "role": "hybrid",
+      "baseHp": 275,
+      "baseAttack": 73,
+      "baseDefense": 35,
+      "baseSpeed": 17,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Thợ Săn Tầm Gai",
+      "nameEn": "Briar Hunter"
+    },
+    {
+      "id": "spark_adept",
+      "familyId": "ember_sage",
+      "tier": 1,
+      "parentClassId": null,
+      "role": "damage",
+      "baseHp": 135,
+      "baseAttack": 54,
+      "baseDefense": 12,
+      "baseSpeed": 13,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Học Giả Tia Lửa",
+      "nameEn": "Spark Adept"
+    },
+    {
+      "id": "flame_weaver",
+      "familyId": "ember_sage",
+      "tier": 2,
+      "parentClassId": "spark_adept",
+      "role": "damage",
+      "baseHp": 165,
+      "baseAttack": 75,
+      "baseDefense": 16,
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Dệt Lửa",
+      "nameEn": "Flame Weaver"
+    },
+    {
+      "id": "storm_scribe",
+      "familyId": "ember_sage",
+      "tier": 2,
+      "parentClassId": "spark_adept",
+      "role": "hybrid",
+      "baseHp": 180,
+      "baseAttack": 69,
+      "baseDefense": 20,
+      "baseSpeed": 15,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Thư Sĩ Phù Văn",
+      "nameEn": "Rune Scribe"
+    },
+    {
+      "id": "cinder_oracle",
+      "familyId": "ember_sage",
+      "tier": 3,
+      "parentClassId": "flame_weaver",
+      "role": "damage",
+      "baseHp": 205,
+      "baseAttack": 99,
+      "baseDefense": 21,
+      "baseSpeed": 15,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Tiên Tri Tàn Hỏa",
+      "nameEn": "Cinder Oracle"
+    },
+    {
+      "id": "glassfire_magus",
+      "familyId": "ember_sage",
+      "tier": 3,
+      "parentClassId": "flame_weaver",
+      "role": "damage",
+      "baseHp": 225,
+      "baseAttack": 92,
+      "baseDefense": 25,
+      "baseSpeed": 14,
+      "targeting": "lowest_hp",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 16000,
+      "nameVi": "Pháp Sư Lưu Hỏa",
+      "nameEn": "Glassfire Magus"
+    },
+    {
+      "id": "thunder_calligrapher",
+      "familyId": "ember_sage",
+      "tier": 3,
+      "parentClassId": "storm_scribe",
+      "role": "hybrid",
+      "baseHp": 240,
+      "baseAttack": 84,
+      "baseDefense": 30,
+      "baseSpeed": 16,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Thợ Rèn Phù Văn Bão",
+      "nameEn": "Storm Runesmith"
+    },
+    {
+      "id": "dawn_acolyte",
+      "familyId": "dawn_warden",
+      "tier": 1,
+      "parentClassId": null,
+      "role": "support",
+      "baseHp": 165,
+      "baseAttack": 35,
+      "baseDefense": 18,
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000,
+      "nameVi": "Học Đồ Bình Minh",
+      "nameEn": "Dawn Acolyte"
+    },
+    {
+      "id": "light_keeper",
+      "familyId": "dawn_warden",
+      "tier": 2,
+      "parentClassId": "dawn_acolyte",
+      "role": "support",
+      "baseHp": 220,
+      "baseAttack": 43,
+      "baseDefense": 28,
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000,
+      "nameVi": "Người Giữ Đèn",
+      "nameEn": "Light Keeper"
+    },
+    {
+      "id": "spirit_mender",
+      "familyId": "dawn_warden",
+      "tier": 2,
+      "parentClassId": "dawn_acolyte",
+      "role": "support",
+      "baseHp": 195,
+      "baseAttack": 49,
+      "baseDefense": 22,
+      "baseSpeed": 13,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000,
+      "nameVi": "Y Sư Linh Hồn",
+      "nameEn": "Spirit Mender"
+    },
+    {
+      "id": "sunward_sage",
+      "familyId": "dawn_warden",
+      "tier": 3,
+      "parentClassId": "light_keeper",
+      "role": "support",
+      "baseHp": 285,
+      "baseAttack": 54,
+      "baseDefense": 40,
+      "baseSpeed": 11,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000,
+      "nameVi": "Hiền Giả Hướng Nhật",
+      "nameEn": "Sunward Sage"
+    },
+    {
+      "id": "lantern_guide",
+      "familyId": "dawn_warden",
+      "tier": 3,
+      "parentClassId": "light_keeper",
+      "role": "hybrid",
+      "baseHp": 260,
+      "baseAttack": 62,
+      "baseDefense": 34,
+      "baseSpeed": 12,
+      "targeting": "highest_attack",
+      "ultimateKind": "damage",
+      "ultimateTargeting": "highest_attack",
+      "ultimatePowerBps": 14500,
+      "nameVi": "Người Dẫn Đèn",
+      "nameEn": "Lantern Guide"
+    },
+    {
+      "id": "soulweaver",
+      "familyId": "dawn_warden",
+      "tier": 3,
+      "parentClassId": "spirit_mender",
+      "role": "support",
+      "baseHp": 235,
+      "baseAttack": 68,
+      "baseDefense": 29,
+      "baseSpeed": 14,
+      "targeting": "highest_attack",
+      "ultimateKind": "heal",
+      "ultimateTargeting": "lowest_hp",
+      "ultimatePowerBps": 18000,
+      "nameVi": "Dệt Hồn",
+      "nameEn": "Soulweaver"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "bamboo_mite",
+      "dungeonId": "bamboo_grove",
+      "rank": "normal",
+      "hp": 85,
+      "attack": 22,
+      "defense": 7,
+      "speed": 11,
+      "rewardGold": 3,
+      "rewardExp": 5,
+      "nameVi": "Yêu Tinh Móc Túi",
+      "nameEn": "Goblin Cutpurse"
+    },
+    {
+      "id": "reed_tusk",
+      "dungeonId": "bamboo_grove",
+      "rank": "normal",
+      "hp": 125,
+      "attack": 27,
+      "defense": 12,
+      "speed": 8,
+      "rewardGold": 4,
+      "rewardExp": 6,
+      "nameVi": "Lợn Rừng Lưng Gai",
+      "nameEn": "Thornback Boar"
+    },
+    {
+      "id": "mossback_guard",
+      "dungeonId": "bamboo_grove",
+      "rank": "elite",
+      "hp": 210,
+      "attack": 35,
+      "defense": 24,
+      "speed": 7,
+      "rewardGold": 11,
+      "rewardExp": 14,
+      "nameVi": "Đại Yêu Tinh Hung Bạo",
+      "nameEn": "Hobgoblin Brute"
+    },
+    {
+      "id": "hollow_cane_tyrant",
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "hp": 420,
+      "attack": 45,
+      "defense": 32,
+      "speed": 9,
+      "rewardGold": 30,
+      "rewardExp": 35,
+      "nameVi": "Vua Bụi Gai",
+      "nameEn": "Briar King"
+    },
+    {
+      "id": "mistfin_eel",
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "hp": 165,
+      "attack": 39,
+      "defense": 16,
+      "speed": 14,
+      "rewardGold": 9,
+      "rewardExp": 9,
+      "nameVi": "Đỉa Đầm Lầy",
+      "nameEn": "Bog Leech"
+    },
+    {
+      "id": "reedclaw_crab",
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "hp": 205,
+      "attack": 35,
+      "defense": 24,
+      "speed": 8,
+      "rewardGold": 10,
+      "rewardExp": 10,
+      "nameVi": "Người Thằn Lằn Đầm Lầy",
+      "nameEn": "Marsh Lizardfolk"
+    },
+    {
+      "id": "fogwing_heron",
+      "dungeonId": "misty_riverbank",
+      "rank": "elite",
+      "hp": 270,
+      "attack": 52,
+      "defense": 22,
+      "speed": 16,
+      "rewardGold": 24,
+      "rewardExp": 22,
+      "nameVi": "Phù Thủy Đầm Lầy",
+      "nameEn": "Fen Witch"
+    },
+    {
+      "id": "riverglass_serpent",
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "hp": 560,
+      "attack": 61,
+      "defense": 38,
+      "speed": 13,
+      "rewardGold": 56,
+      "rewardExp": 48,
+      "nameVi": "Mãng Xà Nhiều Đầu",
+      "nameEn": "Mire Hydra"
+    },
+    {
+      "id": "clay_maskling",
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "hp": 245,
+      "attack": 53,
+      "defense": 29,
+      "speed": 9,
+      "rewardGold": 23,
+      "rewardExp": 14,
+      "nameVi": "Bộ Xương Tập Sự",
+      "nameEn": "Skeleton Acolyte"
+    },
+    {
+      "id": "lotus_wisp",
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "hp": 205,
+      "attack": 62,
+      "defense": 20,
+      "speed": 15,
+      "rewardGold": 24,
+      "rewardExp": 15,
+      "nameVi": "Hồn Ma Chết Đuối",
+      "nameEn": "Drowned Ghost"
+    },
+    {
+      "id": "tidebound_sentinel",
+      "dungeonId": "sunken_shrine",
+      "rank": "elite",
+      "hp": 355,
+      "attack": 67,
+      "defense": 42,
+      "speed": 10,
+      "rewardGold": 53,
+      "rewardExp": 30,
+      "nameVi": "Hiệp Sĩ Dòng Bị Nguyền",
+      "nameEn": "Cursed Templar"
+    },
+    {
+      "id": "drowned_bell_colossus",
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "hp": 760,
+      "attack": 78,
+      "defense": 55,
+      "speed": 8,
+      "rewardGold": 117,
+      "rewardExp": 64,
+      "nameVi": "Pháp Sư Bất Tử Tháp Chuông",
+      "nameEn": "Belltower Lich"
+    },
+    {
+      "id": "cinder_gecko",
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "hp": 305,
+      "attack": 70,
+      "defense": 31,
+      "speed": 16,
+      "rewardGold": 53,
+      "rewardExp": 19,
+      "nameVi": "Kỳ Nhông Lửa",
+      "nameEn": "Fire Salamander"
+    },
+    {
+      "id": "ash_horn_ram",
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "hp": 390,
+      "attack": 65,
+      "defense": 46,
+      "speed": 11,
+      "rewardGold": 57,
+      "rewardExp": 21,
+      "nameVi": "Quỷ Đá Tro",
+      "nameEn": "Ashen Gargoyle"
+    },
+    {
+      "id": "fireglass_moth",
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "hp": 420,
+      "attack": 86,
+      "defense": 38,
+      "speed": 18,
+      "rewardGold": 119,
+      "rewardExp": 39,
+      "nameVi": "Kobold Phóng Hỏa",
+      "nameEn": "Kobold Pyromancer"
+    },
+    {
+      "id": "obsidian_peak_golem",
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "hp": 980,
+      "attack": 96,
+      "defense": 72,
+      "speed": 9,
+      "rewardGold": 264,
+      "rewardExp": 82,
+      "nameVi": "Rồng Hắc Diện",
+      "nameEn": "Obsidian Wyrm"
+    }
+  ]
+}

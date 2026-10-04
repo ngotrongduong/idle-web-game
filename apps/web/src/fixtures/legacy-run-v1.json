@@ -1,0 +1,481 @@
+{
+  "capturedFrom": "apps/server simulateDungeonCycle at 47c0a2d (battle formula v1)",
+  "dungeonId": "misty_riverbank",
+  "seed": 3141592653,
+  "battleRules": {
+    "maxTurns": 60,
+    "defenseK": 100,
+    "varianceMinBps": 9000,
+    "varianceMaxBps": 11000,
+    "defaultCritBps": 1000,
+    "critMultiplierBps": 20000,
+    "mpMax": 100,
+    "mpPerAction": 10,
+    "mpOnHit": 5,
+    "familyAdvantage": {
+      "ironbound": "dawn_warden",
+      "windstrider": "ironbound",
+      "ember_sage": "windstrider",
+      "dawn_warden": "ember_sage"
+    },
+    "advantageMultiplierBps": 12000,
+    "disadvantageMultiplierBps": 8500
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "seed": 1501061126,
+      "result": "win",
+      "turns": 6,
+      "hash": "351b4107",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "mistfin_eel",
+          "hp": 165,
+          "attack": 39,
+          "defense": 16,
+          "speed": 14
+        },
+        {
+          "id": "reedclaw_crab",
+          "hp": 205,
+          "attack": 35,
+          "defense": 24,
+          "speed": 8
+        }
+      ]
+    },
+    {
+      "wave": 2,
+      "seed": 4155496895,
+      "result": "win",
+      "turns": 8,
+      "hash": "05742f3a",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "reedclaw_crab",
+          "hp": 205,
+          "attack": 35,
+          "defense": 24,
+          "speed": 8
+        },
+        {
+          "id": "mistfin_eel",
+          "hp": 165,
+          "attack": 39,
+          "defense": 16,
+          "speed": 14
+        }
+      ]
+    },
+    {
+      "wave": 3,
+      "seed": 2514965368,
+      "result": "win",
+      "turns": 8,
+      "hash": "33ae37cf",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "mistfin_eel",
+          "hp": 165,
+          "attack": 39,
+          "defense": 16,
+          "speed": 14
+        },
+        {
+          "id": "reedclaw_crab",
+          "hp": 205,
+          "attack": 35,
+          "defense": 24,
+          "speed": 8
+        }
+      ]
+    },
+    {
+      "wave": 4,
+      "seed": 874433841,
+      "result": "win",
+      "turns": 6,
+      "hash": "a435234e",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "reedclaw_crab",
+          "hp": 205,
+          "attack": 35,
+          "defense": 24,
+          "speed": 8
+        },
+        {
+          "id": "mistfin_eel",
+          "hp": 165,
+          "attack": 39,
+          "defense": 16,
+          "speed": 14
+        }
+      ]
+    },
+    {
+      "wave": 5,
+      "seed": 3528869610,
+      "result": "win",
+      "turns": 7,
+      "hash": "d0930499",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "mistfin_eel",
+          "hp": 165,
+          "attack": 39,
+          "defense": 16,
+          "speed": 14
+        },
+        {
+          "id": "fogwing_heron",
+          "hp": 270,
+          "attack": 52,
+          "defense": 22,
+          "speed": 16
+        }
+      ]
+    },
+    {
+      "wave": 6,
+      "seed": 1888338083,
+      "result": "win",
+      "turns": 8,
+      "hash": "6ff0ac39",
+      "allies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "hp": 595,
+          "attack": 110,
+          "defense": 90,
+          "speed": 25,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000002",
+          "hp": 305,
+          "attack": 97,
+          "defense": 30,
+          "speed": 30,
+          "critBps": 1500,
+          "familyId": "windstrider",
+          "targeting": "lowest_hp",
+          "ultimatePowerBps": 16000,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000003",
+          "hp": 394,
+          "attack": 83,
+          "defense": 43,
+          "speed": 26,
+          "critBps": 1000,
+          "familyId": "dawn_warden",
+          "targeting": "highest_attack",
+          "ultimatePowerBps": 18000,
+          "ultimateKind": "heal",
+          "ultimateTargeting": "lowest_hp"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000004",
+          "hp": 451,
+          "attack": 68,
+          "defense": 72,
+          "speed": 14,
+          "critBps": 1000,
+          "familyId": "ironbound",
+          "targeting": "random",
+          "ultimatePowerBps": 13500,
+          "ultimateKind": "damage",
+          "ultimateTargeting": "highest_attack"
+        }
+      ],
+      "enemies": [
+        {
+          "id": "riverglass_serpent",
+          "hp": 560,
+          "attack": 61,
+          "defense": 38,
+          "speed": 13
+        }
+      ]
+    }
+  ]
+}

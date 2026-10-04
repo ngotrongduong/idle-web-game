@@ -1,0 +1,129 @@
+dungeon,family,name,level,tier,hp,atk,def,matk,mdef,spd,gold_min,gold_max,exp_min,exp_max
+forest_of_whispers,slime_jr,Slime Jr,1,normal,30,7,2,4,2,5,8,14,2,3
+forest_of_whispers,slime_jr,Venom Slime,2,elite,53,12,3,7,3,9,11,20,4,6
+forest_of_whispers,slime_jr,Slime King,3,leader,90,22,6,12,6,16,16,28,8,12
+forest_of_whispers,slime_jr,Slime Emperor,4,boss,156,36,10,21,10,26,24,42,16,25
+forest_of_whispers,cave_bat,Cave Bat,2,normal,50,11,3,6,2,10,12,20,2,4
+forest_of_whispers,cave_bat,Vampire Bat,3,elite,86,19,6,10,4,17,17,28,5,9
+forest_of_whispers,cave_bat,Bat Swarm Lord,4,leader,147,33,10,17,7,30,24,40,11,18
+forest_of_whispers,cave_bat,Bat Queen,5,boss,252,56,17,28,11,50,36,60,22,36
+forest_of_whispers,giant_worm,Giant Worm,5,normal,126,22,10,8,6,10,22,36,4,7
+forest_of_whispers,giant_worm,Sand Worm,6,elite,216,39,17,15,9,17,31,50,9,14
+forest_of_whispers,giant_worm,Death Worm,7,leader,360,64,29,24,16,29,44,72,19,29
+forest_of_whispers,giant_worm,Devourer Worm,8,boss,612,109,48,41,27,48,66,108,39,58
+forest_of_whispers,wraith,Wraith,7,normal,224,32,14,19,10,14,40,60,9,13
+forest_of_whispers,wraith,Wraith Knight,8,elite,381,54,24,32,17,24,56,84,19,27
+forest_of_whispers,wraith,Wraith Lord,9,leader,630,90,41,54,27,41,80,120,38,55
+forest_of_whispers,wraith,Wraith King,10,boss,1064,152,68,91,46,68,120,180,77,110
+crystal_caverns,crystal_bat,Crystal Bat,10,normal,410,57,19,27,13,32,30,50,4,6
+crystal_caverns,crystal_bat,Crystal Vampire Bat,11,elite,692,96,32,46,24,52,42,70,8,12
+crystal_caverns,crystal_bat,Crystal Bat Lord,12,leader,1134,160,50,76,38,88,60,100,16,25
+crystal_caverns,crystal_bat,Crystal Bat Empress,13,boss,1901,264,84,128,64,147,90,150,33,51
+crystal_caverns,gem_spider,Gem Spider,12,normal,554,76,29,38,21,29,40,65,5,8
+crystal_caverns,gem_spider,Crystal Spider Queen,13,elite,928,128,51,64,35,51,56,91,10,16
+crystal_caverns,gem_spider,Gem Spider Matriarch,14,leader,1518,207,83,106,55,83,80,130,21,32
+crystal_caverns,gem_spider,Crystal Spider Empress,15,boss,2534,346,139,173,91,139,120,195,42,64
+crystal_caverns,rock_golem,Rock Golem,14,normal,966,97,55,28,32,16,55,85,7,10
+crystal_caverns,rock_golem,Crystal Golem Brute,15,elite,1613,161,91,46,55,29,77,119,14,21
+crystal_caverns,rock_golem,Stone Titan,16,leader,2625,265,150,75,90,45,110,170,29,42
+crystal_caverns,rock_golem,Crystal Golem Boss,17,boss,4368,437,250,125,151,75,165,255,59,84
+crystal_caverns,crystal_wraith,Crystal Wraith,16,normal,840,85,30,75,43,33,50,80,6,10
+crystal_caverns,crystal_wraith,Crystal Wraith Lord,17,elite,1399,140,49,125,68,57,70,112,13,20
+crystal_caverns,crystal_wraith,Crystal Wraith King,18,leader,2268,227,81,205,113,92,100,160,27,40
+crystal_caverns,crystal_wraith,Crystal Wraith Emperor,19,boss,3763,375,134,336,188,148,150,240,55,80
+shadow_realm,shadow_wolf,Shadow Wolf,15,normal,1267,144,48,31,31,55,60,100,5,7
+shadow_realm,shadow_wolf,Shadow Wolf Alpha,16,elite,2113,240,78,53,53,95,84,140,10,15
+shadow_realm,shadow_wolf,Shadow Wolf Pack Lord,17,leader,3432,390,127,86,86,153,120,200,21,31
+shadow_realm,shadow_wolf,Shadow Wolf King,18,boss,5700,645,211,140,140,254,180,300,43,63
+shadow_realm,void_bat,Void Bat,16,normal,1148,130,40,98,40,65,65,110,6,9
+shadow_realm,void_bat,Void Vampire Bat,17,elite,1911,216,65,161,65,109,91,154,12,18
+shadow_realm,void_bat,Void Bat Lord,18,leader,3100,351,105,265,105,176,130,220,24,37
+shadow_realm,void_bat,Void Bat Queen,19,boss,5141,582,174,437,174,291,195,330,48,75
+shadow_realm,dark_knight,Dark Knight,17,normal,1862,187,86,52,52,34,80,130,7,10
+shadow_realm,dark_knight,Dark Knight Commander,18,elite,3097,308,140,84,84,57,112,182,14,21
+shadow_realm,dark_knight,Dark Knight General,19,leader,5015,501,230,137,137,92,160,260,28,43
+shadow_realm,dark_knight,Dark Knight Lord,20,boss,8309,829,377,226,226,151,240,390,57,86
+shadow_realm,shadow_mage,Shadow Mage,18,normal,1050,70,35,211,89,49,70,120,6,10
+shadow_realm,shadow_mage,Shadow Archmage,19,elite,1739,118,59,350,146,81,98,168,13,20
+shadow_realm,shadow_mage,Shadow Sorcerer Lord,20,leader,2819,189,96,566,238,133,140,240,26,40
+shadow_realm,shadow_mage,Shadow Lich,21,boss,4665,312,156,936,390,219,210,360,52,80
+volcano_peak,lava_slime,Lava Slime,20,normal,2552,255,90,148,58,46,100,160,6,10
+volcano_peak,lava_slime,Magma Slime,21,elite,4224,426,147,243,93,75,140,224,13,20
+volcano_peak,lava_slime,Lava Slime King,22,leader,6823,685,242,394,152,121,200,320,27,41
+volcano_peak,lava_slime,Infernal Slime Emperor,23,boss,11264,1133,400,650,250,198,300,480,54,82
+volcano_peak,fire_imp,Fire Imp,22,normal,1916,192,68,307,118,68,90,150,5,9
+volcano_peak,fire_imp,Fire Demon,23,elite,3162,320,112,509,192,112,126,210,11,18
+volcano_peak,fire_imp,Fire Imp Warlord,24,leader,5095,515,185,815,314,185,180,300,23,36
+volcano_peak,fire_imp,Infernal Imp King,25,boss,8398,850,299,1343,513,299,270,450,47,73
+volcano_peak,magma_golem,Magma Golem,24,normal,4019,343,158,119,99,30,130,200,8,12
+volcano_peak,magma_golem,Magma Golem Brute,25,elite,6627,564,262,201,163,48,182,280,16,24
+volcano_peak,magma_golem,Magma Titan,26,leader,10661,910,424,319,263,81,260,400,32,48
+volcano_peak,magma_golem,Magma Golem Lord,27,boss,17539,1498,691,526,432,130,390,600,64,97
+volcano_peak,flame_wraith,Flame Wraith,26,normal,2527,273,91,298,126,70,110,180,7,10
+volcano_peak,flame_wraith,Flame Wraith Sorcerer,27,elite,4154,450,151,486,212,112,154,252,14,21
+volcano_peak,flame_wraith,Flame Wraith Lord,28,leader,6675,722,241,784,337,181,220,360,28,43
+volcano_peak,flame_wraith,Flame Wraith King,29,boss,10967,1186,395,1284,555,296,330,540,56,86
+frozen_wastes,ice_wolf,Ice Wolf,25,normal,5307,442,156,218,109,95,150,240,8,12
+frozen_wastes,ice_wolf,Ice Wolf Pack Leader,26,elite,8743,732,259,364,182,158,210,336,16,24
+frozen_wastes,ice_wolf,Ice Wolf Alpha,27,leader,14051,1174,418,580,292,252,300,480,32,48
+frozen_wastes,ice_wolf,Ice Wolf King,28,boss,23103,1928,685,955,477,414,450,720,64,96
+frozen_wastes,snow_goblin,Snow Goblin,26,normal,4064,406,137,319,158,112,140,220,7,11
+frozen_wastes,snow_goblin,Snow Goblin Shaman,27,elite,6682,670,227,526,256,187,196,308,14,22
+frozen_wastes,snow_goblin,Snow Goblin Chieftain,28,leader,10737,1077,363,844,414,300,280,440,29,44
+frozen_wastes,snow_goblin,Snow Goblin King,29,boss,17640,1767,597,1383,680,490,420,660,59,88
+frozen_wastes,frost_skeleton,Frost Skeleton,27,normal,6908,554,230,187,137,54,180,280,9,13
+frozen_wastes,frost_skeleton,Frost Skeleton Captain,28,elite,11366,910,385,307,222,93,252,392,18,27
+frozen_wastes,frost_skeleton,Frost Skeleton General,29,leader,18236,1463,612,494,361,148,360,560,36,55
+frozen_wastes,frost_skeleton,Frost Skeleton King,30,boss,29944,2402,1006,807,589,242,540,840,73,110
+frozen_wastes,ice_witch,Ice Witch,28,normal,3756,281,118,611,233,93,160,260,8,12
+frozen_wastes,ice_witch,Ice Sorceress,29,elite,6171,456,198,1007,384,156,224,364,17,25
+frozen_wastes,ice_witch,Ice Witch Matriarch,30,leader,9898,737,316,1611,616,246,320,520,34,51
+frozen_wastes,ice_witch,Ice Queen,31,boss,16240,1208,516,2644,1008,404,480,780,69,103
+ancient_ruins,undead_knight,Undead Knight,30,normal,10670,776,339,289,218,66,220,360,9,14
+ancient_ruins,undead_knight,Undead Knight Champion,31,elite,17504,1272,556,476,360,108,308,504,19,28
+ancient_ruins,undead_knight,Death Knight General,32,leader,28040,2038,890,763,574,172,440,720,38,57
+ancient_ruins,undead_knight,Undead King,33,boss,45956,3339,1457,1247,941,281,660,1080,76,114
+ancient_ruins,bone_archer,Bone Archer,31,normal,8876,688,248,196,196,140,200,340,9,13
+ancient_ruins,bone_archer,Bone Sniper,32,elite,14555,1132,402,320,320,230,280,476,18,27
+ancient_ruins,bone_archer,Bone Archer Captain,33,leader,23302,1810,647,517,517,370,400,680,36,54
+ancient_ruins,bone_archer,Skeleton Archer Lord,34,boss,38167,2963,1058,843,843,602,600,1020,72,109
+ancient_ruins,cursed_mummy,Cursed Mummy,32,normal,14034,902,402,254,254,41,250,400,10,15
+ancient_ruins,cursed_mummy,Cursed Pharaoh Mummy,33,elite,23003,1474,659,412,412,63,350,560,21,31
+ancient_ruins,cursed_mummy,Mummy Lord,34,leader,36799,2365,1054,662,662,108,500,800,42,62
+ancient_ruins,cursed_mummy,Mummy Emperor,35,boss,60245,3868,1725,1082,1082,172,750,1200,84,124
+ancient_ruins,necromancer,Necromancer,33,normal,7644,512,206,1016,407,113,240,400,9,15
+ancient_ruins,necromancer,Necromancer Adept,34,elite,12522,839,335,1668,662,181,336,560,19,30
+ancient_ruins,necromancer,Death Mage,35,leader,20020,1342,541,2666,1065,295,480,800,39,60
+ancient_ruins,necromancer,Lich Emperor,36,boss,32760,2192,882,4361,1737,477,720,1200,79,121
+celestial_temple,fallen_cherub,Fallen Cherub,35,normal,14401,906,370,616,286,123,300,500,10,15
+celestial_temple,fallen_cherub,Fallen Cherub Captain,36,elite,23562,1481,603,1004,464,198,420,700,21,31
+celestial_temple,fallen_cherub,Fallen Cherub Lord,37,leader,37637,2369,961,1610,750,317,600,1000,42,63
+celestial_temple,fallen_cherub,Fallen Cherub King,38,boss,61523,3868,1570,2627,1222,517,900,1500,84,126
+celestial_temple,dark_seraph,Dark Seraph,36,normal,12519,752,333,1170,414,117,320,520,11,16
+celestial_temple,dark_seraph,Dark Seraph Commander,37,elite,20475,1228,543,1914,676,193,448,728,22,33
+celestial_temple,dark_seraph,Dark Seraph Lord,38,leader,32689,1965,870,3050,1086,310,640,1040,45,66
+celestial_temple,dark_seraph,Fallen Seraphim,39,boss,53414,3211,1416,4982,1776,509,960,1560,90,132
+celestial_temple,corrupted_paladin,Corrupted Paladin,37,normal,19053,1058,506,423,382,64,350,560,12,18
+celestial_temple,corrupted_paladin,Corrupted Paladin Commander,38,elite,31142,1725,827,691,620,108,490,784,24,36
+celestial_temple,corrupted_paladin,Dark Paladin Lord,39,leader,49699,2760,1320,1109,994,173,700,1120,48,72
+celestial_temple,corrupted_paladin,Black Paladin King,40,boss,81173,4508,2156,1813,1617,279,1050,1680,96,144
+celestial_temple,void_priest,Void Priest,38,normal,10735,649,301,1377,517,103,340,560,11,17
+celestial_temple,void_priest,Void Bishop,39,elite,17539,1056,490,2251,845,168,476,784,23,34
+celestial_temple,void_priest,Void Inquisitor,40,leader,27974,1686,784,3587,1348,270,680,1120,46,69
+celestial_temple,void_priest,Void Pope,41,boss,45670,2750,1275,5850,2200,440,1020,1680,93,138
+abyssal_void,void_wraith,Void Wraith,40,normal,15959,1024,417,637,319,108,400,640,11,17
+abyssal_void,void_wraith,Void Wraith Lord,41,elite,26055,1670,680,1045,520,180,560,896,22,34
+abyssal_void,void_wraith,Void Wraith King,42,leader,41524,2662,1081,1663,826,286,800,1280,44,68
+abyssal_void,void_wraith,Void Wraith Emperor,43,boss,67740,4342,1763,2714,1347,468,1200,1920,88,136
+abyssal_void,star_eater,Star Eater,41,normal,14545,905,355,1290,485,95,480,760,12,18
+abyssal_void,star_eater,Star Devourer,42,elite,23735,1479,581,2111,791,153,672,1064,24,36
+abyssal_void,star_eater,Star Eater Lord,43,leader,37814,2350,926,3359,1258,250,960,1520,48,72
+abyssal_void,star_eater,Star Eater Tyrant,44,boss,61666,3832,1511,5480,2051,408,1440,2280,96,144
+abyssal_void,abyssal_horror,Abyssal Horror,42,normal,22904,1244,587,490,423,66,500,800,13,19
+abyssal_void,abyssal_horror,Abyssal Horror Maw,43,elite,37367,2028,957,801,692,109,700,1120,26,39
+abyssal_void,abyssal_horror,Abyssal Behemoth,44,leader,59508,3233,1526,1272,1102,170,1000,1600,52,78
+abyssal_void,abyssal_horror,Abyssal Leviathan,45,boss,97011,5270,2489,2074,1798,275,1500,2400,104,156
+abyssal_void,cosmic_tentacle,Cosmic Tentacle,43,normal,19874,993,530,827,400,52,520,840,14,21
+abyssal_void,cosmic_tentacle,Tentacle Mass,44,elite,32415,1622,859,1346,652,80,728,1176,28,42
+abyssal_void,cosmic_tentacle,Tentacle Behemoth,45,leader,51602,2581,1372,2149,1037,130,1040,1680,56,84
+abyssal_void,cosmic_tentacle,Void Devourer,46,boss,84095,4208,2233,3504,1689,209,1560,2520,112,168

@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/guildhall_test
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: guildhall_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d guildhall_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Migrate test database
+        run: |
+          pnpm --filter @idle/server db:migrate
+          # Migrations re-run on every deploy; a second pass must be a no-op.
+          pnpm --filter @idle/server db:migrate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Economy balance report
+        run: pnpm --filter @idle/sim sim:economy
+
+      - name: Chromium golden battle
+        run: |
+          pnpm --filter @idle/web exec vite ../../packages/game-core --host 127.0.0.1 --port 5174 --strictPort > /tmp/golden-vite.log 2>&1 &
+          VITE_PID=$!
+          trap 'kill "$VITE_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5174/browser-golden.html >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/golden-vite.log
+            exit 1
+          fi
+          pnpm --filter @idle/inspect golden:battle
+
+      - name: Dungeon, promotion, equipment, auto-sell, buildings and language UI E2E
+        run: |
+          pnpm --filter @idle/server exec tsx src/index.ts > /tmp/e2e-server.log 2>&1 &
+          SERVER_PID=$!
+          pnpm --filter @idle/web exec vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/e2e-web.log 2>&1 &
+          WEB_PID=$!
+          cleanup() {
+            kill "$WEB_PID" "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/health >/dev/null && curl -fsS http://127.0.0.1:5173/ >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/e2e-server.log
+            cat /tmp/e2e-web.log
+            exit 1
+          fi
+          pnpm --filter @idle/inspect e2e:dungeon
+          pnpm --filter @idle/inspect e2e:promotion
+          pnpm --filter @idle/inspect e2e:equipment
+          pnpm --filter @idle/inspect e2e:auto-sell
+          pnpm --filter @idle/inspect e2e:buildings
+          pnpm --filter @idle/inspect e2e:language
+
+      - name: Build
+        run: pnpm build
+
+      - name: Validate Docker Compose
+        run: docker compose -f infra/docker-compose.yml config --quiet

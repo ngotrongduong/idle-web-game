@@ -1,0 +1,5 @@
+id,name_vi,name_en,archetype,damage_type,advantage_family_id
+ironbound,Thiết Vệ,Ironbound,frontline,physical,dawn_warden
+windstrider,Phong Hành,Windstrider,ranged,physical,ironbound
+ember_sage,Hỏa Thuật,Ember Sage,caster,magical,windstrider
+dawn_warden,Hộ Quang,Dawn Warden,support,magical,ember_sage

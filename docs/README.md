@@ -14,22 +14,28 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 | 06 | [Monetization và LiveOps](06-monetization-liveops.md) | Bảng giá, kênh thanh toán VN, lịch sự kiện, analytics, KPI | 📝 v0.1 |
 | 07 | [Lộ trình MVP](07-roadmap-mvp.md) | Làm gì, theo thứ tự nào, trong bao lâu, tiêu chí xong | 📝 v0.1 |
 | 08 | [Pháp lý và rủi ro](08-legal-risks.md) | IP, NĐ 147/2024 (G1), xác thực SĐT, dữ liệu cá nhân, thuế, sổ rủi ro | ⚠ cần luật sư xác minh |
+| 09 | [Chơi thử mốc M1](09-playtest-m1.md) | 30 phút đầu của một tài khoản mới chạy thật ra sao so với mục tiêu, vướng ở đâu, nên sửa gì | ✅ đo thật ngày 05/10 |
 
 ## Quyết định đã chốt
 
 - Thể loại: **Idle RPG treo máy**, cụ thể là idle guild master (giống fworldgm).
 - Quy mô: **solo / 1–2 người**, ra **MVP** trong ~14 tuần tới closed beta.
 - Stack: **TypeScript full-stack** (React + Vite PWA, Node + Fastify, PostgreSQL, Socket.IO, pnpm monorepo).
+- Bối cảnh: **high fantasy phương Tây** (02 §2). Tên game vẫn là tên tạm "Project Guildhall".
+- Art direction: **pixel art HD-2D lite** (05 §1).
+- Pháp lý: **closed beta miễn phí**, quyết phương án thu tiền sau (08 §3).
+- Chiến đấu: **mỗi wave bắt đầu đầy HP, 50% MP**, công thức sát thương v2 theo 03 §3 (02 §5.4).
+- Thưởng idle: **kỳ vọng của 30 vòng mẫu**, vòng dừng ở wave thua đầu tiên (04 §6).
+- Tiến độ: **mở hầm theo thứ tự** sau khi hạ boss hầm trước; số đội song song theo cấp Sảnh (02 §5.1, §5.4).
 
-## Quyết định còn mở (cần bạn chốt trước M0)
+## Quyết định còn mở
 
-1. Tên game và bối cảnh (đề xuất: huyền huyễn pha văn hóa dân gian Việt; 02 §2).
-2. Art direction: pixel HD-2D lite (đề xuất) hay chibi vector (05 §1).
-3. Phương án pháp lý trước khi thu tiền: closed beta miễn phí → đối tác phát hành hay tự xin G1 (08 §3).
-4. Hosting beta: Singapore (rẻ, nhanh) hay VPS Việt Nam ngay từ đầu (04 §11).
+1. Tên game chính thức.
+2. Phương án thu tiền sau closed beta: đối tác phát hành hay tự xin G1 (08 §3).
+3. Hosting beta: Singapore (rẻ, nhanh) hay VPS Việt Nam ngay từ đầu (04 §11).
 
 ## Bước tiếp theo ngay
 
-1. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.
-2. Chốt 4 quyết định còn mở.
-3. Bắt đầu **M0** (07): scaffold `apps/` + `packages/` trong monorepo (`pnpm-workspace.yaml` đã có sẵn), viết `packages/game-core` + `tools/sim` trước tiên.
+1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.8 đã xong, đã chơi thử mốc M1 ([09](09-playtest-m1.md)); tiếp theo là sửa các điểm vướng của buổi chơi thử rồi sang M2.
+2. Quy tắc làm việc cho mọi agent (Claude Code, Codex) nằm ở [`AGENTS.md`](../AGENTS.md); đội agent của Claude Code ở [`CLAUDE.md`](../CLAUDE.md).
+3. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.

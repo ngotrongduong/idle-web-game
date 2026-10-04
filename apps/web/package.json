@@ -1,0 +1,27 @@
+{
+  "name": "@idle/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "tsc -p tsconfig.json --noEmit --pretty false && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+  },
+  "dependencies": {
+    "@idle/i18n": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@idle/game-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@idle/api-contract": "workspace:*",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}

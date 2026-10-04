@@ -1,0 +1,40 @@
+{
+  "formulaVersion": 2,
+  "maxTurns": 150,
+  "defenseKBase": 60,
+  "defenseKPerLevel": 8,
+  "varianceMinBps": 9500,
+  "varianceMaxBps": 10500,
+  "defaultCritBps": 500,
+  "rangedCritBonusBps": 500,
+  "critMultiplierBps": 15000,
+  "critCapBps": 7500,
+  "mpMax": 100,
+  "mpPerAction": 10,
+  "mpOnHit": 5,
+  "startingMpBps": 5000,
+  "advantageMultiplierBps": 12000,
+  "disadvantageMultiplierBps": 8500,
+  "enemyStatMultiplierBps": {
+    "bamboo_grove": {
+      "hp": 17300,
+      "attack": 17300,
+      "defense": 13153
+    },
+    "misty_riverbank": {
+      "hp": 31100,
+      "attack": 31100,
+      "defense": 17635
+    },
+    "sunken_shrine": {
+      "hp": 65900,
+      "attack": 65900,
+      "defense": 25671
+    },
+    "ember_ridge": {
+      "hp": 102500,
+      "attack": 102500,
+      "defense": 32016
+    }
+  }
+}

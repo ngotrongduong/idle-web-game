@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Battle Golden</title>
+  </head>
+  <body>
+    <pre id="result">pending</pre>
+    <pre id="result-v2">pending</pre>
+    <script type="module">
+      import { simulateWave } from "./src/index.ts";
+      import { GOLDEN_V1, GOLDEN_V2, GOLDEN_V2_RULES } from "./src/goldens.ts";
+
+      const summarize = (battle) =>
+        JSON.stringify({ result: battle.result, turns: battle.turns, hash: battle.hash });
+
+      document.querySelector("#result").textContent = summarize(simulateWave(GOLDEN_V1));
+      document.querySelector("#result-v2").textContent = summarize(
+        simulateWave({ ...GOLDEN_V2, rules: GOLDEN_V2_RULES }),
+      );
+    </script>
+  </body>
+</html>

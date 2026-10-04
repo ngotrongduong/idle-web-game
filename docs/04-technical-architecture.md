@@ -132,6 +132,12 @@ for team in player.teams where team.dungeon_id != null:
 - Cache kết quả mẫu theo `(teamPowerHash, dungeon, difficulty)` vài phút.
 - Hero lên cấp trong lúc offline: áp EXP theo từng "lô" 10 wave để đội mạnh dần hợp lý.
 
+**Đã cài (M1)**, đơn giản hơn nhưng cùng tinh thần "giá trị kỳ vọng":
+- Lúc bắt đầu lượt chạy, server mô phỏng `rewardSampleCycles` (30) vòng mẫu; mỗi vòng dừng ở wave thua đầu tiên. Lưu cả 30 mẫu `{gold, exp, kills}` vào `dungeon_runs.cycle_samples`; mẫu 0 chính là replay client tự kiểm hash.
+- Vòng idle thứ c trả theo mẫu `c mod 30` (vàng, EXP, loot roll bằng seed `deriveCycleLootSeed(run_seed, c)`), nên chia nhỏ số lần nhận không đổi tổng và không cần mô phỏng lại khi catch-up.
+- `run_seed = hash(player, dungeon, snapshot đội, luật)`: dừng rồi chạy lại với cùng đội cho ra cùng mẫu, chặn việc "bấm lại tới khi thắng boss".
+- Chưa có tốc độ online 100% và chưa áp EXP theo lô: snapshot đội cố định suốt lượt chạy, muốn dùng chỉ số mới thì dừng và chạy lại.
+
 ## 7. Realtime và nội dung chung server
 
 - Socket.IO namespace `/live`, xác thực bằng session cookie. Rooms: `world:{id}` (chat, thông báo), `boss:{id}` (HP world boss), `player:{id}` (thông báo cá nhân: xây xong, mail mới).

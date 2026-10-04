@@ -1,0 +1,26 @@
+{
+  "baseRarityBps": {
+    "common": 7000,
+    "elite": 2500,
+    "rare": 450,
+    "legendary": 50
+  },
+  "rarityStatMultiplierBps": {
+    "common": 10000,
+    "elite": 10800,
+    "rare": 11800,
+    "legendary": 13000
+  },
+  "rarePityRefreshes": 40,
+  "legendaryPityRefreshes": 200,
+  "legendarySoftPityStart": 150,
+  "legendarySoftPityStepBps": 10,
+  "refreshCooldownSeconds": 7200,
+  "offersPerRefresh": 3,
+  "secondaryOfferRarityBps": {
+    "common": 7368,
+    "elite": 2632,
+    "rare": 0,
+    "legendary": 0
+  }
+}

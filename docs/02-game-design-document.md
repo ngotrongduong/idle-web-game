@@ -22,8 +22,9 @@
 
 ## 2. Bối cảnh và IP (gốc)
 
-- Thế giới: **Đại lục Vân Hải** (tên tạm), một vùng huyền huyễn pha phương Đông–phương Tây, với các dải hầm ngục xuất hiện sau một "vết nứt trời".
-- Gợi ý khác biệt: mượn **văn hóa dân gian Việt Nam** (thuộc phạm vi công cộng) cho quái, boss và địa danh (rừng tre, đầm lầy, hang Sơn Đoòng huyền bí, thủy cung…), kết hợp class fantasy quen thuộc. Phải là thiết kế gốc, **không** dùng tên hay hình tượng thuộc IP của người khác.
+- **Đã chốt: high fantasy phương Tây.** Thế giới (tên tạm) là một vương quốc trung cổ với các dải hầm ngục xuất hiện sau một "vết nứt trời": rừng gai, đầm lầy sương mù, tu viện chìm, vách núi của rồng lửa.
+- Quái và boss dùng các motif fantasy phổ biến thuộc phạm vi công cộng (goblin, người thằn lằn, phù thủy đầm lầy, lich, wyrm…), kết hợp class fantasy quen thuộc. Phải là thiết kế gốc, **không** dùng tên hay hình tượng thuộc IP của người khác.
+- Nội dung MVP hiện có: Rừng Gai Thornwood, Đầm Lầy Sương Mù (Mistmoor), Tu Viện Chìm (Sunken Abbey), Vách Đá Lửa Rồng (Dragonfire Crags). Id trong dữ liệu (`bamboo_grove`, `sunken_shrine`…) là định danh nội bộ cũ, giữ lại để không vỡ replay, không bao giờ hiển thị cho người chơi.
 - Giọng văn: hài hước nhẹ, ngắn gọn (idle game không cần cốt truyện dài). Mỗi hầm có 1 đoạn lore 2–3 câu, mỗi boss 1 câu thoại.
 
 ## 3. Core loop
@@ -84,12 +85,19 @@
 
 | Công trình | Tác dụng | Lv tối đa MVP |
 |---|---|---|
-| Sảnh Hội (Hall) | số hero tối đa (3 + Lv), số đội song song (1 → 4) | 10 |
+| Sảnh Hội (Hall) | số hero tối đa (3 + Lv), số đội song song (1 → 4: mở ở Lv1 / Lv3 / Lv6 / Lv9) | 10 |
 | Quán Rượu (Tavern) | số ứng viên, tỉ lệ ứng viên hiếm, giảm thời gian refresh | 10 |
 | Kho (Storage) | số ô item; mở công thức tier cao | 10 |
 | Lò Rèn (Forge) | mở cường hóa, tăng tỉ lệ phẩm chất khi chế tạo | 10 |
 
 Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở cấp thấp (1–7 phút cho Lv1–5) và dài dần (~3 giờ ở Lv9→10, xem [03 §6](03-economy-balancing.md#6-công-trình)). Thời gian xây là lý do để quay lại, và có thể tăng tốc bằng vật phẩm.
+
+**Đã cài (M1.7)**: Sảnh Hội và Lò Rèn (Quán Rượu và Kho chưa có cấp). Bảng số ở [03 §6](03-economy-balancing.md#6-công-trình).
+
+- Bấm nâng cấp thì trả vàng (Lò Rèn thêm nguyên liệu hầm) ngay, cấp mới có hiệu lực khi hết thời gian xây. Đồng hồ chạy theo server, kể cả khi đóng tab.
+- Chỉ có một thợ xây: mỗi lúc chỉ xây một công trình.
+- Tăng tốc bằng **Đồng Hồ Cát Thợ Xây** (rơi từ boss hầm, sau này từ quest): mỗi cái bớt 5 phút.
+- **Lò Rèn** Lv1 chỉ chế tạo; Lv2 mở cường hóa tới +2, Lv4 tới +3, Lv6 tới +4, Lv8 tới +5 (mỗi mức mới cần nguyên liệu của hầm kế tiếp). Mỗi cấp Lò Rèn giảm 3% tỉ lệ ra đồ Thường và chia cho Tinh xảo / Hiếm / Kiệt tác.
 
 ### 5.2 Hero
 
@@ -104,12 +112,17 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Tier n có n nhánh để chọn (như fworldgm), cuối cùng mỗi họ có 8 nhánh. MVP T1–T3: mỗi họ 1 + 2 + 3 = 6 class, tổng 24 class.
 - Mỗi class có: đòn đánh thường, **1 ULT** (đầy 100 MP), **1 nội tại**. Từ T4 thêm 1 kỹ năng chủ động thứ hai (Later).
 - **Khắc hệ** vòng tròn giữa các họ: ×1.2 / ×0.85.
-- **Thăng tier**: đạt level cap (10 × tier) + **Ấn Thăng Cấp** (rơi từ boss hầm cùng tier) + vàng. Level reset về 1 nhưng giữ **20% chỉ số cũ** dạng "tiềm năng", để thăng tier không cảm giác bị yếu đi.
+- **Thăng tier**: đạt level cap (10 × tier) + **Ấn Thăng Cấp** + vàng. Level reset về 1 nhưng giữ **20% chỉ số cũ** dạng "tiềm năng", để thăng tier không cảm giác bị yếu đi.
+  - Đã chốt: hệ số cấp **nối tiếp qua các tier** (T2 Lv1 tính như T1 Lv10, T3 Lv1 như T2 Lv20; xem [03 §2](03-economy-balancing.md#2-công-thức-chỉ-số)), nên hero sau khi thăng luôn mạnh hơn hoặc bằng trước khi thăng.
+  - Đã cài (M1.4B): T1→T2 cần 1 Ấn Thăng Cấp I + 500 vàng, Ấn I rơi từ boss hầm 1–2; T2→T3 cần 2 Ấn Thăng Cấp II + 3000 vàng, Ấn II rơi từ boss hầm 3–4. Chỉ được chọn class con trực tiếp, và hero không được đang ở trong một lượt chạy hầm.
 
 ### 5.4 Hầm ngục và chiến đấu
 
 - Mỗi hầm: 5 wave thường (2–3 quái) + **wave 6 là boss hầm** (mỗi 10 vòng). Đội lặp lại liên tục.
-- Mở khóa hầm theo quest chính / tiến độ. MVP 4 hầm (Lv đề xuất 1 / 10 / 20 / 30).
+  - Bản M1 hiện tại: boss xuất hiện ở wave 6 của **mọi** vòng, nên tỉ lệ rơi ở [03 §8](03-economy-balancing.md#8-loot) được tính cho từng vòng.
+- **Đã chốt: mỗi wave bắt đầu với HP đầy và 50% MP**, không mang sát thương sang wave sau. Mỗi wave replay độc lập từ snapshot đầy đủ chỉ số; 50% MP giúp ULT (kể cả ULT hồi máu) dùng được giữa trận.
+- **Đã chốt: mở khóa hầm theo tiến độ**: hầm N mở khi đã hạ boss hầm N−1 (ghi nhận lúc nhận thưởng). MVP 4 hầm (Lv đề xuất 1 / 10 / 20 / 30). Quest chính có thể thêm điều kiện sau.
+- Một vòng chạy hầm dừng ở wave thua đầu tiên; thưởng idle là giá trị kỳ vọng của 30 vòng mẫu (xem [04 §6](04-technical-architecture.md#6-tính-toán-idle--offline)).
 - **Độ khó hầm (Difficulty)** 1–10 trong mỗi hầm: tăng chỉ số quái và tỉ lệ rơi, tạo ngưỡng mục tiêu dài hạn với cùng một bộ asset.
 - Chiến đấu: theo lượt, thứ tự theo SPD, MP +10/lượt và +5 khi trúng, ULT tự động khi đầy. Cap 60 lượt mỗi wave; quá cap thì **hòa** (rút lui, không cộng thưởng) thay vì "cả đội chết".
 - Mục tiêu: ưu tiên theo vai trò (tank khiêu khích, sát thủ đánh máu thấp, pháp sư AoE), **mọi lựa chọn ngẫu nhiên đều dùng RNG có seed**.
@@ -129,6 +142,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Chế tạo: chọn công thức (2–3 nguyên liệu), có tỉ lệ roll phẩm chất. Lò rèn cấp cao tăng tỉ lệ.
 - Cường hóa +1…+10 (MVP +5): xem [03 §5](03-economy-balancing.md#5-cường-hóa-trang-bị). Có **mốc an toàn +5** và **pity**.
 - Phân rã đồ thừa thành bụi (Dust) để dùng cho cường hóa, thay vì chỉ bán lấy vàng.
+  - Đã cài (M1.7): nút **Phân rã** cạnh nút Bán, trả 1–5 Bụi Rèn theo phẩm chất; mỗi lần cường hóa tốn vàng và Bụi Rèn ([03 §5](03-economy-balancing.md#5-cường-hóa-trang-bị)). Đồ đang khóa hoặc đang mặc không phân rã được.
 
 ### 5.7 Tuyển mộ (Tavern)
 
@@ -162,7 +176,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 | Phút | Sự kiện | Cảm xúc mục tiêu |
 |---|---|---|
 | 0:00 | Vào game không cần đăng ký (guest). Cutscene 3 khung tranh: vết nứt trời, hội quán đổ nát | tò mò |
-| 0:30 | Nhận 2 hero (1 Chiến Binh, 1 Pháp Sư), quest "Gửi đội vào Rừng Tre" | dễ hiểu |
+| 0:30 | Nhận 2 hero (1 Chiến Binh, 1 Pháp Sư), quest "Gửi đội vào Rừng Gai" | dễ hiểu |
 | 1:00 | Trận đầu: thấy ULT đầu tiên ở wave 2, boss nhỏ ở wave 6 | "wow" |
 | 3:00 | Lên Lv2–3, nhận nguyên liệu, quest "Chế tạo vũ khí đầu tiên", trang bị ngay | thấy mạnh lên |
 | 6:00 | Mở Tavern, tuyển hero thứ 3 (bảo đảm Xạ Thủ), mở **đội thứ 2** chạy song song | fantasy quản lý |
@@ -179,6 +193,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Nguyên tắc: một hành động chính mỗi màn; chấm đỏ chỉ khi có thể làm ngay; số lớn rút gọn (1,2K / 3,4M / 5,6B); animation nhận thưởng; haptic (Vibration API) khi thăng tier.
 - **Accessibility**: tương phản AA, cỡ chữ điều chỉnh được, không dùng màu là tín hiệu duy nhất (độ hiếm có icon/viền), hỗ trợ `prefers-reduced-motion`.
 - i18n: `vi` (mặc định) và `en`; mọi chuỗi qua key, không hard-code.
+  - Đã cài (M1.8): nút **Tiếng Việt / English** ở đầu trang, đổi ngay không tải lại và không mất thao tác đang dở. Mọi người bắt đầu bằng tiếng Việt (không đoán theo ngôn ngữ trình duyệt); lựa chọn được nhớ trên thiết bị. Thông báo lỗi cũng theo ngôn ngữ đang chọn.
 
 ## 9. Âm thanh
 

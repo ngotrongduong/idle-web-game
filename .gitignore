@@ -7,3 +7,7 @@ dist/
 research/*/raw/
 research/*/user-provided/*
 !research/*/user-provided/README.md
+
+# Personal Claude Code overrides (shared team config lives in .claude/ and CLAUDE.md)
+.claude/settings.local.json
+CLAUDE.local.md

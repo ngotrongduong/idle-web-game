@@ -1,0 +1,25 @@
+id,name_vi,name_en,family_id,tier,parent_class_id,role,base_hp,base_attack,base_defense,base_speed,targeting,ultimate_kind,ultimate_targeting,ultimate_power_bps
+ward_squire,Tân Vệ,Ward Squire,ironbound,1,,tank,210,34,32,9,random,damage,highest_attack,13500
+iron_guard,Thiết Giáp,Iron Guard,ironbound,2,ward_squire,tank,280,42,46,8,random,damage,highest_attack,13500
+blade_runner,Kiếm Du,Blade Runner,ironbound,2,ward_squire,damage,220,58,26,13,lowest_hp,damage,lowest_hp,16000
+bastion_captain,Thành Lũy,Bastion Captain,ironbound,3,iron_guard,tank,365,52,64,8,random,damage,highest_attack,13500
+banner_knight,Kỵ Sĩ Chiến Kỳ,Banner Knight,ironbound,3,iron_guard,hybrid,315,61,49,10,highest_attack,damage,highest_attack,14500
+oathblade,Kiếm Thệ,Oathblade,ironbound,3,blade_runner,damage,270,76,34,14,lowest_hp,damage,lowest_hp,16000
+trail_archer,Cung Thủ Lữ Hành,Trail Archer,windstrider,1,,damage,150,48,15,15,lowest_hp,damage,lowest_hp,16000
+gale_marksman,Xạ Thủ Cuồng Phong,Gale Marksman,windstrider,2,trail_archer,damage,185,66,19,17,lowest_hp,damage,lowest_hp,16000
+thorn_stalker,Thợ Săn Gai,Thorn Stalker,windstrider,2,trail_archer,hybrid,205,59,24,16,highest_attack,damage,highest_attack,14500
+sky_piercer,Cung Thủ Xuyên Mây,Sky Piercer,windstrider,3,gale_marksman,damage,220,88,24,19,lowest_hp,damage,lowest_hp,16000
+farshot_ranger,Viễn Kích Du Hiệp,Farshot Ranger,windstrider,3,gale_marksman,damage,245,80,28,18,lowest_hp,damage,lowest_hp,16000
+briar_hunter,Thợ Săn Tầm Gai,Briar Hunter,windstrider,3,thorn_stalker,hybrid,275,73,35,17,highest_attack,damage,highest_attack,14500
+spark_adept,Học Giả Tia Lửa,Spark Adept,ember_sage,1,,damage,135,54,12,13,lowest_hp,damage,lowest_hp,16000
+flame_weaver,Dệt Lửa,Flame Weaver,ember_sage,2,spark_adept,damage,165,75,16,14,lowest_hp,damage,lowest_hp,16000
+storm_scribe,Thư Sĩ Phù Văn,Rune Scribe,ember_sage,2,spark_adept,hybrid,180,69,20,15,highest_attack,damage,highest_attack,14500
+cinder_oracle,Tiên Tri Tàn Hỏa,Cinder Oracle,ember_sage,3,flame_weaver,damage,205,99,21,15,lowest_hp,damage,lowest_hp,16000
+glassfire_magus,Pháp Sư Lưu Hỏa,Glassfire Magus,ember_sage,3,flame_weaver,damage,225,92,25,14,lowest_hp,damage,lowest_hp,16000
+thunder_calligrapher,Thợ Rèn Phù Văn Bão,Storm Runesmith,ember_sage,3,storm_scribe,hybrid,240,84,30,16,highest_attack,damage,highest_attack,14500
+dawn_acolyte,Học Đồ Bình Minh,Dawn Acolyte,dawn_warden,1,,support,165,35,18,11,highest_attack,heal,lowest_hp,18000
+light_keeper,Người Giữ Đèn,Light Keeper,dawn_warden,2,dawn_acolyte,support,220,43,28,11,highest_attack,heal,lowest_hp,18000
+spirit_mender,Y Sư Linh Hồn,Spirit Mender,dawn_warden,2,dawn_acolyte,support,195,49,22,13,highest_attack,heal,lowest_hp,18000
+sunward_sage,Hiền Giả Hướng Nhật,Sunward Sage,dawn_warden,3,light_keeper,support,285,54,40,11,highest_attack,heal,lowest_hp,18000
+lantern_guide,Người Dẫn Đèn,Lantern Guide,dawn_warden,3,light_keeper,hybrid,260,62,34,12,highest_attack,damage,highest_attack,14500
+soulweaver,Dệt Hồn,Soulweaver,dawn_warden,3,spirit_mender,support,235,68,29,14,highest_attack,heal,lowest_hp,18000

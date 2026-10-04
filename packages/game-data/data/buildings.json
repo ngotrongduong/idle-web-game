@@ -1,0 +1,64 @@
+{
+  "maxLevel": 10,
+  "speedUp": {
+    "materialId": "builders_hourglass",
+    "secondsPerItem": 300
+  },
+  "hall": {
+    "upgradeGoldCost": [300, 780, 2030, 5270, 13710, 35640, 92670, 240950, 626480],
+    "buildSeconds": [60, 114, 217, 412, 782, 1486, 2823, 5363, 10190],
+    "upgradeMaterials": [[], [], [], [], [], [], [], [], []]
+  },
+  "forge": {
+    "upgradeGoldCost": [240, 624, 1624, 4216, 10968, 28512, 74136, 192760, 501184],
+    "buildSeconds": [48, 91, 174, 330, 626, 1189, 2258, 4290, 8152],
+    "upgradeMaterials": [
+      [{ "materialId": "river_stone", "qty": 3 }],
+      [
+        { "materialId": "river_stone", "qty": 8 },
+        { "materialId": "bamboo_fiber", "qty": 8 }
+      ],
+      [
+        { "materialId": "driftwood_core", "qty": 10 },
+        { "materialId": "reed_thread", "qty": 10 }
+      ],
+      [
+        { "materialId": "mist_pearl", "qty": 20 },
+        { "materialId": "driftwood_core", "qty": 20 }
+      ],
+      [
+        { "materialId": "sunken_clay", "qty": 30 },
+        { "materialId": "shrine_fragment", "qty": 30 }
+      ],
+      [
+        { "materialId": "tide_crystal", "qty": 50 },
+        { "materialId": "lotus_silk", "qty": 50 }
+      ],
+      [
+        { "materialId": "ember_ore", "qty": 80 },
+        { "materialId": "ash_hide", "qty": 80 }
+      ],
+      [
+        { "materialId": "fireglass", "qty": 120 },
+        { "materialId": "obsidian_shard", "qty": 120 }
+      ],
+      [
+        { "materialId": "obsidian_shard", "qty": 200 },
+        { "materialId": "ridge_herb", "qty": 200 }
+      ]
+    ],
+    "maxEnhanceLevel": [0, 2, 2, 3, 3, 4, 4, 5, 5, 5],
+    "qualityWeightsBps": [
+      [7000, 2500, 450, 50],
+      [6700, 2700, 530, 70],
+      [6400, 2900, 610, 90],
+      [6100, 3100, 690, 110],
+      [5800, 3300, 770, 130],
+      [5500, 3500, 850, 150],
+      [5200, 3700, 930, 170],
+      [4900, 3900, 1010, 190],
+      [4600, 4100, 1090, 210],
+      [4300, 4300, 1170, 230]
+    ]
+  }
+}

@@ -2,15 +2,34 @@
   "name": "idle-web-game",
   "private": true,
   "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "dev": "pnpm --parallel --filter @idle/web --filter @idle/server run dev",
+    "build": "pnpm -r --if-present run build",
+    "test": "pnpm -r --if-present run test",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "ci:local": "bash scripts/ci-local.sh",
+    "sim:battle": "pnpm --filter @idle/sim sim:battle",
+    "sim:upgrade": "pnpm --filter @idle/sim sim:upgrade",
     "inspect:capture": "pnpm --filter @idle/inspect capture",
     "inspect:analyze": "pnpm --filter @idle/inspect analyze",
     "inspect:extract": "pnpm --filter @idle/inspect extract",
-    "inspect:test": "pnpm --filter @idle/inspect test"
+    "inspect:test": "pnpm --filter @idle/inspect test",
+    "lint": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.{ts,tsx}\" \"tools/sim/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"{apps,packages,tools/sim}/**/*.{ts,tsx,css,html,json}\" \"*.{json,yml,yaml,mjs}\" \".github/workflows/*.yml\" \"infra/*.yml\"",
+    "format:check": "prettier --check \"{apps,packages,tools/sim}/**/*.{ts,tsx,css,html,json}\" \"*.{json,yml,yaml,mjs}\" \".github/workflows/*.yml\" \"infra/*.yml\"",
+    "sim:gacha": "pnpm --filter @idle/sim sim:gacha"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^10.10.0",
+    "prettier": "^3.9.9",
+    "typescript-eslint": "^8.70.1"
   }
 }

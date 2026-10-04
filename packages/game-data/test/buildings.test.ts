@@ -1,0 +1,112 @@
+import { describe, expect, it } from "vitest";
+import rawBuildingsConfig from "../data/buildings.json" with { type: "json" };
+import {
+  buildingUpgrade,
+  buildingsConfig,
+  dismantleDustForQuality,
+  enhancementDustCost,
+  equipmentConfig,
+  forgeMaxEnhanceLevel,
+  forgeQualityTiers,
+  validateBuildingsConfig,
+} from "../src/index";
+
+describe("buildings config", () => {
+  it("follows the docs/03 §6 Hall curve: 300 × 2.6^(L-1) gold, 60s × 1.9^(L-1)", () => {
+    expect(buildingUpgrade("hall", 1)).toEqual({ goldCost: 300, buildSeconds: 60, materials: [] });
+    expect(buildingUpgrade("hall", 5)).toMatchObject({ goldCost: 13_710, buildSeconds: 782 });
+    expect(buildingUpgrade("hall", 9)).toMatchObject({ goldCost: 626_480, buildSeconds: 10_190 });
+    expect(buildingUpgrade("hall", 10)).toBeNull();
+  });
+
+  it("prices the Forge at 0.8 × the Hall in gold and time, plus dungeon materials", () => {
+    for (let level = 1; level < buildingsConfig.maxLevel; level += 1) {
+      const hall = buildingUpgrade("hall", level)!;
+      const forge = buildingUpgrade("forge", level)!;
+      expect(forge.goldCost).toBe((hall.goldCost * 8) / 10);
+      expect(Math.abs(forge.buildSeconds - hall.buildSeconds * 0.8)).toBeLessThanOrEqual(1);
+      expect(forge.materials.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("matches the docs/03 §6 Forge table mid-way (level 4 → 5 and the level 5 odds)", () => {
+    expect(buildingUpgrade("forge", 4)).toEqual({
+      goldCost: 4_216,
+      buildSeconds: 330,
+      materials: [
+        { materialId: "mist_pearl", qty: 20 },
+        { materialId: "driftwood_core", qty: 20 },
+      ],
+    });
+    expect(forgeQualityTiers(5).map((tier) => tier.weightBps)).toEqual([5_800, 3_300, 770, 130]);
+    expect(forgeQualityTiers(10).map((tier) => tier.weightBps)).toEqual([4_300, 4_300, 1_170, 230]);
+  });
+
+  it("unlocks enhancement at Forge level 2 and one more level with each dungeon's materials", () => {
+    // +3 needs the level 4 Forge (dungeon 2 materials), +4 level 6 (dungeon 3), +5 level 8
+    // (dungeon 4), so the full +5 arrives with dungeon 4 as docs/03 §4 plans.
+    const caps = Array.from({ length: buildingsConfig.maxLevel }, (_, index) =>
+      forgeMaxEnhanceLevel(index + 1),
+    );
+    expect(caps).toEqual([0, 2, 2, 3, 3, 4, 4, 5, 5, 5]);
+    expect(caps.at(-1)).toBe(equipmentConfig.maxEnhanceLevel);
+
+    const dungeonFourMaterials = [
+      "ember_ore",
+      "ash_hide",
+      "fireglass",
+      "ridge_herb",
+      "obsidian_shard",
+    ];
+    const stepToPlusFive = buildingUpgrade("forge", caps.indexOf(5))!;
+    expect(
+      stepToPlusFive.materials.every((entry) => dungeonFourMaterials.includes(entry.materialId)),
+    ).toBe(true);
+  });
+
+  it("shifts craft odds towards better quality with every Forge level", () => {
+    expect(forgeQualityTiers(1)).toEqual(equipmentConfig.qualityTiers);
+    for (let level = 2; level <= buildingsConfig.maxLevel; level += 1) {
+      const previous = forgeQualityTiers(level - 1);
+      const current = forgeQualityTiers(level);
+      expect(current.reduce((sum, tier) => sum + tier.weightBps, 0)).toBe(10_000);
+      expect(current[0]!.weightBps).toBeLessThan(previous[0]!.weightBps);
+      for (let tier = 1; tier < current.length; tier += 1) {
+        expect(current[tier]!.weightBps).toBeGreaterThan(previous[tier]!.weightBps);
+      }
+    }
+  });
+
+  it("rejects quality weights that do not total 10000 bps", () => {
+    const invalid = structuredClone(rawBuildingsConfig);
+    invalid.forge.qualityWeightsBps[3] = [6_000, 3_000, 700, 100];
+    expect(() => validateBuildingsConfig(invalid)).toThrow("totalling 10000 bps");
+  });
+
+  it("rejects an enhancement cap that drops at a higher Forge level", () => {
+    const invalid = structuredClone(rawBuildingsConfig);
+    invalid.forge.maxEnhanceLevel[4] = 1;
+    expect(() => validateBuildingsConfig(invalid)).toThrow("never decrease");
+  });
+
+  it("rejects a building with a missing upgrade step", () => {
+    const invalid = structuredClone(rawBuildingsConfig);
+    invalid.hall.buildSeconds.pop();
+    expect(() => validateBuildingsConfig(invalid)).toThrow("hall must list 9 upgrade steps");
+  });
+});
+
+describe("forge dust", () => {
+  it("charges dust for every enhancement attempt", () => {
+    expect([0, 1, 2, 3, 4].map(enhancementDustCost)).toEqual([1, 2, 3, 4, 5]);
+    expect(() => enhancementDustCost(5)).toThrow("current enhance level");
+  });
+
+  it("returns more dust for better craft quality", () => {
+    expect(
+      equipmentConfig.qualityTiers.map((tier) => dismantleDustForQuality(tier.multiplierBps)),
+    ).toEqual([1, 2, 3, 5]);
+    // A value between two tiers pays the tier it has reached.
+    expect(dismantleDustForQuality(11_500)).toBe(2);
+  });
+});
