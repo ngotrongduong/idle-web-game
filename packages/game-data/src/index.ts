@@ -31,6 +31,12 @@ export {
 
 export const lootConfig = validateLootConfig(rawLootConfig, foundationGameData, promotionConfig);
 
+export {
+  EquipmentConfigSchema,
+  equipmentConfig,
+  itemSellGold,
+  type EquipmentConfig,
+} from "./equipment.js";
 export { IdleConfigSchema, idleConfig, type IdleConfig } from "./idle.js";
 export {
   PromotionConfigSchema,

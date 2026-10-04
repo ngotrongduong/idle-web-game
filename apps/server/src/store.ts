@@ -3,6 +3,7 @@ import type {
   DungeonRun,
   FoundationPlayerState,
   Hero,
+  InventoryItem,
   MaterialBalance,
   TavernOffer,
   Team,
@@ -38,6 +39,10 @@ export interface GameStore {
   setHero(playerId: string, hero: Hero): Promise<Hero>;
   listMaterials(playerId: string): Promise<MaterialBalance[]>;
   setMaterialQuantity(playerId: string, materialId: string, qty: number): Promise<MaterialBalance>;
+  listItems(playerId: string): Promise<InventoryItem[]>;
+  createItem(playerId: string, input: Omit<InventoryItem, "id">): Promise<InventoryItem>;
+  setItem(playerId: string, item: InventoryItem): Promise<InventoryItem>;
+  deleteItem(playerId: string, itemId: string): Promise<boolean>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
@@ -79,6 +84,7 @@ export class InMemoryGameStore implements GameStore {
   private readonly taverns = new Map<string, StoredTavernState>();
   private readonly heroes = new Map<string, Hero[]>();
   private readonly materials = new Map<string, Map<string, number>>();
+  private readonly items = new Map<string, InventoryItem[]>();
   private readonly teams = new Map<string, Map<number, Team>>();
   private readonly dungeonRuns = new Map<string, DungeonRun[]>();
   private readonly lockTails = new Map<string, Promise<void>>();
@@ -205,6 +211,35 @@ export class InMemoryGameStore implements GameStore {
     }
     inventory.set(materialId, qty);
     return { materialId, qty };
+  }
+
+  async listItems(playerId: string): Promise<InventoryItem[]> {
+    return (this.items.get(playerId) ?? []).map((item) => ({ ...item }));
+  }
+
+  async createItem(playerId: string, input: Omit<InventoryItem, "id">): Promise<InventoryItem> {
+    const item: InventoryItem = { id: randomUUID(), ...input };
+    const items = this.items.get(playerId) ?? [];
+    items.push({ ...item });
+    this.items.set(playerId, items);
+    return { ...item };
+  }
+
+  async setItem(playerId: string, item: InventoryItem): Promise<InventoryItem> {
+    const items = this.items.get(playerId) ?? [];
+    const index = items.findIndex((candidate) => candidate.id === item.id);
+    if (index < 0) throw new Error(`Item ${item.id} was not found`);
+    items[index] = { ...item };
+    this.items.set(playerId, items);
+    return { ...item };
+  }
+
+  async deleteItem(playerId: string, itemId: string): Promise<boolean> {
+    const items = this.items.get(playerId) ?? [];
+    const next = items.filter((item) => item.id !== itemId);
+    if (next.length === items.length) return false;
+    this.items.set(playerId, next);
+    return true;
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

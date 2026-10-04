@@ -85,6 +85,26 @@ export const MaterialsResponseSchema = z.object({
   materials: z.array(MaterialBalanceSchema),
 });
 
+export const EquipmentSlotSchema = z.enum(["weapon", "helmet", "armor", "accessory"]);
+export type EquipmentSlot = z.infer<typeof EquipmentSlotSchema>;
+
+export const InventoryItemSchema = z.object({
+  id: z.string().uuid(),
+  itemId: z.string().min(1),
+  slot: EquipmentSlotSchema,
+  qualityBps: z.number().int().min(10_000).max(20_000),
+  enhanceLevel: z.number().int().min(0).max(5),
+  locked: z.boolean(),
+  equippedHeroId: z.string().uuid().nullable(),
+});
+
+export type InventoryItem = z.infer<typeof InventoryItemSchema>;
+
+export const InventoryResponseSchema = z.object({
+  ok: z.literal(true),
+  items: z.array(InventoryItemSchema),
+});
+
 export const CatalogEntrySchema = z.object({
   id: z.string().min(1),
   nameVi: z.string().min(1),
@@ -93,11 +113,19 @@ export const CatalogEntrySchema = z.object({
 
 export type CatalogEntry = z.infer<typeof CatalogEntrySchema>;
 
+export const ItemCatalogEntrySchema = CatalogEntrySchema.extend({
+  slot: EquipmentSlotSchema,
+  attack: z.number().int().nonnegative(),
+  defense: z.number().int().nonnegative(),
+  sellGold: z.number().int().nonnegative(),
+});
+
 export const CatalogResponseSchema = z.object({
   ok: z.literal(true),
   classes: z.array(CatalogEntrySchema),
   dungeons: z.array(CatalogEntrySchema),
   materials: z.array(CatalogEntrySchema),
+  items: z.array(ItemCatalogEntrySchema),
 });
 
 export type CatalogResponse = z.infer<typeof CatalogResponseSchema>;
@@ -263,6 +291,28 @@ export const PromoteHeroCommandSchema = z.object({
   targetClassId: z.string().min(1),
 });
 
+export const EquipItemCommandSchema = z.object({
+  type: z.literal("equip_item"),
+  itemInstanceId: z.string().uuid(),
+  heroId: z.string().uuid(),
+});
+
+export const UnequipItemCommandSchema = z.object({
+  type: z.literal("unequip_item"),
+  itemInstanceId: z.string().uuid(),
+});
+
+export const SetItemLockedCommandSchema = z.object({
+  type: z.literal("set_item_locked"),
+  itemInstanceId: z.string().uuid(),
+  locked: z.boolean(),
+});
+
+export const SellItemCommandSchema = z.object({
+  type: z.literal("sell_item"),
+  itemInstanceId: z.string().uuid(),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
@@ -272,6 +322,10 @@ export const CommandSchema = z.discriminatedUnion("type", [
   StopDungeonCommandSchema,
   ClaimDungeonRewardsCommandSchema,
   PromoteHeroCommandSchema,
+  EquipItemCommandSchema,
+  UnequipItemCommandSchema,
+  SetItemLockedCommandSchema,
+  SellItemCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -343,6 +397,28 @@ const HeroPromotedEventSchema = z.object({
   retainedPotentialBps: z.number().int().min(0).max(10_000),
 });
 
+const ItemEquippedEventSchema = z.object({
+  type: z.literal("item_equipped"),
+  item: InventoryItemSchema,
+  replacedItemId: z.string().uuid().nullable(),
+});
+
+const ItemUnequippedEventSchema = z.object({
+  type: z.literal("item_unequipped"),
+  item: InventoryItemSchema,
+});
+
+const ItemLockChangedEventSchema = z.object({
+  type: z.literal("item_lock_changed"),
+  item: InventoryItemSchema,
+});
+
+const ItemSoldEventSchema = z.object({
+  type: z.literal("item_sold"),
+  itemInstanceId: z.string().uuid(),
+  gold: z.number().int().nonnegative(),
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
@@ -352,6 +428,10 @@ export const CommandEventSchema = z.discriminatedUnion("type", [
   DungeonStoppedEventSchema,
   DungeonRewardsClaimedEventSchema,
   HeroPromotedEventSchema,
+  ItemEquippedEventSchema,
+  ItemUnequippedEventSchema,
+  ItemLockChangedEventSchema,
+  ItemSoldEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -388,6 +468,10 @@ export const ApiErrorCodeSchema = z.enum([
   "HERO_MAX_TIER",
   "HERO_BUSY",
   "INSUFFICIENT_MATERIAL",
+  "ITEM_NOT_FOUND",
+  "ITEM_LOCKED",
+  "ITEM_EQUIPPED",
+  "ITEM_SLOT_CONFLICT",
 ]);
 
 export const ApiErrorSchema = z.object({

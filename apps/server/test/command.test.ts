@@ -708,4 +708,147 @@ describe("server-authoritative command pipeline", () => {
     expect(stop.json().events[0].run.status).toBe("stopped");
     expect(stop.json().events[0].run.stoppedAt).toBeTruthy();
   });
+
+  it("equips, locks, unequips and sells inventory items without duplication", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    const first = await store.createItem(guest.state.id, {
+      itemId: "bamboo_training_sword",
+      slot: "weapon",
+      qualityBps: 10_000,
+      enhanceLevel: 0,
+      locked: false,
+      equippedHeroId: null,
+    });
+    const second = await store.createItem(guest.state.id, {
+      itemId: "bamboo_spear",
+      slot: "weapon",
+      qualityBps: 10_000,
+      enhanceLevel: 0,
+      locked: false,
+      equippedHeroId: null,
+    });
+
+    const equipFirst = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "equip_item", itemInstanceId: first.id, heroId: hero.id },
+      },
+    });
+    expect(equipFirst.statusCode).toBe(200);
+
+    const equipSecond = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: { type: "equip_item", itemInstanceId: second.id, heroId: hero.id },
+      },
+    });
+    expect(equipSecond.statusCode).toBe(200);
+    const afterSwap = await store.listItems(guest.state.id);
+    expect(afterSwap.find((item) => item.id === first.id)?.equippedHeroId).toBeNull();
+    expect(afterSwap.find((item) => item.id === second.id)?.equippedHeroId).toBe(hero.id);
+
+    const lock = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 2,
+        command: { type: "set_item_locked", itemInstanceId: first.id, locked: true },
+      },
+    });
+    expect(lock.statusCode).toBe(200);
+
+    const blockedSell = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 3,
+        command: { type: "sell_item", itemInstanceId: first.id },
+      },
+    });
+    expect(blockedSell.statusCode).toBe(409);
+    expect(blockedSell.json().code).toBe("ITEM_LOCKED");
+
+    await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 3,
+        command: { type: "set_item_locked", itemInstanceId: first.id, locked: false },
+      },
+    });
+    const sell = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 4,
+        command: { type: "sell_item", itemInstanceId: first.id },
+      },
+    });
+    expect(sell.statusCode).toBe(200);
+    expect((await store.listItems(guest.state.id)).map((item) => item.id)).toEqual([second.id]);
+  });
+
+  it("applies equipped item stats only to new dungeon snapshots", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    await store.setTeam(guest.state.id, { slot: 1, heroIds: [hero.id] });
+    const item = await store.createItem(guest.state.id, {
+      itemId: "bamboo_training_sword",
+      slot: "weapon",
+      qualityBps: 10_000,
+      enhanceLevel: 0,
+      locked: false,
+      equippedHeroId: hero.id,
+    });
+
+    const start = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "start_dungeon", dungeonId: "bamboo_grove", teamSlot: 1 },
+      },
+    });
+    expect(start.statusCode).toBe(200);
+    const run = start.json().events[0].run;
+    expect(run.waves[0].allies[0].attack).toBeGreaterThan(20);
+
+    const listed = await store.listItems(guest.state.id);
+    expect(listed.find((entry) => entry.id === item.id)?.equippedHeroId).toBe(hero.id);
+  });
 });

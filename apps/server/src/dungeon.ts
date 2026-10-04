@@ -1,5 +1,10 @@
 import { randomBytes } from "node:crypto";
-import type { BattleUnitSnapshot, DungeonWaveReplay, Hero } from "@idle/api-contract";
+import type {
+  BattleUnitSnapshot,
+  DungeonWaveReplay,
+  Hero,
+  InventoryItem,
+} from "@idle/api-contract";
 import { foundationGameData } from "@idle/game-data";
 import {
   calculateHeroStats,
@@ -26,7 +31,10 @@ export function deriveWaveSeed(rootSeed: number, wave: number): number {
   return (rootSeed + Math.imul(wave, 0x9e3779b9)) >>> 0;
 }
 
-export function heroToCombatant(hero: Hero): BattleUnitSnapshot {
+export function heroToCombatant(
+  hero: Hero,
+  equipment: readonly InventoryItem[] = [],
+): BattleUnitSnapshot {
   const heroClass = foundationGameData.classes.find((entry) => entry.id === hero.classId);
   if (!heroClass) {
     throw new Error(`Unknown hero class: ${hero.classId}`);
@@ -47,11 +55,21 @@ export function heroToCombatant(hero: Hero): BattleUnitSnapshot {
     ...(hero.potential ? { potential: hero.potential } : {}),
   });
 
+  const equipped = equipment.filter((item) => item.equippedHeroId === hero.id);
+  const equipmentAttack = equipped.reduce((sum, item) => {
+    const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
+    return sum + (spec ? Math.floor((spec.attack * item.qualityBps) / 10_000) : 0);
+  }, 0);
+  const equipmentDefense = equipped.reduce((sum, item) => {
+    const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
+    return sum + (spec ? Math.floor((spec.defense * item.qualityBps) / 10_000) : 0);
+  }, 0);
+
   return {
     id: hero.id,
     hp: stats.hp,
-    attack: stats.attack,
-    defense: stats.defense,
+    attack: stats.attack + equipmentAttack,
+    defense: stats.defense + equipmentDefense,
     speed: stats.speed,
     critBps: family.archetype === "ranged" ? 1_500 : 1_000,
     familyId: family.id,
@@ -96,6 +114,7 @@ export function simulateDungeonCycle(input: {
   heroes: Hero[];
   dungeonId: string;
   seed: number;
+  equipment?: readonly InventoryItem[];
 }): DungeonWaveReplay[] {
   const dungeon = foundationGameData.dungeons.find((entry) => entry.id === input.dungeonId);
   if (!dungeon) throw new Error(`Unknown dungeon: ${input.dungeonId}`);
@@ -103,7 +122,7 @@ export function simulateDungeonCycle(input: {
     throw new Error("Dungeon cycle requires between one and four heroes");
   }
 
-  const allies = input.heroes.map(heroToCombatant);
+  const allies = input.heroes.map((hero) => heroToCombatant(hero, input.equipment ?? []));
 
   return Array.from({ length: dungeon.waveCount }, (_, index) => {
     const wave = index + 1;

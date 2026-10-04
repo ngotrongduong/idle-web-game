@@ -1,5 +1,6 @@
 import {
   bigint,
+  boolean,
   index,
   integer,
   jsonb,
@@ -14,8 +15,10 @@ import type {
   BattleRulesSnapshot,
   DungeonRun,
   DungeonWaveReplay,
+  EquipmentSlot,
   HeroPotential,
   HeroRarity,
+  InventoryItem,
   MaterialBalance,
   TavernOffer,
 } from "@idle/api-contract";
@@ -109,6 +112,30 @@ export const playerMaterials = pgTable(
     index("player_materials_player_id_idx").on(table.playerId),
   ],
 );
+
+export const playerItems = pgTable(
+  "player_items",
+  {
+    id: uuid("id").primaryKey(),
+    playerId: uuid("player_id")
+      .notNull()
+      .references(() => players.id, { onDelete: "cascade" }),
+    itemId: text("item_id").notNull(),
+    slot: varchar("slot", { length: 16 }).$type<EquipmentSlot>().notNull(),
+    qualityBps: integer("quality_bps").notNull().default(10_000),
+    enhanceLevel: integer("enhance_level").notNull().default(0),
+    locked: boolean("locked").notNull().default(false),
+    equippedHeroId: uuid("equipped_hero_id").references(() => heroes.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("player_items_player_id_idx").on(table.playerId),
+    index("player_items_equipped_hero_id_idx").on(table.equippedHeroId),
+  ],
+);
+
+export type PlayerItemRow = InventoryItem;
 
 export const teams = pgTable(
   "teams",

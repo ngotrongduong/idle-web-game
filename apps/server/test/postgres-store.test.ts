@@ -321,4 +321,33 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       pendingMaterials: accrued.pendingMaterials,
     });
   });
+
+  it("persists inventory items and equipment state", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const hero = await store.createHero(player.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    const item = await store.createItem(player.id, {
+      itemId: "bamboo_training_sword",
+      slot: "weapon",
+      qualityBps: 10_000,
+      enhanceLevel: 0,
+      locked: false,
+      equippedHeroId: null,
+    });
+
+    await store.setItem(player.id, { ...item, locked: true, equippedHeroId: hero.id });
+    expect(await store.listItems(player.id)).toContainEqual({
+      ...item,
+      locked: true,
+      equippedHeroId: hero.id,
+    });
+
+    expect(await store.deleteItem(player.id, item.id)).toBe(true);
+    expect(await store.listItems(player.id)).toEqual([]);
+  });
 });

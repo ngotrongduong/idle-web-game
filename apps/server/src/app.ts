@@ -8,6 +8,7 @@ import {
   CatalogResponseSchema,
   HealthResponseSchema,
   HeroesResponseSchema,
+  InventoryResponseSchema,
   MaterialsResponseSchema,
   PromotionStateResponseSchema,
   TavernResponseSchema,
@@ -23,7 +24,13 @@ import {
   levelCapForTier,
   retainHeroPotential,
 } from "@idle/game-core";
-import { foundationGameData, promotionConfig, promotionRuleForTier } from "@idle/game-data";
+import {
+  equipmentConfig,
+  foundationGameData,
+  itemSellGold,
+  promotionConfig,
+  promotionRuleForTier,
+} from "@idle/game-data";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -134,6 +141,15 @@ export function buildServer(options?: { store?: GameStore }) {
       nameVi,
       nameEn,
     })),
+    items: foundationGameData.items.map(({ id, nameVi, nameEn, slot, attack, defense }) => ({
+      id,
+      nameVi,
+      nameEn,
+      slot,
+      attack,
+      defense,
+      sellGold: itemSellGold({ attack, defense }),
+    })),
   });
   app.get("/api/v1/catalog", async () => catalog);
 
@@ -174,6 +190,18 @@ export function buildServer(options?: { store?: GameStore }) {
     return MaterialsResponseSchema.parse({
       ok: true,
       materials: await store.listMaterials(playerId),
+    });
+  });
+
+  app.get("/api/v1/inventory", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    return InventoryResponseSchema.parse({
+      ok: true,
+      items: await store.listItems(playerId),
     });
   });
 
@@ -628,10 +656,12 @@ export function buildServer(options?: { store?: GameStore }) {
 
         const seed = createDungeonSeed();
         const startedAt = new Date().toISOString();
+        const equipment = await store.listItems(playerId);
         const waves = simulateDungeonCycle({
           heroes: teamHeroes.filter((hero) => hero !== undefined),
           dungeonId,
           seed,
+          equipment,
         });
         const run = await store.createDungeonRun(playerId, {
           dungeonId,
@@ -966,6 +996,193 @@ export function buildServer(options?: { store?: GameStore }) {
           ],
         });
         const stored: StoredCommandOutcome = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "equip_item") {
+        const { itemInstanceId, heroId } = envelope.command;
+        const [items, heroes] = await Promise.all([
+          store.listItems(playerId),
+          store.listHeroes(playerId),
+        ]);
+        const item = items.find((candidate) => candidate.id === itemInstanceId);
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+        if (!heroes.some((hero) => hero.id === heroId)) {
+          const missingHero: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("HERO_NOT_FOUND", "Hero was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingHero);
+          return missingHero;
+        }
+        if (item.equippedHeroId && item.equippedHeroId !== heroId) {
+          const equipped: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "ITEM_EQUIPPED",
+              "Item is equipped by another hero; unequip it first",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, equipped);
+          return equipped;
+        }
+
+        const replaced = items.find(
+          (candidate) =>
+            candidate.id !== item.id &&
+            candidate.equippedHeroId === heroId &&
+            candidate.slot === item.slot,
+        );
+        if (replaced) {
+          await store.setItem(playerId, { ...replaced, equippedHeroId: null });
+        }
+        const equippedItem = await store.setItem(playerId, {
+          ...item,
+          equippedHeroId: heroId,
+        });
+
+        const nextState = { ...state, version: state.version + 1 };
+        await store.setPlayer(nextState);
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [
+            {
+              type: "item_equipped",
+              item: equippedItem,
+              replacedItemId: replaced?.id ?? null,
+            },
+          ],
+        });
+        const stored = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "unequip_item") {
+        const item = (await store.listItems(playerId)).find(
+          (candidate) => candidate.id === envelope.command.itemInstanceId,
+        );
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+
+        const unequipped = await store.setItem(playerId, {
+          ...item,
+          equippedHeroId: null,
+        });
+        const nextState = { ...state, version: state.version + 1 };
+        await store.setPlayer(nextState);
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "item_unequipped", item: unequipped }],
+        });
+        const stored = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "set_item_locked") {
+        const item = (await store.listItems(playerId)).find(
+          (candidate) => candidate.id === envelope.command.itemInstanceId,
+        );
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+
+        const lockedItem = await store.setItem(playerId, {
+          ...item,
+          locked: envelope.command.locked,
+        });
+        const nextState = { ...state, version: state.version + 1 };
+        await store.setPlayer(nextState);
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "item_lock_changed", item: lockedItem }],
+        });
+        const stored = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "sell_item") {
+        const item = (await store.listItems(playerId)).find(
+          (candidate) => candidate.id === envelope.command.itemInstanceId,
+        );
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+        if (item.locked) {
+          const locked: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_LOCKED", "Locked items cannot be sold", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, locked);
+          return locked;
+        }
+        if (item.equippedHeroId) {
+          const equipped: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_EQUIPPED", "Equipped items cannot be sold", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, equipped);
+          return equipped;
+        }
+
+        const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
+        if (!spec) throw new Error(`Unknown item definition: ${item.itemId}`);
+        const baseSellGold = itemSellGold(spec);
+        const sellGold = Math.floor((baseSellGold * item.qualityBps) / equipmentConfig.baseQualityBps);
+
+        await store.deleteItem(playerId, item.id);
+        const nextState = {
+          ...state,
+          version: state.version + 1,
+          gold: state.gold + sellGold,
+        };
+        await store.setPlayer(nextState);
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: { gold: nextState.gold },
+          events: [
+            {
+              type: "item_sold",
+              itemInstanceId: item.id,
+              gold: sellGold,
+            },
+          ],
+        });
+        const stored = { statusCode: 200, body: success };
         await store.setCommandOutcome(playerId, envelope.cmdId, stored);
         return stored;
       }

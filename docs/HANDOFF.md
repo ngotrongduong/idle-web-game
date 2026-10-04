@@ -4,7 +4,7 @@
 `chatgpt/m0-foundation`
 
 ## Current milestone
-M1 — Core loop (M1.1–M1.4 done; next M1.5 equipment/crafting).
+M1 — Core loop (M1.1–M1.4 done; M1.5A inventory/equipment in progress).
 
 ## Verified status
 - M1.4B (promotion + dungeon loot) is verified locally with the full CI-equivalent run: frozen install, migrations through `0007`, lint, Prettier, typecheck, unit/integration tests (InMemory + PostgreSQL), Chromium golden battle (`c080875a`, unchanged by the content re-theme), dungeon E2E, the new promotion E2E, build and Docker Compose validation.
@@ -98,7 +98,9 @@ M1 — Core loop (M1.1–M1.4 done; next M1.5 equipment/crafting).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. M1.5 per `docs/07`: equipment + crafting that consumes dungeon materials (recipes already exist in `items.csv`), then enhancement.
+1. Verify M1.5A inventory/equipment through full CI: item instances, equip/unequip, lock/sell and new-run stat snapshots.
+2. Add the Inventory UI and then M1.5B auto-sell after item quality rules are introduced.
+3. M1.6 crafting from existing recipes, random quality, then enhancement +1…+5.
 2. Economy pass with `tools/sim`: idle gold (~180 gold/cycle in Thornwood with a Lv.1 team) and material/seal rates were not tuned together yet.
 3. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 4. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.

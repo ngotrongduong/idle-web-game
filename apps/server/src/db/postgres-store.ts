@@ -4,6 +4,7 @@ import type {
   DungeonRun,
   FoundationPlayerState,
   Hero,
+  InventoryItem,
   MaterialBalance,
   TavernOffer,
   Team,
@@ -15,6 +16,7 @@ import {
   commandOutcomes,
   dungeonRuns,
   heroes,
+  playerItems,
   playerMaterials,
   players,
   sessions,
@@ -329,6 +331,65 @@ export class PostgresGameStore implements GameStore {
       });
 
     return { materialId, qty };
+  }
+
+  async listItems(playerId: string): Promise<InventoryItem[]> {
+    return this.database()
+      .select({
+        id: playerItems.id,
+        itemId: playerItems.itemId,
+        slot: playerItems.slot,
+        qualityBps: playerItems.qualityBps,
+        enhanceLevel: playerItems.enhanceLevel,
+        locked: playerItems.locked,
+        equippedHeroId: playerItems.equippedHeroId,
+      })
+      .from(playerItems)
+      .where(eq(playerItems.playerId, playerId));
+  }
+
+  async createItem(playerId: string, input: Omit<InventoryItem, "id">): Promise<InventoryItem> {
+    const item: InventoryItem = { id: randomUUID(), ...input };
+    await this.database().insert(playerItems).values({
+      id: item.id,
+      playerId,
+      itemId: item.itemId,
+      slot: item.slot,
+      qualityBps: item.qualityBps,
+      enhanceLevel: item.enhanceLevel,
+      locked: item.locked,
+      equippedHeroId: item.equippedHeroId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    return item;
+  }
+
+  async setItem(playerId: string, item: InventoryItem): Promise<InventoryItem> {
+    const [row] = await this.database()
+      .update(playerItems)
+      .set({
+        itemId: item.itemId,
+        slot: item.slot,
+        qualityBps: item.qualityBps,
+        enhanceLevel: item.enhanceLevel,
+        locked: item.locked,
+        equippedHeroId: item.equippedHeroId,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(playerItems.playerId, playerId), eq(playerItems.id, item.id)))
+      .returning({ id: playerItems.id });
+
+    if (!row) throw new Error(`Item ${item.id} was not found`);
+    return item;
+  }
+
+  async deleteItem(playerId: string, itemId: string): Promise<boolean> {
+    const rows = await this.database()
+      .delete(playerItems)
+      .where(and(eq(playerItems.playerId, playerId), eq(playerItems.id, itemId)))
+      .returning({ id: playerItems.id });
+    return rows.length > 0;
   }
 
   async listTeams(playerId: string): Promise<Team[]> {
