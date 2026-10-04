@@ -16,3 +16,9 @@ export {
 } from "./schema";
 
 export const foundationGameData = validateGameData(generatedConfig);
+
+export {
+  TavernConfigSchema,
+  tavernConfig,
+  type TavernConfig,
+} from "./tavern";

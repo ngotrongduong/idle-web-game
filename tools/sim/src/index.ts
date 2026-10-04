@@ -1,4 +1,5 @@
 import { runBattleSimulation } from "./battle-sim";
+import { runGachaSimulation } from "./gacha-sim";
 import { runUpgradeSimulation } from "./upgrade-sim";
 
 function readNumberArg(name: string, fallback: number): number {
@@ -30,6 +31,12 @@ if (command === "battle") {
     ...(encounterId === undefined ? {} : { encounterId }),
   });
   console.log(JSON.stringify(summary, null, 2));
+} else if (command === "gacha") {
+  const summary = runGachaSimulation({
+    runs: readNumberArg("runs", 20_000),
+    seedBase: readNumberArg("seed", 1),
+  });
+  console.log(JSON.stringify(summary, null, 2));
 } else if (command === "upgrade") {
   const summary = runUpgradeSimulation({
     runs: readNumberArg("runs", 20_000),
@@ -43,6 +50,7 @@ if (command === "battle") {
       "Usage:",
       "  pnpm sim:battle -- --runs 10000 [--encounter dungeon_1] [--seed 1]",
       "  pnpm sim:upgrade -- --runs 20000 [--target 10] [--seed 1]",
+      "  pnpm sim:gacha -- --runs 20000 [--seed 1]",
     ].join("\n"),
   );
 }

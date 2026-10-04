@@ -18,7 +18,8 @@
     "inspect:test": "pnpm --filter @idle/inspect test",
     "lint": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.{ts,tsx}\" \"tools/sim/**/*.{ts,tsx}\"",
     "format": "prettier --write \"{apps,packages,tools/sim}/**/*.{ts,tsx,css,html,json}\" \"*.{json,yml,yaml,mjs}\" \".github/workflows/*.yml\" \"infra/*.yml\"",
-    "format:check": "prettier --check \"{apps,packages,tools/sim}/**/*.{ts,tsx,css,html,json}\" \"*.{json,yml,yaml,mjs}\" \".github/workflows/*.yml\" \"infra/*.yml\""
+    "format:check": "prettier --check \"{apps,packages,tools/sim}/**/*.{ts,tsx,css,html,json}\" \"*.{json,yml,yaml,mjs}\" \".github/workflows/*.yml\" \"infra/*.yml\"",
+    "sim:gacha": "pnpm --filter @idle/sim sim:gacha"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -14,3 +14,11 @@ export function hallUpgradeGoldCost(currentLevel: number): number {
 
   return HALL_UPGRADE_GOLD_COST[currentLevel - 1]!;
 }
+
+export function heroCapacityForHall(hallLevel: number): number {
+  if (!Number.isInteger(hallLevel) || hallLevel < 1 || hallLevel > HALL_MAX_LEVEL) {
+    throw new Error(`hallLevel must be an integer between 1 and ${HALL_MAX_LEVEL}`);
+  }
+
+  return 3 + hallLevel;
+}

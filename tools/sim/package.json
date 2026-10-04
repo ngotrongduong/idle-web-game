@@ -8,7 +8,8 @@
     "sim:battle": "tsx src/index.ts battle",
     "sim:upgrade": "tsx src/index.ts upgrade",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
+    "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "sim:gacha": "tsx src/index.ts gacha"
   },
   "dependencies": {
     "@idle/game-core": "workspace:*",

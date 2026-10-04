@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GAME_CORE_VERSION, simulateWave } from "@idle/game-core";
 import { foundationGameData } from "@idle/game-data";
 import { runBattleSimulation } from "../src/battle-sim";
+import { runGachaSimulation } from "../src/gacha-sim";
 import { buildDungeonWave, buildProgressionTeam, SAMPLE_ENCOUNTERS } from "../src/scenarios";
 import { runUpgradeSimulation } from "../src/upgrade-sim";
 
@@ -48,6 +49,16 @@ describe("sim tools", () => {
     expect(
       summaries.every((summary) => summary.expectedGold >= 0 && summary.expectedExp >= 0),
     ).toBe(true);
+  });
+
+  it("keeps tavern pity within the configured hard limits", () => {
+    const summary = runGachaSimulation({ runs: 1_000, seedBase: 1 });
+
+    expect(summary.maxRefreshesToRarePlus).toBeLessThanOrEqual(40);
+    expect(summary.maxRefreshesToLegendary).toBeLessThanOrEqual(200);
+    expect(summary.p90RefreshesToLegendary).toBeGreaterThanOrEqual(
+      summary.p90RefreshesToRarePlus,
+    );
   });
 
   it("summarizes upgrade percentiles", () => {

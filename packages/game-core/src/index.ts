@@ -11,7 +11,19 @@ export {
   type Combatant,
   type TargetingMode,
 } from "./battle.js";
-export { HALL_MAX_LEVEL, HALL_UPGRADE_GOLD_COST, hallUpgradeGoldCost } from "./economy.js";
+export {
+  HALL_MAX_LEVEL,
+  HALL_UPGRADE_GOLD_COST,
+  hallUpgradeGoldCost,
+  heroCapacityForHall,
+} from "./economy.js";
+export {
+  rollTavernRarity,
+  type HeroRarity,
+  type TavernPityState,
+  type TavernRarityRoll,
+  type TavernRarityRules,
+} from "./tavern.js";
 export {
   getUpgradeSuccessBps,
   resolveUpgradeAttempt,
