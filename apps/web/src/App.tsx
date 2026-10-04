@@ -3,12 +3,7 @@ import { t } from "@idle/i18n";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
 const teamSlots = [1, 2, 3, 4] as const;
-const dungeonOptions = [
-  "bamboo_grove",
-  "misty_riverbank",
-  "sunken_shrine",
-  "ember_ridge",
-] as const;
+const dungeonOptions = ["bamboo_grove", "misty_riverbank", "sunken_shrine", "ember_ridge"] as const;
 
 type Tab = (typeof tabs)[number];
 
@@ -127,33 +122,21 @@ export function App() {
   const [now, setNow] = useState(() => Date.now());
 
   const loadCollections = useCallback(async () => {
-    const [tavernResponse, heroesResponse, teamsResponse, runsResponse] =
-      await Promise.all([
-        fetch("/api/v1/tavern", { credentials: "include" }),
-        fetch("/api/v1/heroes", { credentials: "include" }),
-        fetch("/api/v1/teams", { credentials: "include" }),
-        fetch("/api/v1/dungeon-runs", { credentials: "include" }),
-      ]);
+    const [tavernResponse, heroesResponse, teamsResponse, runsResponse] = await Promise.all([
+      fetch("/api/v1/tavern", { credentials: "include" }),
+      fetch("/api/v1/heroes", { credentials: "include" }),
+      fetch("/api/v1/teams", { credentials: "include" }),
+      fetch("/api/v1/dungeon-runs", { credentials: "include" }),
+    ]);
 
-    if (
-      !tavernResponse.ok ||
-      !heroesResponse.ok ||
-      !teamsResponse.ok ||
-      !runsResponse.ok
-    ) {
+    if (!tavernResponse.ok || !heroesResponse.ok || !teamsResponse.ok || !runsResponse.ok) {
       throw new Error(t("vi", "app.loadError"));
     }
 
-    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(
-      tavernResponse,
-    );
-    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(
-      heroesResponse,
-    );
+    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(tavernResponse);
+    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
     const teamsBody = await readJson<{ ok: true; teams: Team[] }>(teamsResponse);
-    const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(
-      runsResponse,
-    );
+    const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(runsResponse);
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
@@ -183,9 +166,7 @@ export function App() {
           method: "POST",
           credentials: "include",
         });
-        const guest = await readJson<{ ok: true; state: PlayerState }>(
-          stateResponse,
-        );
+        const guest = await readJson<{ ok: true; state: PlayerState }>(stateResponse);
         setPlayer(guest.state);
       } else {
         if (!stateResponse.ok) {
@@ -290,8 +271,7 @@ export function App() {
   const assignedElsewhere = useCallback(
     (slot: number, heroId: string) =>
       teamSlots.some(
-        (otherSlot) =>
-          otherSlot !== slot && (teamDrafts[otherSlot] ?? []).includes(heroId),
+        (otherSlot) => otherSlot !== slot && (teamDrafts[otherSlot] ?? []).includes(heroId),
       ),
     [teamDrafts],
   );
@@ -301,8 +281,7 @@ export function App() {
       [...runs]
         .filter((run) => run.teamSlot === slot)
         .sort(
-          (left, right) =>
-            new Date(right.startedAt).getTime() - new Date(left.startedAt).getTime(),
+          (left, right) => new Date(right.startedAt).getTime() - new Date(left.startedAt).getTime(),
         )[0],
     [runs],
   );
@@ -358,10 +337,7 @@ export function App() {
           <section className="stack" aria-label={t("vi", "tavern.offers")}>
             {tavern?.offers.length ? (
               tavern.offers.map((offer) => (
-                <article
-                  className={`offer-card rarity-${offer.rarity}`}
-                  key={offer.id}
-                >
+                <article className={`offer-card rarity-${offer.rarity}`} key={offer.id}>
                   <div>
                     <span className="rarity">{rarityLabel(offer.rarity)}</span>
                     <strong>{humanizeId(offer.classId)}</strong>
@@ -421,8 +397,7 @@ export function App() {
             const selectedHeroIds = teamDrafts[slot] ?? [];
             const savedTeam = teams.find((team) => team.slot === slot);
             const latestRun = latestRunForSlot(slot);
-            const activeRun =
-              latestRun?.status === "active" ? latestRun : undefined;
+            const activeRun = latestRun?.status === "active" ? latestRun : undefined;
 
             return (
               <article className="card team-card" key={slot}>
@@ -543,8 +518,7 @@ export function App() {
                       </span>
                     </div>
                     <small>
-                      seed {latestRun.seed} · {latestRun.waves.length}{" "}
-                      {t("vi", "dungeon.waves")}
+                      seed {latestRun.seed} · {latestRun.waves.length} {t("vi", "dungeon.waves")}
                     </small>
 
                     <div className="wave-grid">

@@ -33,7 +33,8 @@ const messages = {
     "tavern.loadError": "Không tải được dữ liệu Tavern.",
     "dungeon.title": "Đội & Hầm",
     "dungeon.subtitle": "Xếp đội và chạy hầm ngục",
-    "dungeon.help": "Mỗi đội có tối đa 4 anh hùng. Lưu đội trước, sau đó chọn hầm và bắt đầu lượt chạy deterministic 6 wave.",
+    "dungeon.help":
+      "Mỗi đội có tối đa 4 anh hùng. Lưu đội trước, sau đó chọn hầm và bắt đầu lượt chạy deterministic 6 wave.",
     "dungeon.team": "Đội",
     "dungeon.members": "thành viên",
     "dungeon.saveTeam": "Lưu đội",
@@ -81,7 +82,8 @@ const messages = {
     "tavern.loadError": "Could not load Tavern data.",
     "dungeon.title": "Teams & Dungeons",
     "dungeon.subtitle": "Build teams and run dungeons",
-    "dungeon.help": "Each team supports up to four heroes. Save the team, choose a dungeon, then start a deterministic six-wave run.",
+    "dungeon.help":
+      "Each team supports up to four heroes. Save the team, choose a dungeon, then start a deterministic six-wave run.",
     "dungeon.team": "Team",
     "dungeon.members": "members",
     "dungeon.saveTeam": "Save team",
