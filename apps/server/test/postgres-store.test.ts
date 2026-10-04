@@ -195,10 +195,17 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
 
     expect(await store.listHeroes(player.id)).toContainEqual(hero);
 
-    await store.addHeroExp(player.id, [hero.id], 25);
+    await store.setHeroProgress(player.id, [
+      {
+        id: hero.id,
+        level: 2,
+        exp: 7,
+      },
+    ]);
     expect(await store.listHeroes(player.id)).toContainEqual({
       ...hero,
-      exp: 25,
+      level: 2,
+      exp: 7,
     });
   });
   it("persists and stops dungeon run snapshots", async () => {

@@ -28,6 +28,7 @@ import {
   simulateDungeonCycle,
 } from "./dungeon.js";
 import { accrueDungeonRunRewards } from "./idle.js";
+import { grantHeroExperience } from "./progression.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
 import { emptyTavernState, refreshTavernOffers, serializeTavernState } from "./tavern.js";
@@ -649,7 +650,22 @@ export function buildServer(options?: { store?: GameStore }) {
         const claimedGold = run.pendingGold;
         const claimedExpPerHero = run.pendingExpPerHero;
 
-        await store.addHeroExp(playerId, heroIds, claimedExpPerHero);
+        const ownedHeroIds = new Set((await store.listHeroes(playerId)).map((hero) => hero.id));
+        const missingHeroId = heroIds.find((heroId) => !ownedHeroIds.has(heroId));
+        if (missingHeroId) {
+          const staleHero: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_HERO_NOT_FOUND",
+              `Dungeon reward hero ${missingHeroId} no longer exists`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, staleHero);
+          return staleHero;
+        }
+
+        await grantHeroExperience(store, playerId, heroIds, claimedExpPerHero);
         await store.updateDungeonRun(playerId, {
           ...run,
           pendingCycles: 0,

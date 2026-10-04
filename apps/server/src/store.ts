@@ -30,7 +30,10 @@ export interface GameStore {
   setTavernState(playerId: string, state: StoredTavernState): Promise<void>;
   listHeroes(playerId: string): Promise<Hero[]>;
   createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero>;
-  addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]>;
+  setHeroProgress(
+    playerId: string,
+    updates: Array<Pick<Hero, "id" | "level" | "exp">>,
+  ): Promise<Hero[]>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
@@ -144,14 +147,20 @@ export class InMemoryGameStore implements GameStore {
     return { ...hero };
   }
 
-  async addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]> {
-    const targetIds = new Set(heroIds);
+  async setHeroProgress(
+    playerId: string,
+    updates: Array<Pick<Hero, "id" | "level" | "exp">>,
+  ): Promise<Hero[]> {
+    const progressById = new Map(updates.map((update) => [update.id, update]));
     const heroes = this.heroes.get(playerId) ?? [];
-    const updated = heroes.map((hero) =>
-      targetIds.has(hero.id) ? { ...hero, exp: hero.exp + expEach } : hero,
-    );
-    this.heroes.set(playerId, updated);
-    return updated.filter((hero) => targetIds.has(hero.id)).map((hero) => ({ ...hero }));
+    const updatedHeroes = heroes.map((hero) => {
+      const progress = progressById.get(hero.id);
+      return progress ? { ...hero, level: progress.level, exp: progress.exp } : hero;
+    });
+    this.heroes.set(playerId, updatedHeroes);
+    return updatedHeroes
+      .filter((hero) => progressById.has(hero.id))
+      .map((hero) => ({ ...hero }));
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

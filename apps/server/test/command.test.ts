@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
+import { foundationGameData } from "@idle/game-data";
+import { applyHeroExperience } from "@idle/game-core";
 import { buildServer } from "../src/app.js";
 import { InMemoryGameStore } from "../src/store.js";
 
@@ -362,9 +364,19 @@ describe("server-authoritative command pipeline", () => {
       ],
     });
 
+    const heroClass = foundationGameData.classes.find((entry) => entry.id === hero.classId)!;
+    const expectedProgress = applyHeroExperience(
+      {
+        level: hero.level,
+        exp: hero.exp,
+        tier: heroClass.tier,
+      },
+      expPerCycle * 9,
+    );
     expect(await store.listHeroes(guest.state.id)).toContainEqual({
       ...hero,
-      exp: expPerCycle * 9,
+      level: expectedProgress.level,
+      exp: expectedProgress.exp,
     });
 
     const [claimedRun] = await store.listDungeonRuns(guest.state.id);

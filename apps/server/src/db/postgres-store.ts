@@ -7,7 +7,7 @@ import type {
   TavernOffer,
   Team,
 } from "@idle/api-contract";
-import { and, eq, gt, inArray, lt, sql } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
 import {
@@ -247,15 +247,22 @@ export class PostgresGameStore implements GameStore {
     return hero;
   }
 
-  async addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]> {
-    if (heroIds.length === 0 || expEach === 0) return [];
+  async setHeroProgress(
+    playerId: string,
+    updates: Array<Pick<Hero, "id" | "level" | "exp">>,
+  ): Promise<Hero[]> {
+    for (const update of updates) {
+      await this.database()
+        .update(heroes)
+        .set({
+          level: update.level,
+          exp: update.exp,
+        })
+        .where(and(eq(heroes.playerId, playerId), eq(heroes.id, update.id)));
+    }
 
-    await this.database()
-      .update(heroes)
-      .set({ exp: sql`${heroes.exp} + ${expEach}` })
-      .where(and(eq(heroes.playerId, playerId), inArray(heroes.id, heroIds)));
-
-    return (await this.listHeroes(playerId)).filter((hero) => heroIds.includes(hero.id));
+    const updatedIds = new Set(updates.map((update) => update.id));
+    return (await this.listHeroes(playerId)).filter((hero) => updatedIds.has(hero.id));
   }
 
   async listTeams(playerId: string): Promise<Team[]> {
