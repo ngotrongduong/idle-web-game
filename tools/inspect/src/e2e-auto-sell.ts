@@ -90,12 +90,19 @@ try {
   await autoSellCard.waitFor({ state: "visible", timeout: 10_000 });
 
   const threshold = autoSellCard.getByLabel("Tự bán đến phẩm chất");
-  await threshold.selectOption(String(MAX_QUALITY_BPS));
-  await page.waitForResponse(
-    (candidate) =>
-      candidate.url().endsWith("/api/v1/cmd") &&
-      candidate.request().method() === "POST",
-  );
+  const [thresholdResponse] = await Promise.all([
+    page.waitForResponse(
+      (candidate) =>
+        candidate.url().endsWith("/api/v1/cmd") &&
+        candidate.request().method() === "POST",
+    ),
+    threshold.selectOption(String(MAX_QUALITY_BPS)),
+  ]);
+  if (!thresholdResponse.ok()) {
+    throw new Error(
+      `Updating auto-sell threshold failed with ${thresholdResponse.status()}: ${await thresholdResponse.text()}`,
+    );
+  }
 
   const toggle = autoSellCard.getByRole("checkbox");
   const [toggleResponse] = await Promise.all([
