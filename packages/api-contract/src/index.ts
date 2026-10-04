@@ -63,6 +63,18 @@ export const HeroesResponseSchema = z.object({
   heroes: z.array(HeroSchema),
 });
 
+export const TeamSchema = z.object({
+  slot: z.number().int().min(1).max(4),
+  heroIds: z.array(z.string().uuid()).max(4),
+});
+
+export type Team = z.infer<typeof TeamSchema>;
+
+export const TeamsResponseSchema = z.object({
+  ok: z.literal(true),
+  teams: z.array(TeamSchema).max(4),
+});
+
 export const UpgradeHallCommandSchema = z.object({
   type: z.literal("upgrade_hall"),
 });
@@ -76,10 +88,17 @@ export const RecruitHeroCommandSchema = z.object({
   offerId: z.string().uuid(),
 });
 
+export const SetTeamCommandSchema = z.object({
+  type: z.literal("set_team"),
+  slot: z.number().int().min(1).max(4),
+  heroIds: z.array(z.string().uuid()).max(4),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
   RecruitHeroCommandSchema,
+  SetTeamCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -115,10 +134,16 @@ const HeroRecruitedEventSchema = z.object({
   remainingOffers: z.array(TavernOfferSchema).max(2),
 });
 
+const TeamUpdatedEventSchema = z.object({
+  type: z.literal("team_updated"),
+  team: TeamSchema,
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
   HeroRecruitedEventSchema,
+  TeamUpdatedEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -140,6 +165,9 @@ export const ApiErrorCodeSchema = z.enum([
   "TAVERN_COOLDOWN",
   "HERO_CAPACITY_FULL",
   "OFFER_NOT_FOUND",
+  "TEAM_DUPLICATE_HERO",
+  "TEAM_HERO_NOT_FOUND",
+  "TEAM_HERO_ALREADY_ASSIGNED",
 ]);
 
 export const ApiErrorSchema = z.object({

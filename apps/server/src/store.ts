@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { FoundationPlayerState, Hero, TavernOffer } from "@idle/api-contract";
+import type { FoundationPlayerState, Hero, TavernOffer, Team } from "@idle/api-contract";
 
 export type StoredCommandOutcome = {
   statusCode: number;
@@ -24,6 +24,8 @@ export interface GameStore {
   setTavernState(playerId: string, state: StoredTavernState): Promise<void>;
   listHeroes(playerId: string): Promise<Hero[]>;
   createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero>;
+  listTeams(playerId: string): Promise<Team[]>;
+  setTeam(playerId: string, team: Team): Promise<Team>;
   withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T>;
   close?(): Promise<void>;
 }
@@ -42,6 +44,7 @@ export class InMemoryGameStore implements GameStore {
   private readonly commandOutcomes = new Map<string, Map<string, StoredCommandOutcome>>();
   private readonly taverns = new Map<string, StoredTavernState>();
   private readonly heroes = new Map<string, Hero[]>();
+  private readonly teams = new Map<string, Map<number, Team>>();
   private readonly lockTails = new Map<string, Promise<void>>();
 
   async createGuest(sessionHash: string): Promise<FoundationPlayerState> {
@@ -112,6 +115,23 @@ export class InMemoryGameStore implements GameStore {
     heroes.push(hero);
     this.heroes.set(playerId, heroes);
     return { ...hero };
+  }
+
+  async listTeams(playerId: string): Promise<Team[]> {
+    return [...(this.teams.get(playerId)?.values() ?? [])]
+      .sort((left, right) => left.slot - right.slot)
+      .map((team) => ({ ...team, heroIds: [...team.heroIds] }));
+  }
+
+  async setTeam(playerId: string, team: Team): Promise<Team> {
+    let playerTeams = this.teams.get(playerId);
+    if (!playerTeams) {
+      playerTeams = new Map();
+      this.teams.set(playerId, playerTeams);
+    }
+    const stored = { ...team, heroIds: [...team.heroIds] };
+    playerTeams.set(team.slot, stored);
+    return { ...stored, heroIds: [...stored.heroIds] };
   }
 
   async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {

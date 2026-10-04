@@ -1,10 +1,10 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
-import type { FoundationPlayerState, Hero, TavernOffer } from "@idle/api-contract";
+import type { FoundationPlayerState, Hero, TavernOffer, Team } from "@idle/api-contract";
 import { and, eq, gt, lt } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
-import { commandOutcomes, heroes, players, sessions, tavernStates } from "./schema.js";
+import { commandOutcomes, heroes, players, sessions, tavernStates, teams } from "./schema.js";
 import * as schema from "./schema.js";
 import type { GameStore, StoredCommandOutcome, StoredTavernState } from "../store.js";
 
@@ -231,6 +231,40 @@ export class PostgresGameStore implements GameStore {
     });
 
     return hero;
+  }
+
+  async listTeams(playerId: string): Promise<Team[]> {
+    const rows = await this.database()
+      .select({
+        slot: teams.slot,
+        heroIds: teams.heroIds,
+      })
+      .from(teams)
+      .where(eq(teams.playerId, playerId));
+
+    return rows
+      .map((row) => ({ slot: row.slot, heroIds: [...row.heroIds] }))
+      .sort((left, right) => left.slot - right.slot);
+  }
+
+  async setTeam(playerId: string, team: Team): Promise<Team> {
+    await this.database()
+      .insert(teams)
+      .values({
+        playerId,
+        slot: team.slot,
+        heroIds: team.heroIds,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [teams.playerId, teams.slot],
+        set: {
+          heroIds: team.heroIds,
+          updatedAt: new Date(),
+        },
+      });
+
+    return { ...team, heroIds: [...team.heroIds] };
   }
 
   async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {

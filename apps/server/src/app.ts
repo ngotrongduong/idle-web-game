@@ -7,6 +7,7 @@ import {
   HealthResponseSchema,
   HeroesResponseSchema,
   TavernResponseSchema,
+  TeamsResponseSchema,
   type ApiError,
   type FoundationPlayerState,
 } from "@idle/api-contract";
@@ -97,6 +98,18 @@ export function buildServer(options?: { store?: GameStore }) {
     return TavernResponseSchema.parse({
       ok: true,
       tavern: serializeTavernState(tavern),
+    });
+  });
+
+  app.get("/api/v1/teams", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    return TeamsResponseSchema.parse({
+      ok: true,
+      teams: await store.listTeams(playerId),
     });
   });
 
@@ -309,6 +322,83 @@ export function buildServer(options?: { store?: GameStore }) {
               remainingOffers: nextTavern.offers,
             },
           ],
+        });
+        const stored: StoredCommandOutcome = {
+          statusCode: 200,
+          body: success,
+        };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "set_team") {
+        const uniqueHeroIds = new Set(envelope.command.heroIds);
+        if (uniqueHeroIds.size !== envelope.command.heroIds.length) {
+          const duplicate: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_DUPLICATE_HERO",
+              "A hero can only appear once in the same team",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, duplicate);
+          return duplicate;
+        }
+
+        const heroes = await store.listHeroes(playerId);
+        const ownedHeroIds = new Set(heroes.map((hero) => hero.id));
+        const missingHeroId = envelope.command.heroIds.find(
+          (heroId) => !ownedHeroIds.has(heroId),
+        );
+        if (missingHeroId) {
+          const missingHero: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_HERO_NOT_FOUND",
+              `Hero ${missingHeroId} does not belong to this player`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingHero);
+          return missingHero;
+        }
+
+        const teams = await store.listTeams(playerId);
+        const assignedElsewhere = teams
+          .filter((team) => team.slot !== envelope.command.slot)
+          .flatMap((team) => team.heroIds)
+          .find((heroId) => uniqueHeroIds.has(heroId));
+
+        if (assignedElsewhere) {
+          const alreadyAssigned: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_HERO_ALREADY_ASSIGNED",
+              `Hero ${assignedElsewhere} is already assigned to another team`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, alreadyAssigned);
+          return alreadyAssigned;
+        }
+
+        const team = await store.setTeam(playerId, {
+          slot: envelope.command.slot,
+          heroIds: [...envelope.command.heroIds],
+        });
+
+        const nextState: FoundationPlayerState = {
+          ...state,
+          version: state.version + 1,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "team_updated", team }],
         });
         const stored: StoredCommandOutcome = {
           statusCode: 200,

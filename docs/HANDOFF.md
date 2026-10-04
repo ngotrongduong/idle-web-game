@@ -31,9 +31,16 @@ M1 — Core loop.
   - GET `/api/v1/tavern` and `/api/v1/heroes`
   - playable React Tavern screen with guest bootstrap, pity/cooldown, refresh, recruit and roster
   - Vite dev proxy to the Fastify API
+- M1.2A team foundation:
+  - four persistent team slots
+  - maximum four heroes per team
+  - server-authoritative assignment validation
+  - a hero cannot be assigned to two teams simultaneously
+  - GET `/api/v1/teams` + `set_team` command
+  - PostgreSQL persistence migration
 
 ## Next implementation work
-1. M1.2: persistent teams and hero assignment.
+1. M1.2A: persistent team slots and hero assignment are implemented; verify CI and then continue dungeon runs/replay.
 2. Add dungeon run start/stop commands using server-generated deterministic battle seeds.
 3. Generate the full 5 regular waves + boss wave from validated dungeon/enemy data and persist run/replay state.
 4. Add the web Team & Dungeon screen and replay the server result client-side from the same seed.

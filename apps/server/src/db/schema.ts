@@ -80,3 +80,20 @@ export const heroes = pgTable(
   },
   (table) => [index("heroes_player_id_idx").on(table.playerId)],
 );
+
+
+export const teams = pgTable(
+  "teams",
+  {
+    playerId: uuid("player_id")
+      .notNull()
+      .references(() => players.id, { onDelete: "cascade" }),
+    slot: integer("slot").notNull(),
+    heroIds: jsonb("hero_ids").$type<string[]>().notNull().default([]),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.playerId, table.slot] }),
+    index("teams_player_id_idx").on(table.playerId),
+  ],
+);

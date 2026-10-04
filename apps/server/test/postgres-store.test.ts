@@ -139,6 +139,26 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       gold: 1_002,
     });
   });
+  it("persists team assignments", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const hero = await store.createHero(player.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+
+    await store.setTeam(player.id, {
+      slot: 1,
+      heroIds: [hero.id],
+    });
+
+    expect(await store.listTeams(player.id)).toEqual([
+      { slot: 1, heroIds: [hero.id] },
+    ]);
+  });
+
   it("persists tavern offers and recruited heroes", async () => {
     const store = createStore();
     const player = await store.createGuest(sessionHash());
