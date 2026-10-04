@@ -8,6 +8,29 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL is required for dungeon E2E reward verification");
 }
 
+function referenceT1Progress(level: number, exp: number, gainedExp: number) {
+  const cap = 10;
+  if (level >= cap) return { level: cap, exp: 0 };
+
+  let nextLevel = level;
+  let nextExp = exp + gainedExp;
+
+  while (nextLevel < cap) {
+    const required = Math.round(20 + 18 * nextLevel ** 1.7);
+    if (nextExp < required) break;
+
+    nextExp -= required;
+    nextLevel += 1;
+
+    if (nextLevel === cap) {
+      nextExp = 0;
+      break;
+    }
+  }
+
+  return { level: nextLevel, exp: nextExp };
+}
+
 async function runCommand(
   page: Page,
   button: ReturnType<Page["getByRole"]>,
@@ -239,17 +262,25 @@ try {
   }
 
   const beforeHeroes = (
-    beforeClaim.heroes as { heroes: Array<{ id: string; exp: number }> }
+    beforeClaim.heroes as { heroes: Array<{ id: string; level: number; exp: number }> }
   ).heroes;
   const afterHeroes = (
-    afterClaim.heroes as { heroes: Array<{ id: string; exp: number }> }
+    afterClaim.heroes as { heroes: Array<{ id: string; level: number; exp: number }> }
   ).heroes;
   for (const beforeHero of beforeHeroes) {
     const afterHero = afterHeroes.find((hero) => hero.id === beforeHero.id);
-    const expectedExp = beforeHero.exp + accruedRun.pendingExpPerHero;
-    if (!afterHero || afterHero.exp !== expectedExp) {
+    const expected = referenceT1Progress(
+      beforeHero.level,
+      beforeHero.exp,
+      accruedRun.pendingExpPerHero,
+    );
+    if (
+      !afterHero ||
+      afterHero.level !== expected.level ||
+      afterHero.exp !== expected.exp
+    ) {
       throw new Error(
-        `Expected hero ${beforeHero.id} EXP ${expectedExp} after claim, got ${afterHero?.exp}`,
+        `Expected hero ${beforeHero.id} Lv.${expected.level} EXP ${expected.exp} after claim, got Lv.${afterHero?.level} EXP ${afterHero?.exp}`,
       );
     }
   }
