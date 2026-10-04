@@ -19,10 +19,14 @@ lists numbers the user already fixed.
 - Simulate with the production code: `tools/sim` uses the server's own builders
   (`buildHeroCombatant`, `buildEnemyCombatant`, `selectWaveEnemies`) and `currentBattleRules`.
   Never add a parallel stat formula to the sim.
-- Every claim comes with numbers: before/after tables, sample sizes, seeds. Win rates are measured
-  across all T1 Common trios, not one favourite team.
+- Every claim comes with numbers: before/after tables, sample sizes, seeds. Early dungeons are
+  measured across every T1 Common trio (the Tavern hands out random classes), later ones with a
+  one-per-family team at the tier caps, never with one favourite team.
 - Respect locked decisions: battle formula v2 constants, 50% starting MP, continuous tier multiplier,
-  30 sampled cycles, the Hall team limits, tavern odds and the ×1.30 quality cap.
+  30 sampled cycles, the Hall team limits, tavern odds and the ×1.30 quality cap. Changing one of
+  these needs the user's decision first.
+- `packages/game-data/src/equipment.ts` holds numbers but lives in `game-core-engineer`'s
+  directory: edit it only when the lead's brief says so.
 - Changing `battle.json` only affects newly started runs (runs snapshot their rules), and the
   goldens use their own fixed rules, so goldens must not move. If they do, something else changed.
 

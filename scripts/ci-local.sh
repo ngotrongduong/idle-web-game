@@ -5,6 +5,7 @@
 #   scripts/ci-local.sh --quick    lint, Prettier, typecheck, unit tests (PostgreSQL tests run if reachable)
 #   scripts/ci-local.sh --no-e2e   full pipeline without the four browser E2Es
 #   scripts/ci-local.sh --install  run `pnpm install --frozen-lockfile` first
+#   scripts/ci-local.sh --help     this text
 #
 # Environment:
 #   DATABASE_URL       defaults to the CI database postgresql://postgres:postgres@127.0.0.1:5432/guildhall_test
@@ -25,7 +26,7 @@ for arg in "$@"; do
     --no-e2e) E2E=0 ;;
     --install) INSTALL=1 ;;
     -h | --help)
-      sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
+      sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *)
@@ -36,6 +37,10 @@ for arg in "$@"; do
 done
 
 export DATABASE_URL="${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:5432/guildhall_test}"
+case "$DATABASE_URL" in
+  */guildhall_test | */guildhall_test\?*) ;;
+  *) echo "warning: DATABASE_URL is not a guildhall_test database; migrations, tests and E2E guests will write to it" >&2 ;;
+esac
 export GUILDHALL_BROWSER="${GUILDHALL_BROWSER:-chromium}"
 LOG_DIR="${TMPDIR:-/tmp}/guildhall-ci"
 mkdir -p "$LOG_DIR"
@@ -49,7 +54,9 @@ cleanup() {
   done
   BG_PIDS=()
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 start_bg() {
   local log=$1
@@ -65,7 +72,7 @@ start_bg() {
 wait_for_url() {
   local url=$1
   for _ in $(seq 1 60); do
-    if curl -fsS "$url" >/dev/null 2>&1; then return 0; fi
+    if curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then return 0; fi
     sleep 1
   done
   echo "timed out waiting for $url" >&2
@@ -73,10 +80,16 @@ wait_for_url() {
 }
 
 port_busy() {
-  curl -sS -o /dev/null "http://127.0.0.1:$1/" 2>/dev/null
+  # Any TCP listener counts, not only HTTP servers.
+  (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
 }
 
 STEP_RESULTS=()
+SKIPPED=0
+skip() {
+  STEP_RESULTS+=("skip $1")
+  SKIPPED=1
+}
 step() {
   local name=$1
   shift
@@ -147,10 +160,6 @@ browser_e2e() {
 }
 
 docker_compose_config() {
-  if ! command -v docker >/dev/null 2>&1; then
-    echo "docker not installed; skipping compose validation (CI still runs it)"
-    return 0
-  fi
   docker compose -f infra/docker-compose.yml config --quiet
 }
 
@@ -177,6 +186,7 @@ EOF
   fi
   echo "PostgreSQL not reachable: --quick run skips migrations and PostgreSQL integration tests"
   unset DATABASE_URL
+  skip "migrations and PostgreSQL integration tests (database not reachable)"
 fi
 
 if [ "$QUICK" -eq 0 ]; then
@@ -197,16 +207,24 @@ step "test" pnpm test
 if [ "$QUICK" -eq 0 ]; then
   step "economy balance report" pnpm --filter @idle/sim sim:economy
   step "chromium golden battle" golden_battle
-  if [ "$E2E" -eq 1 ]; then step "browser E2E (dungeon, promotion, equipment, auto-sell)" browser_e2e; fi
+  if [ "$E2E" -eq 1 ]; then
+    step "browser E2E (dungeon, promotion, equipment, auto-sell)" browser_e2e
+  else
+    skip "browser E2E (--no-e2e)"
+  fi
   step "build" pnpm build
-  step "docker compose config" docker_compose_config
+  if command -v docker >/dev/null 2>&1; then
+    step "docker compose config" docker_compose_config
+  else
+    skip "docker compose config (docker not installed; CI still runs it)"
+  fi
 fi
 
 summary
 if [ "$QUICK" -eq 1 ]; then
   echo "ci-local: quick checks passed (not the full CI pipeline)"
-elif [ "$E2E" -eq 0 ]; then
-  echo "ci-local: passed without browser E2Es"
+elif [ "$SKIPPED" -eq 1 ]; then
+  echo "ci-local: passed with skipped steps (see summary); not equivalent to CI"
 else
   echo "ci-local: full pipeline passed"
 fi

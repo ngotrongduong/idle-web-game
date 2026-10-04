@@ -7,7 +7,8 @@ file=$(node -e '
   let input = "";
   process.stdin.on("data", (chunk) => (input += chunk)).on("end", () => {
     try {
-      process.stdout.write(JSON.parse(input).tool_input?.file_path ?? "");
+      const file = JSON.parse(input).tool_input?.file_path;
+      if (typeof file === "string" && file) process.stdout.write(require("node:path").resolve(file));
     } catch {}
   });
 ' 2>/dev/null)

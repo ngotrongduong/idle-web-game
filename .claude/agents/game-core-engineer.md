@@ -20,9 +20,10 @@ loading, cross-reference validation). Read `AGENTS.md` and the doc sections name
   can exceed 2^53 (see `calculateDamageV2`). Never rely on float associativity.
 - Replay compatibility: persisted runs replay with the rules snapshot they were started with. Never
   change the v1 code path in `battle.ts` or `DEFAULT_BATTLE_RULES`. New combat behaviour = new
-  `formulaVersion` branch + validation of its constants + a new golden in `src/goldens.ts`, also
-  rendered by `browser-golden.html` and checked by `tools/inspect/src/golden-battle.ts`. Existing
-  golden hashes (v1 `c080875a`, v2 `fce81aeb`) must not change.
+  `formulaVersion` branch + validation of its constants + a new golden scenario in
+  `src/goldens.ts`, rendered by `browser-golden.html`, with its hash pinned in
+  `test/foundation.test.ts` and `tools/inspect/src/golden-battle.ts`. Existing golden hashes (v1
+  `c080875a`, v2 `fce81aeb`) must not change.
 - Combatants are built by `src/combatants.ts` (`buildHeroCombatant`, `buildEnemyCombatant`,
   `selectWaveEnemies`), shared by the server and `tools/sim`. Change them once there; never fork the
   logic into a caller.

@@ -33,7 +33,7 @@ therefore be safe to run again on a database that already has it.
 ## 2. Code
 - `packages/api-contract`: add the field to the zod schema (unknown keys are stripped). Persisted
   objects need `.default(...)` or `.nullable().default(null)` so old rows and old payloads parse.
-  Add it to `CommandPatch` if commands return it.
+  Add it to `CommandPatchSchema` if commands return it.
 - `apps/server/src/db/schema.ts`: Drizzle column matching the SQL type, nullability and default.
 - `apps/server/src/db/postgres-store.ts`: read mapping, insert/update, `RETURNING` lists, and a
   stable `ORDER BY` on lists.

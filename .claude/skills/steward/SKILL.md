@@ -18,7 +18,6 @@ description: Repository rules for committing, pushing and driving PRs on Project
 ## Commits
 - One logical step per commit, imperative subject under ~72 characters, a body that says why and
   lists any migration or rules-version change.
-- No AI model names or identifiers in commits, PR text or code.
 - Never commit `research/*/raw/`, HAR files, credentials or `.env` files.
 
 ## Before pushing

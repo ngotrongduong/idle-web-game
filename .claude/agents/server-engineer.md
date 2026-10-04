@@ -13,13 +13,21 @@ You are the backend engineer for Project Guildhall. You own `apps/server` and
 named in your brief first.
 
 ## How the server works
-- Every state change is a command on `POST /api/v1/cmd` (`apps/server/src/app.ts`): parse with the
-  contract schema → player lock (`withPlayerLock`, a real row lock in PostgreSQL) → version check →
-  idempotency by `cmdId` → validate → mutate through the store → return a `CommandPatch` and events.
+- Every player action is a command on `POST /api/v1/cmd` (`apps/server/src/app.ts`): session →
+  parse (`INVALID_COMMAND`) → player lock (`withPlayerLock`, a `FOR UPDATE` row lock in PostgreSQL)
+  → **cached outcome for the `cmdId`** (errors are cached too) → player exists → global version
+  check (`VERSION_CONFLICT`) → command-specific checks → mutate through the store → response with a
+  patch (`CommandPatchSchema`) and events. The cache lookup must stay before the version check so a
+  retried command returns its original result (`command.test.ts`, "creates a guest and upgrades the
+  hall by intent"). Time-based idle accrual is persisted under the same lock by the read endpoints
+  (`accrueActiveDungeonRuns`), outside `/cmd`.
 - Keep domain logic in modules (`dungeon.ts`, `idle.ts`, `progression.ts`, `tavern.ts`) and call
   game-core for rules; `app.ts` only orchestrates. Never re-implement a game-core formula here.
-- Validation order matters and is tested: not found → locked/forbidden → invalid input → busy or
-  already active → stale version → capacity limits. Add new error codes to `ApiErrorCodeSchema`.
+- Inside a command, keep the existing check order: target not found → locked → invalid/empty input
+  → already active / busy → stale references → capacity limits (`start_dungeon`: DUNGEON_NOT_FOUND →
+  DUNGEON_LOCKED → TEAM_NOT_FOUND → TEAM_EMPTY → DUNGEON_RUN_ALREADY_ACTIVE → HERO_BUSY →
+  TEAM_HERO_NOT_FOUND → TEAM_LIMIT_REACHED). Nothing is spent before every check passes. Add new
+  error codes to `ApiErrorCodeSchema`.
 - Two stores implement `GameStore`: `store.ts` (InMemory, must deep-copy everything it returns or
   stores) and `db/postgres-store.ts` (transactions, `FOR UPDATE`, stable `ORDER BY`, row mapping).
   Every persisted change goes to both, plus `db/schema.ts` and a migration — follow the

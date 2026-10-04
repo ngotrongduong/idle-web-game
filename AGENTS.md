@@ -52,11 +52,15 @@ Chrome channel unless `GUILDHALL_BROWSER=chromium`.
    basis points (bps, 10000 = 100%); round once, explicitly.
 2. **Replay compatibility.** Persisted runs carry a battle-rules snapshot and replay in the browser.
    Never change the v1 battle path or `DEFAULT_BATTLE_RULES`; new combat behaviour goes behind a new
-   `formulaVersion`. Golden hashes (`packages/game-core/src/goldens.ts`, v1 `c080875a`, v2
-   `fce81aeb`) only change when a new version is added on purpose, never to make a test pass. The
-   legacy fixture in `apps/web/src/replay.test.ts` must keep replaying.
-3. **Server-authoritative.** Every state change goes through `/api/v1/cmd` under the player lock with
-   version check and idempotency (`cmdId`). The client never decides outcomes or rewards.
+   `formulaVersion`. Golden scenarios live in `packages/game-core/src/goldens.ts`; their hashes (v1
+   `c080875a`, v2 `fce81aeb`) are pinned in `packages/game-core/test/foundation.test.ts` and
+   `tools/inspect/src/golden-battle.ts` (Chromium). They only change when a new version is added on
+   purpose, never to make a test pass. The legacy fixture in `apps/web/src/replay.test.ts` must keep
+   replaying.
+3. **Server-authoritative.** Every player action goes through `/api/v1/cmd` under the player lock
+   with idempotency (`cmdId`, checked before the version) and a version check; time-based idle
+   accrual is applied under the same lock when runs are read. The client never decides outcomes or
+   rewards.
 4. **No resource duplication.** Think through repeated, concurrent and interleaved commands
    (stop → promote → claim, one hero or item in two runs, split claims). Rewards are paid once;
    splitting a claim never changes the total.
@@ -75,7 +79,7 @@ Chrome channel unless `GUILDHALL_BROWSER=chromium`.
 ## Definition of done
 
 - The behaviour is covered by tests; a bug fix includes a regression test that fails on the old code.
-- `scripts/ci-local.sh` passes (full run before pushing anything touching server, web, data or E2E).
+- `scripts/ci-local.sh` passes: `--quick` while iterating, the full run before every push.
 - Docs updated: `docs/HANDOFF.md` (status, decisions, next work) and the design doc section whose
   numbers or rules changed.
 - GitHub Actions is green on the pushed head.
@@ -86,6 +90,5 @@ Chrome channel unless `GUILDHALL_BROWSER=chromium`.
   Before every push: `git fetch` and **merge** (never rebase, amend or force-push shared history).
   On a conflict in `generated/config.json`, rerun the data build instead of merging by hand.
 - Small commits, one logical step each, imperative subject, body says why.
-- Do not put AI model names or identifiers in commits, PRs or code.
 - Keep PR #2 a draft until M1 is complete.
 - Code, comments and `docs/HANDOFF.md` in English; design docs 01–08 in Vietnamese; UI text via i18n.

@@ -58,9 +58,9 @@ M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle
   - start/stop dungeon commands and GET `/api/v1/dungeon-runs`
   - one active run per team slot enforced by PostgreSQL
   - rewards stored as replay metadata only; payout/idle accumulation is intentionally deferred
-  - hero stat scaling uses `levelMult(L)` from docs/03 §2 plus rarity, potential and equipment (`tools/sim` still uses the old 4%/level formula, see Review findings)
+  - hero stat scaling uses `levelMult(L)` from docs/03 §2 plus rarity, potential and equipment (now the continuous tier multiplier, shared with `tools/sim`; see Decisions)
   - replay stores the complete battle rules because unit snapshots + seed alone are insufficient if balance constants change later
-  - each wave starts from its persisted full-stat snapshot (full HP/MP every wave, see Decisions)
+  - each wave starts from its persisted full-stat snapshot (full HP and 50% MP every wave, see Decisions)
 - M1.2 client replay/UI verification:
   - four editable team slots in the React Team & Dungeon screen
   - dungeon start/stop and persisted 6-wave summaries
