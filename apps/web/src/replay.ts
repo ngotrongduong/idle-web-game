@@ -23,9 +23,7 @@ export type ReplayVerification = {
   }[];
 };
 
-export function verifyDungeonRunReplay(
-  run: ReplayRunSnapshot,
-): ReplayVerification {
+export function verifyDungeonRunReplay(run: ReplayRunSnapshot): ReplayVerification {
   const waves = run.waves.map((wave) => {
     const replayed = simulateWave({
       allies: wave.allies,

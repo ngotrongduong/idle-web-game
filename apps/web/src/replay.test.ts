@@ -73,12 +73,8 @@ describe("client dungeon replay verification", () => {
           wave: 1,
           seed: 1,
           hash: "00000000",
-          allies: [
-            { id: "hero", hp: 100, attack: 30, defense: 10, speed: 10 },
-          ],
-          enemies: [
-            { id: "enemy", hp: 100, attack: 20, defense: 10, speed: 9 },
-          ],
+          allies: [{ id: "hero", hp: 100, attack: 30, defense: 10, speed: 10 }],
+          enemies: [{ id: "enemy", hp: 100, attack: 20, defense: 10, speed: 9 }],
         },
       ],
     });

@@ -401,9 +401,7 @@ export function App() {
             const savedTeam = teams.find((team) => team.slot === slot);
             const latestRun = latestRunForSlot(slot);
             const activeRun = latestRun?.status === "active" ? latestRun : undefined;
-            const replayVerification = latestRun
-              ? verifyDungeonRunReplay(latestRun)
-              : undefined;
+            const replayVerification = latestRun ? verifyDungeonRunReplay(latestRun) : undefined;
 
             return (
               <article className="card team-card" key={slot}>
@@ -545,23 +543,23 @@ export function App() {
                         );
 
                         return (
-                        <div className="wave-card" key={wave.wave}>
-                          <span>
-                            {t("vi", "dungeon.wave")} {wave.wave}
-                          </span>
-                          <strong>{wave.result}</strong>
-                          <small>
-                            {wave.turns} turns · {wave.hash}
-                          </small>
-                          <small>
-                            {replayWave?.matches
-                              ? t("vi", "dungeon.hashMatch")
-                              : t("vi", "dungeon.hashMismatch")}
-                          </small>
-                          <small>
-                            +{wave.rewardGold} gold · +{wave.rewardExp} EXP
-                          </small>
-                        </div>
+                          <div className="wave-card" key={wave.wave}>
+                            <span>
+                              {t("vi", "dungeon.wave")} {wave.wave}
+                            </span>
+                            <strong>{wave.result}</strong>
+                            <small>
+                              {wave.turns} turns · {wave.hash}
+                            </small>
+                            <small>
+                              {replayWave?.matches
+                                ? t("vi", "dungeon.hashMatch")
+                                : t("vi", "dungeon.hashMismatch")}
+                            </small>
+                            <small>
+                              +{wave.rewardGold} gold · +{wave.rewardExp} EXP
+                            </small>
+                          </div>
                         );
                       })}
                     </div>
