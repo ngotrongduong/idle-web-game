@@ -56,7 +56,7 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
   - start/stop dungeon commands and GET `/api/v1/dungeon-runs`
   - one active run per team slot enforced by PostgreSQL
   - rewards stored as replay metadata only; payout/idle accumulation is intentionally deferred
-  - current M1 hero stat scaling uses the existing 4%/level simulator formula plus rarity multipliers
+  - hero stat scaling uses `levelMult(L)` from docs/03 §2 plus rarity, potential and equipment (`tools/sim` still uses the old 4%/level formula, see Review findings)
   - replay stores the complete battle rules because unit snapshots + seed alone are insufficient if balance constants change later
   - each wave starts from its persisted full-stat snapshot (full HP/MP every wave, see Decisions)
 - M1.2 client replay/UI verification:
@@ -111,7 +111,8 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 ## Decisions
 - HP/MP fully reset at the start of every wave (each wave replays from the persisted full-stat snapshot). This is the intended M1 rule, not a missing feature; revisit only if dungeon difficulty needs attrition.
 - Setting is western high fantasy. Ids such as `bamboo_grove`, `sunken_shrine`, `storm_scribe` are legacy internal identifiers kept for replay/test stability and must never be shown to players; the UI reads names from `/api/v1/catalog`.
-- A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run, so the player stops and restarts the run to use the new class.
+- A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run **or a stopped run still owes it rewards**, so the player stops, claims, promotes and restarts. Otherwise EXP earned at the old tier cap would be paid into the new tier.
+- A hero whose snapshot is farming in an active run is "busy": it cannot start a second run from another team slot, and its equipment cannot be equipped/unequipped until the run stops (one item must not boost several runs).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
@@ -124,6 +125,24 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 - Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
 - Material ids are still the legacy snake_case names; only display names were re-themed.
 - Browser scripts default to the Chrome channel (as on CI); set `GUILDHALL_BROWSER=chromium` to use Playwright's bundled Chromium locally.
+
+## Review findings (2026-10-04)
+Review of everything up to `a2b876c` against docs/02–04 and docs/07. Fixed on this branch, each with a regression test that fails on the old code:
+- Busy heroes (above): one hero could farm in several active runs by moving between team slots, one item could boost several runs, and stop → promote → claim paid capped EXP into the new tier.
+- Tavern pity: a rare/legendary in offer 2 or 3 did not reset the pity counters (they only followed offer 1). Refresh cooldown and offers per refresh now live in `tavern.json`.
+- Forge: craft quality roll moved into game-core (`rollCraftQualityBps`); the server now enhances with the game-data table and pity step (`enhancePityStepBps`) that the UI also displays. `forge-odds.test.ts` checks the M1.6 acceptance criterion statistically (quality weights, +1…+5 first-try odds, ≈5.8 attempts to +5).
+- Server hardening: a malformed session cookie returned 500 with the decode error; 500s no longer echo internal messages; production refuses to start on the in-memory store; a failed ROLLBACK no longer hides the original error.
+- PostgreSQL lists of heroes, items and runs now have a stable `ORDER BY` (equipping used to reshuffle inventory cards under the cursor).
+- game-data validation rejects recipes that repeat a material and dungeons without 2 normal + 1 elite + 1 boss enemies.
+
+Open, needs a design decision (not changed yet):
+- Combat constants differ from docs/03 §3: fixed K=100 (spec 60+8·L), ±10% variance (±5%), crit 10%/×2.0 with no cap (5%/×1.5, cap 75%); constants are hard-coded instead of game-data.
+- MP starts at 0 every wave, so ULTs almost never fire (0 in 1,800 Thornwood waves) and healers never heal.
+- Idle rewards come from one fixed replay: restarting until the boss wins pays that win for 8h, and waves after a loss still pay. docs/04 §6 describes expected values from sampled win rates.
+- Content is too easy for the new `levelMult` scaling (4 Lv.1 commons clear the Lv.20 dungeon) and dungeons are not unlocked by progress; promotion leaves heroes weaker (Ward Squire Lv10 → Iron Guard Lv1: HP 504 → 380).
+- Each of the 3 tavern offers rolls the full rarity table (≈14% of refreshes contain a rare+, docs/03 §7 expects 1 per 20).
+- Craft quality reaches +50% (GDD §5.6 says +0–30%); there is no Forge building level yet; Hall parallel-team limit (GDD §5.1) and build timers (M1.7) are missing.
+- `tools/sim` does not use the server's hero/enemy formulas, so it cannot be used for the economy pass until it does.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
