@@ -477,40 +477,37 @@ export function App() {
                   const promotionState = promotion.heroes.find((entry) => entry.heroId === hero.id);
                   const rule = promotionState?.rule;
                   const sealBalance = rule
-                    ? (promotion.materials.find(
-                        (entry) => entry.materialId === rule.sealMaterialId,
-                      )?.qty ?? 0)
+                    ? (promotion.materials.find((entry) => entry.materialId === rule.sealMaterialId)
+                        ?.qty ?? 0)
                     : 0;
                   const canAfford = Boolean(
-                    player &&
-                      rule &&
-                      player.gold >= rule.goldCost &&
-                      sealBalance >= rule.sealQty,
+                    player && rule && player.gold >= rule.goldCost && sealBalance >= rule.sealQty,
                   );
                   const canPromote = Boolean(
-                    promotionState?.atLevelCap &&
-                      !promotionState.busy &&
-                      rule &&
-                      canAfford,
+                    promotionState?.atLevelCap && !promotionState.busy && rule && canAfford,
                   );
 
                   return (
                     <li className="hero-roster-item" key={hero.id}>
                       <span>
-                        <strong>{promotionState?.currentClassNameVi ?? humanizeId(hero.classId)}</strong>
+                        <strong>
+                          {promotionState?.currentClassNameVi ?? humanizeId(hero.classId)}
+                        </strong>
                         <small>
                           {rarityLabel(hero.rarity)} · T{promotionState?.currentTier ?? "?"} · Lv.
                           {hero.level} · EXP {hero.exp}
                         </small>
                         {promotionState?.targets.length && rule ? (
                           <small>
-                            {t("vi", "promotion.requirement")}: {rule.goldCost} gold · {rule.sealQty}{" "}
-                            {humanizeId(rule.sealMaterialId)}
+                            {t("vi", "promotion.requirement")}: {rule.goldCost} gold ·{" "}
+                            {rule.sealQty} {humanizeId(rule.sealMaterialId)}
                           </small>
                         ) : null}
                         {promotionState?.busy ? (
                           <small>{t("vi", "promotion.busy")}</small>
-                        ) : promotionState && !promotionState.atLevelCap && promotionState.targets.length ? (
+                        ) : promotionState &&
+                          !promotionState.atLevelCap &&
+                          promotionState.targets.length ? (
                           <small>
                             {t("vi", "promotion.needCap")} Lv.{promotionState.levelCap}
                           </small>
