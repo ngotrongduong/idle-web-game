@@ -505,6 +505,7 @@ export function buildServer(options?: { store?: GameStore }) {
           dungeonId,
           teamSlot,
           seed,
+          battleRules: CURRENT_DUNGEON_BATTLE_RULES,
           status: "active",
           startedAt,
           stoppedAt: null,

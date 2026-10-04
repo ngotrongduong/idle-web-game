@@ -10,7 +10,13 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import type { DungeonRun, DungeonWaveReplay, HeroRarity, TavernOffer } from "@idle/api-contract";
+import type {
+  BattleRulesSnapshot,
+  DungeonRun,
+  DungeonWaveReplay,
+  HeroRarity,
+  TavernOffer,
+} from "@idle/api-contract";
 
 export const players = pgTable("players", {
   id: uuid("id").primaryKey(),
@@ -108,6 +114,7 @@ export const dungeonRuns = pgTable(
     dungeonId: text("dungeon_id").notNull(),
     teamSlot: integer("team_slot").notNull(),
     seed: bigint("seed", { mode: "number" }).notNull(),
+    battleRules: jsonb("battle_rules").$type<BattleRulesSnapshot>().notNull(),
     status: varchar("status", { length: 16 }).$type<DungeonRun["status"]>().notNull(),
     waves: jsonb("waves").$type<DungeonWaveReplay[]>().notNull(),
     startedAt: timestamp("started_at", { withTimezone: true }).notNull(),

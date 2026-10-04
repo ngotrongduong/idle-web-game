@@ -42,12 +42,13 @@ M1 — Core loop.
 - M1.2B dungeon run backend:
   - server-generated uint32 root seeds
   - deterministic per-wave seed derivation
-  - persisted hero/enemy combat snapshots and replay hashes
+  - persisted hero/enemy combat snapshots, full battle-rule snapshot and replay hashes
   - five regular waves plus boss wave generated from validated game-data
   - start/stop dungeon commands and GET `/api/v1/dungeon-runs`
   - one active run per team slot enforced by PostgreSQL
   - rewards stored as replay metadata only; payout/idle accumulation is intentionally deferred
   - current M1 hero stat scaling uses the existing 4%/level simulator formula plus rarity multipliers
+  - replay stores the complete battle rules because unit snapshots + seed alone are insufficient if balance constants change later
   - each wave currently starts from its persisted full-stat snapshot; cross-wave HP/MP carryover is not implemented yet
 
 ## Next implementation work

@@ -1,7 +1,13 @@
 import { randomBytes } from "node:crypto";
 import type { BattleUnitSnapshot, DungeonWaveReplay, Hero } from "@idle/api-contract";
 import { foundationGameData } from "@idle/game-data";
-import { scaleStat, simulateWave, type Combatant } from "@idle/game-core";
+import {
+  DEFAULT_BATTLE_RULES,
+  scaleStat,
+  simulateWave,
+  type BattleRules,
+  type Combatant,
+} from "@idle/game-core";
 
 const STAT_GROWTH_BPS_PER_LEVEL = 400;
 const BPS = 10_000;
@@ -114,7 +120,7 @@ export function simulateDungeonCycle(input: {
       allies: allies as Combatant[],
       enemies: enemies as Combatant[],
       seed: waveSeed,
-      rules: { familyAdvantage: FAMILY_ADVANTAGE },
+      rules: CURRENT_DUNGEON_BATTLE_RULES,
     });
 
     const won = result.result === "win";

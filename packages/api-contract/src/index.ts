@@ -106,11 +106,29 @@ export const DungeonWaveReplaySchema = z.object({
 
 export type DungeonWaveReplay = z.infer<typeof DungeonWaveReplaySchema>;
 
+export const BattleRulesSnapshotSchema = z.object({
+  maxTurns: z.number().int().positive(),
+  defenseK: z.number().int().positive(),
+  varianceMinBps: z.number().int().positive(),
+  varianceMaxBps: z.number().int().positive(),
+  defaultCritBps: z.number().int().min(0).max(10_000),
+  critMultiplierBps: z.number().int().positive(),
+  mpMax: z.number().int().positive(),
+  mpPerAction: z.number().int().nonnegative(),
+  mpOnHit: z.number().int().nonnegative(),
+  familyAdvantage: z.record(z.string(), z.string()),
+  advantageMultiplierBps: z.number().int().positive(),
+  disadvantageMultiplierBps: z.number().int().positive(),
+});
+
+export type BattleRulesSnapshot = z.infer<typeof BattleRulesSnapshotSchema>;
+
 export const DungeonRunSchema = z.object({
   id: z.string().uuid(),
   dungeonId: z.string().min(1),
   teamSlot: z.number().int().min(1).max(4),
   seed: z.number().int().min(0).max(4_294_967_295),
+  battleRules: BattleRulesSnapshotSchema,
   status: z.enum(["active", "stopped"]),
   startedAt: z.string().datetime(),
   stoppedAt: z.string().datetime().nullable(),
