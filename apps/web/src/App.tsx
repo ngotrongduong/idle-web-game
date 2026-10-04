@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { type BattleRules } from "@idle/game-core";
 import { t } from "@idle/i18n";
+import { verifyDungeonRunReplay } from "./replay";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
 const teamSlots = [1, 2, 3, 4] as const;
@@ -65,6 +67,7 @@ type DungeonRun = {
   dungeonId: string;
   teamSlot: number;
   seed: number;
+  battleRules: BattleRules;
   status: "active" | "stopped";
   startedAt: string;
   stoppedAt: string | null;
@@ -398,6 +401,9 @@ export function App() {
             const savedTeam = teams.find((team) => team.slot === slot);
             const latestRun = latestRunForSlot(slot);
             const activeRun = latestRun?.status === "active" ? latestRun : undefined;
+            const replayVerification = latestRun
+              ? verifyDungeonRunReplay(latestRun)
+              : undefined;
 
             return (
               <article className="card team-card" key={slot}>
@@ -520,9 +526,25 @@ export function App() {
                     <small>
                       seed {latestRun.seed} · {latestRun.waves.length} {t("vi", "dungeon.waves")}
                     </small>
+                    <span
+                      className={
+                        replayVerification?.ok
+                          ? "replay-badge replay-ok"
+                          : "replay-badge replay-mismatch"
+                      }
+                    >
+                      {replayVerification?.ok
+                        ? t("vi", "dungeon.replayVerified")
+                        : t("vi", "dungeon.replayMismatch")}
+                    </span>
 
                     <div className="wave-grid">
-                      {latestRun.waves.map((wave) => (
+                      {latestRun.waves.map((wave) => {
+                        const replayWave = replayVerification?.waves.find(
+                          (entry) => entry.wave === wave.wave,
+                        );
+
+                        return (
                         <div className="wave-card" key={wave.wave}>
                           <span>
                             {t("vi", "dungeon.wave")} {wave.wave}
@@ -532,10 +554,16 @@ export function App() {
                             {wave.turns} turns · {wave.hash}
                           </small>
                           <small>
+                            {replayWave?.matches
+                              ? t("vi", "dungeon.hashMatch")
+                              : t("vi", "dungeon.hashMismatch")}
+                          </small>
+                          <small>
                             +{wave.rewardGold} gold · +{wave.rewardExp} EXP
                           </small>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 ) : null}

@@ -56,6 +56,9 @@ importers:
 
   apps/web:
     dependencies:
+      "@idle/game-core":
+        specifier: workspace:*
+        version: link:../../packages/game-core
       "@idle/i18n":
         specifier: workspace:*
         version: link:../../packages/i18n

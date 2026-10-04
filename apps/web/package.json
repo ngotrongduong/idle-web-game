@@ -12,7 +12,8 @@
   "dependencies": {
     "@idle/i18n": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@idle/game-core": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

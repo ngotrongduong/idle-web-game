@@ -7,7 +7,8 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #152 passed on commit `4ce50244a3b3a1ec3756c86a804a32818ac8b134` for M1.2A teams.
+- GitHub Actions CI run #175 passed on commit `b4a145bc9885a72f1b94a826a258d4721ef3962b` for M1.2B backend fixes plus the Team & Dungeon web screen.
+- Client-side replay hash verification is now implemented and awaiting its own full CI run.
 - Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
 - PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
 - Temporary format-once workflows have been removed; CI is read-only again.
@@ -53,9 +54,8 @@ M1 — Core loop.
 
 ## Next implementation work
 1. Verify M1.2B through the full CI/PostgreSQL pipeline.
-2. Verify the new web Team & Dungeon screen: four editable team slots, dungeon start/stop controls and persisted wave replay summaries.
-3. Replay the server snapshot client-side from the stored seed and compare hashes.
-4. Add end-to-end browser tests proving client/server replay hashes match.
+2. Verify client-side replay of every persisted wave against the stored server hash.
+3. Add end-to-end browser tests proving client/server replay hashes match through the real UI/API flow.
 5. Add idle cycle accumulation/claim using expected rewards without double-paying replay metadata.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 

@@ -350,3 +350,21 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.replay-badge {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.replay-ok {
+  color: #d9f5bc;
+  background: #344328;
+}
+
+.replay-mismatch {
+  color: #ffd2ca;
+  background: #5a2f29;
+}
