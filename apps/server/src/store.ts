@@ -158,9 +158,7 @@ export class InMemoryGameStore implements GameStore {
       return progress ? { ...hero, level: progress.level, exp: progress.exp } : hero;
     });
     this.heroes.set(playerId, updatedHeroes);
-    return updatedHeroes
-      .filter((hero) => progressById.has(hero.id))
-      .map((hero) => ({ ...hero }));
+    return updatedHeroes.filter((hero) => progressById.has(hero.id)).map((hero) => ({ ...hero }));
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

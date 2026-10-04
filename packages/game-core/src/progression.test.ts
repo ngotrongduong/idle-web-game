@@ -26,9 +26,7 @@ describe("hero EXP progression", () => {
   it("supports multi-level gains while carrying only in-tier remainder", () => {
     const first = xpToNext(1, 1);
     const second = xpToNext(2, 1);
-    expect(
-      applyHeroExperience({ level: 1, exp: 0, tier: 1 }, first + second + 5),
-    ).toMatchObject({
+    expect(applyHeroExperience({ level: 1, exp: 0, tier: 1 }, first + second + 5)).toMatchObject({
       level: 3,
       exp: 5,
       levelsGained: 2,
@@ -38,10 +36,7 @@ describe("hero EXP progression", () => {
 
   it("stops at the tier cap and discards over-cap EXP", () => {
     const required = xpToNext(9, 1);
-    const result = applyHeroExperience(
-      { level: 9, exp: required - 1, tier: 1 },
-      10_000,
-    );
+    const result = applyHeroExperience({ level: 9, exp: required - 1, tier: 1 }, 10_000);
 
     expect(result.level).toBe(10);
     expect(result.exp).toBe(0);
