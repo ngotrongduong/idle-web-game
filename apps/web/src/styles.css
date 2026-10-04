@@ -215,3 +215,138 @@ p {
     flex-direction: column;
   }
 }
+
+h2 {
+  margin: 8px 0;
+  font-size: 1.25rem;
+}
+
+.dungeon-stack {
+  margin-top: 0;
+}
+
+.team-card {
+  display: grid;
+  gap: 14px;
+}
+
+.team-heading,
+.dungeon-controls,
+.run-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.team-heading > div {
+  display: grid;
+  gap: 5px;
+}
+
+.team-heading button,
+.danger-button,
+.dungeon-controls select {
+  border: 1px solid #6e5a43;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f5ead7;
+  background: #2b2118;
+}
+
+.hero-picker {
+  display: grid;
+  gap: 8px;
+}
+
+.hero-picker label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #44372a;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.hero-picker label span {
+  display: grid;
+  gap: 2px;
+  text-transform: capitalize;
+}
+
+.hero-picker small,
+.run-panel small,
+.wave-card small {
+  color: #aa9b87;
+  font-size: 0.72rem;
+}
+
+.disabled-choice {
+  opacity: 0.45;
+}
+
+.dungeon-controls select {
+  min-width: 0;
+  flex: 1;
+  text-transform: capitalize;
+}
+
+.danger-button {
+  border-color: #8b4d45;
+  background: #4a2823;
+}
+
+.run-panel {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid #44372a;
+  padding-top: 12px;
+}
+
+.run-status {
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.status-active {
+  color: #d9f5bc;
+  background: #344328;
+}
+
+.status-stopped {
+  color: #d6c7b4;
+  background: #3a3128;
+}
+
+.wave-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.wave-card {
+  display: grid;
+  gap: 3px;
+  border: 1px solid #44372a;
+  border-radius: 10px;
+  padding: 10px;
+  background: #1c1611;
+}
+
+.wave-card strong {
+  text-transform: uppercase;
+}
+
+@media (max-width: 360px) {
+  .team-heading,
+  .dungeon-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wave-grid {
+    grid-template-columns: 1fr;
+  }
+}

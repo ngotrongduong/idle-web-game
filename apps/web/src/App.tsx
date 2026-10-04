@@ -2,6 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { t } from "@idle/i18n";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
+const teamSlots = [1, 2, 3, 4] as const;
+const dungeonOptions = [
+  "bamboo_grove",
+  "misty_riverbank",
+  "sunken_shrine",
+  "ember_ridge",
+] as const;
+
 type Tab = (typeof tabs)[number];
 
 type PlayerState = {
@@ -32,6 +40,42 @@ type Hero = {
   exp: number;
 };
 
+type Team = {
+  slot: number;
+  heroIds: string[];
+};
+
+type BattleUnitSnapshot = {
+  id: string;
+  hp: number;
+  attack: number;
+  defense: number;
+  speed: number;
+};
+
+type DungeonWaveReplay = {
+  wave: number;
+  seed: number;
+  result: "win" | "lose" | "draw";
+  turns: number;
+  hash: string;
+  allies: BattleUnitSnapshot[];
+  enemies: BattleUnitSnapshot[];
+  rewardGold: number;
+  rewardExp: number;
+};
+
+type DungeonRun = {
+  id: string;
+  dungeonId: string;
+  teamSlot: number;
+  seed: number;
+  status: "active" | "stopped";
+  startedAt: string;
+  stoppedAt: string | null;
+  waves: DungeonWaveReplay[];
+};
+
 type ApiErrorBody = {
   ok: false;
   code: string;
@@ -45,6 +89,13 @@ type CommandSuccess = {
   patch: Partial<Pick<PlayerState, "gold" | "hallLevel">>;
 };
 
+type GameCommand =
+  | { type: "refresh_tavern" }
+  | { type: "recruit_hero"; offerId: string }
+  | { type: "set_team"; slot: number; heroIds: string[] }
+  | { type: "start_dungeon"; dungeonId: string; teamSlot: number }
+  | { type: "stop_dungeon"; runId: string };
+
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
@@ -53,30 +104,69 @@ function rarityLabel(rarity: TavernOffer["rarity"]): string {
   return t("vi", `rarity.${rarity}`);
 }
 
+function humanizeId(value: string): string {
+  return value.replaceAll("_", " ");
+}
+
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>("tavern");
   const [player, setPlayer] = useState<PlayerState | null>(null);
   const [tavern, setTavern] = useState<TavernState | null>(null);
   const [heroes, setHeroes] = useState<Hero[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [runs, setRuns] = useState<DungeonRun[]>([]);
+  const [teamDrafts, setTeamDrafts] = useState<Record<number, string[]>>({});
+  const [selectedDungeons, setSelectedDungeons] = useState<Record<number, string>>({
+    1: dungeonOptions[0],
+    2: dungeonOptions[0],
+    3: dungeonOptions[0],
+    4: dungeonOptions[0],
+  });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   const loadCollections = useCallback(async () => {
-    const [tavernResponse, heroesResponse] = await Promise.all([
-      fetch("/api/v1/tavern", { credentials: "include" }),
-      fetch("/api/v1/heroes", { credentials: "include" }),
-    ]);
+    const [tavernResponse, heroesResponse, teamsResponse, runsResponse] =
+      await Promise.all([
+        fetch("/api/v1/tavern", { credentials: "include" }),
+        fetch("/api/v1/heroes", { credentials: "include" }),
+        fetch("/api/v1/teams", { credentials: "include" }),
+        fetch("/api/v1/dungeon-runs", { credentials: "include" }),
+      ]);
 
-    if (!tavernResponse.ok || !heroesResponse.ok) {
-      throw new Error(t("vi", "tavern.loadError"));
+    if (
+      !tavernResponse.ok ||
+      !heroesResponse.ok ||
+      !teamsResponse.ok ||
+      !runsResponse.ok
+    ) {
+      throw new Error(t("vi", "app.loadError"));
     }
 
-    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(tavernResponse);
-    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
+    const tavernBody = await readJson<{ ok: true; tavern: TavernState }>(
+      tavernResponse,
+    );
+    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(
+      heroesResponse,
+    );
+    const teamsBody = await readJson<{ ok: true; teams: Team[] }>(teamsResponse);
+    const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(
+      runsResponse,
+    );
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
+    setTeams(teamsBody.teams);
+    setRuns(runsBody.runs);
+    setTeamDrafts(
+      Object.fromEntries(
+        teamSlots.map((slot) => [
+          slot,
+          [...(teamsBody.teams.find((team) => team.slot === slot)?.heroIds ?? [])],
+        ]),
+      ),
+    );
   }, []);
 
   const bootstrap = useCallback(async () => {
@@ -93,7 +183,9 @@ export function App() {
           method: "POST",
           credentials: "include",
         });
-        const guest = await readJson<{ ok: true; state: PlayerState }>(stateResponse);
+        const guest = await readJson<{ ok: true; state: PlayerState }>(
+          stateResponse,
+        );
         setPlayer(guest.state);
       } else {
         if (!stateResponse.ok) {
@@ -132,7 +224,7 @@ export function App() {
   }, [canRefresh, tavern]);
 
   const sendCommand = useCallback(
-    async (command: { type: "refresh_tavern" } | { type: "recruit_hero"; offerId: string }) => {
+    async (command: GameCommand) => {
       if (!player) return;
 
       setBusy(true);
@@ -176,6 +268,43 @@ export function App() {
       }
     },
     [bootstrap, loadCollections, player],
+  );
+
+  const toggleHeroForTeam = useCallback((slot: number, heroId: string) => {
+    setTeamDrafts((current) => {
+      const selected = current[slot] ?? [];
+      if (selected.includes(heroId)) {
+        return {
+          ...current,
+          [slot]: selected.filter((id) => id !== heroId),
+        };
+      }
+      if (selected.length >= 4) return current;
+      return {
+        ...current,
+        [slot]: [...selected, heroId],
+      };
+    });
+  }, []);
+
+  const assignedElsewhere = useCallback(
+    (slot: number, heroId: string) =>
+      teamSlots.some(
+        (otherSlot) =>
+          otherSlot !== slot && (teamDrafts[otherSlot] ?? []).includes(heroId),
+      ),
+    [teamDrafts],
+  );
+
+  const latestRunForSlot = useCallback(
+    (slot: number) =>
+      [...runs]
+        .filter((run) => run.teamSlot === slot)
+        .sort(
+          (left, right) =>
+            new Date(right.startedAt).getTime() - new Date(left.startedAt).getTime(),
+        )[0],
+    [runs],
   );
 
   return (
@@ -229,10 +358,13 @@ export function App() {
           <section className="stack" aria-label={t("vi", "tavern.offers")}>
             {tavern?.offers.length ? (
               tavern.offers.map((offer) => (
-                <article className={`offer-card rarity-${offer.rarity}`} key={offer.id}>
+                <article
+                  className={`offer-card rarity-${offer.rarity}`}
+                  key={offer.id}
+                >
                   <div>
                     <span className="rarity">{rarityLabel(offer.rarity)}</span>
-                    <strong>{offer.classId.replaceAll("_", " ")}</strong>
+                    <strong>{humanizeId(offer.classId)}</strong>
                     <small>{t("vi", "tavern.levelOne")}</small>
                   </div>
                   <button
@@ -264,7 +396,7 @@ export function App() {
                 {heroes.map((hero) => (
                   <li key={hero.id}>
                     <span>
-                      <strong>{hero.classId.replaceAll("_", " ")}</strong>
+                      <strong>{humanizeId(hero.classId)}</strong>
                       <small>
                         {rarityLabel(hero.rarity)} · Lv.{hero.level}
                       </small>
@@ -277,6 +409,166 @@ export function App() {
             )}
           </section>
         </>
+      ) : activeTab === "dungeon" ? (
+        <section className="stack dungeon-stack">
+          <section className="card">
+            <span className="section-kicker">{t("vi", "dungeon.title")}</span>
+            <h2>{t("vi", "dungeon.subtitle")}</h2>
+            <p>{t("vi", "dungeon.help")}</p>
+          </section>
+
+          {teamSlots.map((slot) => {
+            const selectedHeroIds = teamDrafts[slot] ?? [];
+            const savedTeam = teams.find((team) => team.slot === slot);
+            const latestRun = latestRunForSlot(slot);
+            const activeRun =
+              latestRun?.status === "active" ? latestRun : undefined;
+
+            return (
+              <article className="card team-card" key={slot}>
+                <div className="team-heading">
+                  <div>
+                    <span className="section-kicker">
+                      {t("vi", "dungeon.team")} {slot}
+                    </span>
+                    <strong>
+                      {selectedHeroIds.length}/4 {t("vi", "dungeon.members")}
+                    </strong>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() =>
+                      void sendCommand({
+                        type: "set_team",
+                        slot,
+                        heroIds: selectedHeroIds,
+                      })
+                    }
+                  >
+                    {savedTeam?.heroIds.join("|") === selectedHeroIds.join("|")
+                      ? t("vi", "dungeon.saved")
+                      : t("vi", "dungeon.saveTeam")}
+                  </button>
+                </div>
+
+                <div className="hero-picker">
+                  {heroes.length ? (
+                    heroes.map((hero) => {
+                      const checked = selectedHeroIds.includes(hero.id);
+                      const unavailable = assignedElsewhere(slot, hero.id);
+
+                      return (
+                        <label
+                          className={unavailable && !checked ? "disabled-choice" : ""}
+                          key={hero.id}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={busy || (unavailable && !checked)}
+                            onChange={() => toggleHeroForTeam(slot, hero.id)}
+                          />
+                          <span>
+                            <strong>{humanizeId(hero.classId)}</strong>
+                            <small>
+                              {rarityLabel(hero.rarity)} · Lv.{hero.level}
+                            </small>
+                          </span>
+                        </label>
+                      );
+                    })
+                  ) : (
+                    <p>{t("vi", "dungeon.needHeroes")}</p>
+                  )}
+                </div>
+
+                <div className="dungeon-controls">
+                  <select
+                    aria-label={`${t("vi", "dungeon.select")} ${slot}`}
+                    disabled={busy || Boolean(activeRun)}
+                    value={selectedDungeons[slot]}
+                    onChange={(event) =>
+                      setSelectedDungeons((current) => ({
+                        ...current,
+                        [slot]: event.target.value,
+                      }))
+                    }
+                  >
+                    {dungeonOptions.map((dungeonId) => (
+                      <option key={dungeonId} value={dungeonId}>
+                        {humanizeId(dungeonId)}
+                      </option>
+                    ))}
+                  </select>
+
+                  {activeRun ? (
+                    <button
+                      className="danger-button"
+                      type="button"
+                      disabled={busy}
+                      onClick={() =>
+                        void sendCommand({
+                          type: "stop_dungeon",
+                          runId: activeRun.id,
+                        })
+                      }
+                    >
+                      {t("vi", "dungeon.stop")}
+                    </button>
+                  ) : (
+                    <button
+                      className="primary-button"
+                      type="button"
+                      disabled={busy || selectedHeroIds.length === 0}
+                      onClick={() =>
+                        void sendCommand({
+                          type: "start_dungeon",
+                          dungeonId: selectedDungeons[slot] ?? dungeonOptions[0],
+                          teamSlot: slot,
+                        })
+                      }
+                    >
+                      {t("vi", "dungeon.start")}
+                    </button>
+                  )}
+                </div>
+
+                {latestRun ? (
+                  <section className="run-panel">
+                    <div className="run-summary">
+                      <strong>{humanizeId(latestRun.dungeonId)}</strong>
+                      <span className={`run-status status-${latestRun.status}`}>
+                        {latestRun.status}
+                      </span>
+                    </div>
+                    <small>
+                      seed {latestRun.seed} · {latestRun.waves.length}{" "}
+                      {t("vi", "dungeon.waves")}
+                    </small>
+
+                    <div className="wave-grid">
+                      {latestRun.waves.map((wave) => (
+                        <div className="wave-card" key={wave.wave}>
+                          <span>
+                            {t("vi", "dungeon.wave")} {wave.wave}
+                          </span>
+                          <strong>{wave.result}</strong>
+                          <small>
+                            {wave.turns} turns · {wave.hash}
+                          </small>
+                          <small>
+                            +{wave.rewardGold} gold · +{wave.rewardExp} EXP
+                          </small>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
+              </article>
+            );
+          })}
+        </section>
       ) : (
         <section className="card empty-state">
           <strong>{t("vi", `nav.${activeTab}`)}</strong>

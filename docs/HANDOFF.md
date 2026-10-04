@@ -53,7 +53,7 @@ M1 — Core loop.
 
 ## Next implementation work
 1. Verify M1.2B through the full CI/PostgreSQL pipeline.
-2. Add the web Team & Dungeon screen.
+2. Verify the new web Team & Dungeon screen: four editable team slots, dungeon start/stop controls and persisted wave replay summaries.
 3. Replay the server snapshot client-side from the stored seed and compare hashes.
 4. Add end-to-end browser tests proving client/server replay hashes match.
 5. Add idle cycle accumulation/claim using expected rewards without double-paying replay metadata.
