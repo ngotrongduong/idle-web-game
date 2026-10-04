@@ -75,6 +75,16 @@
       "id": "obsidian_shard",
       "nameVi": "Mảnh Hắc Diện",
       "nameEn": "Obsidian Shard"
+    },
+    {
+      "id": "promotion_seal_t1",
+      "nameVi": "Ấn Thăng Cấp I",
+      "nameEn": "Promotion Seal I"
+    },
+    {
+      "id": "promotion_seal_t2",
+      "nameVi": "Ấn Thăng Cấp II",
+      "nameEn": "Promotion Seal II"
     }
   ],
   "items": [

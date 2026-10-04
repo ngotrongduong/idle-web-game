@@ -8,7 +8,7 @@ describe("game-data pipeline", () => {
 
   it("loads the complete first MVP content slice", () => {
     expect(foundationGameData.version).toBe("m0.3-content-v3");
-    expect(foundationGameData.materials).toHaveLength(15);
+    expect(foundationGameData.materials).toHaveLength(17);
     expect(foundationGameData.items).toHaveLength(30);
     expect(foundationGameData.dungeons).toHaveLength(4);
     expect(foundationGameData.classFamilies).toHaveLength(4);
@@ -50,6 +50,12 @@ describe("game-data pipeline", () => {
       expect(dungeonEnemies.filter((entry) => entry.rank === "elite")).toHaveLength(1);
       expect(dungeonEnemies.filter((entry) => entry.rank === "boss")).toHaveLength(1);
     }
+  });
+
+  it("contains promotion seals referenced by the promotion tuning config", () => {
+    const materialIds = new Set(foundationGameData.materials.map((entry) => entry.id));
+    expect(materialIds.has("promotion_seal_t1")).toBe(true);
+    expect(materialIds.has("promotion_seal_t2")).toBe(true);
   });
 
   it("covers all four equipment slots", () => {

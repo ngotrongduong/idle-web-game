@@ -3,6 +3,7 @@ import type {
   DungeonRun,
   FoundationPlayerState,
   Hero,
+  MaterialBalance,
   TavernOffer,
   Team,
 } from "@idle/api-contract";
@@ -34,6 +35,9 @@ export interface GameStore {
     playerId: string,
     updates: Array<Pick<Hero, "id" | "level" | "exp">>,
   ): Promise<Hero[]>;
+  setHero(playerId: string, hero: Hero): Promise<Hero>;
+  listMaterials(playerId: string): Promise<MaterialBalance[]>;
+  setMaterialQuantity(playerId: string, materialId: string, qty: number): Promise<MaterialBalance>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
@@ -73,6 +77,7 @@ export class InMemoryGameStore implements GameStore {
   private readonly commandOutcomes = new Map<string, Map<string, StoredCommandOutcome>>();
   private readonly taverns = new Map<string, StoredTavernState>();
   private readonly heroes = new Map<string, Hero[]>();
+  private readonly materials = new Map<string, Map<string, number>>();
   private readonly teams = new Map<string, Map<number, Team>>();
   private readonly dungeonRuns = new Map<string, DungeonRun[]>();
   private readonly lockTails = new Map<string, Promise<void>>();
@@ -133,13 +138,17 @@ export class InMemoryGameStore implements GameStore {
   }
 
   async listHeroes(playerId: string): Promise<Hero[]> {
-    return (this.heroes.get(playerId) ?? []).map((hero) => ({ ...hero }));
+    return (this.heroes.get(playerId) ?? []).map((hero) => ({
+      ...hero,
+      ...(hero.potential ? { potential: { ...hero.potential } } : {}),
+    }));
   }
 
   async createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero> {
     const hero: Hero = {
       id: randomUUID(),
       ...input,
+      potential: input.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
     };
     const heroes = this.heroes.get(playerId) ?? [];
     heroes.push(hero);
@@ -159,6 +168,42 @@ export class InMemoryGameStore implements GameStore {
     });
     this.heroes.set(playerId, updatedHeroes);
     return updatedHeroes.filter((hero) => progressById.has(hero.id)).map((hero) => ({ ...hero }));
+  }
+
+  async setHero(playerId: string, hero: Hero): Promise<Hero> {
+    const heroes = this.heroes.get(playerId) ?? [];
+    const index = heroes.findIndex((candidate) => candidate.id === hero.id);
+    if (index < 0) throw new Error(`Hero ${hero.id} was not found`);
+    const stored = {
+      ...hero,
+      ...(hero.potential ? { potential: { ...hero.potential } } : {}),
+    };
+    heroes[index] = stored;
+    this.heroes.set(playerId, heroes);
+    return { ...stored, ...(stored.potential ? { potential: { ...stored.potential } } : {}) };
+  }
+
+  async listMaterials(playerId: string): Promise<MaterialBalance[]> {
+    return [...(this.materials.get(playerId)?.entries() ?? [])]
+      .map(([materialId, qty]) => ({ materialId, qty }))
+      .sort((left, right) => left.materialId.localeCompare(right.materialId));
+  }
+
+  async setMaterialQuantity(
+    playerId: string,
+    materialId: string,
+    qty: number,
+  ): Promise<MaterialBalance> {
+    if (!Number.isInteger(qty) || qty < 0) {
+      throw new Error("Material quantity must be a non-negative integer");
+    }
+    let inventory = this.materials.get(playerId);
+    if (!inventory) {
+      inventory = new Map();
+      this.materials.set(playerId, inventory);
+    }
+    inventory.set(materialId, qty);
+    return { materialId, qty };
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

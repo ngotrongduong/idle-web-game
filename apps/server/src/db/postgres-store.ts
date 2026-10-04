@@ -4,6 +4,7 @@ import type {
   DungeonRun,
   FoundationPlayerState,
   Hero,
+  MaterialBalance,
   TavernOffer,
   Team,
 } from "@idle/api-contract";
@@ -14,6 +15,7 @@ import {
   commandOutcomes,
   dungeonRuns,
   heroes,
+  playerMaterials,
   players,
   sessions,
   tavernStates,
@@ -223,6 +225,7 @@ export class PostgresGameStore implements GameStore {
         rarity: heroes.rarity,
         level: heroes.level,
         exp: heroes.exp,
+        potential: heroes.potential,
       })
       .from(heroes)
       .where(eq(heroes.playerId, playerId));
@@ -241,10 +244,14 @@ export class PostgresGameStore implements GameStore {
       rarity: hero.rarity,
       level: hero.level,
       exp: hero.exp,
+      potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
       createdAt: new Date(),
     });
 
-    return hero;
+    return {
+      ...hero,
+      potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
+    };
   }
 
   async setHeroProgress(
@@ -263,6 +270,63 @@ export class PostgresGameStore implements GameStore {
 
     const updatedIds = new Set(updates.map((update) => update.id));
     return (await this.listHeroes(playerId)).filter((hero) => updatedIds.has(hero.id));
+  }
+
+  async setHero(playerId: string, hero: Hero): Promise<Hero> {
+    const [row] = await this.database()
+      .update(heroes)
+      .set({
+        classId: hero.classId,
+        rarity: hero.rarity,
+        level: hero.level,
+        exp: hero.exp,
+        potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
+      })
+      .where(and(eq(heroes.playerId, playerId), eq(heroes.id, hero.id)))
+      .returning({ id: heroes.id });
+
+    if (!row) throw new Error(`Hero ${hero.id} was not found`);
+    return {
+      ...hero,
+      potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
+    };
+  }
+
+  async listMaterials(playerId: string): Promise<MaterialBalance[]> {
+    const rows = await this.database()
+      .select({
+        materialId: playerMaterials.materialId,
+        qty: playerMaterials.qty,
+      })
+      .from(playerMaterials)
+      .where(eq(playerMaterials.playerId, playerId));
+
+    return rows.sort((left, right) => left.materialId.localeCompare(right.materialId));
+  }
+
+  async setMaterialQuantity(
+    playerId: string,
+    materialId: string,
+    qty: number,
+  ): Promise<MaterialBalance> {
+    if (!Number.isInteger(qty) || qty < 0) {
+      throw new Error("Material quantity must be a non-negative integer");
+    }
+
+    await this.database()
+      .insert(playerMaterials)
+      .values({
+        playerId,
+        materialId,
+        qty,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [playerMaterials.playerId, playerMaterials.materialId],
+        set: { qty, updatedAt: new Date() },
+      });
+
+    return { materialId, qty };
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

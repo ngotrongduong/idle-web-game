@@ -26,12 +26,22 @@ export const HeroRaritySchema = z.enum(["common", "elite", "rare", "legendary"])
 
 export type HeroRarity = z.infer<typeof HeroRaritySchema>;
 
+export const HeroPotentialSchema = z.object({
+  hp: z.number().int().nonnegative(),
+  attack: z.number().int().nonnegative(),
+  defense: z.number().int().nonnegative(),
+  speed: z.number().int().nonnegative(),
+});
+
+export type HeroPotential = z.infer<typeof HeroPotentialSchema>;
+
 export const HeroSchema = z.object({
   id: z.string().uuid(),
   classId: z.string().min(1),
   rarity: HeroRaritySchema,
   level: z.number().int().positive(),
   exp: z.number().int().nonnegative(),
+  potential: HeroPotentialSchema.optional(),
 });
 
 export type Hero = z.infer<typeof HeroSchema>;
@@ -61,6 +71,18 @@ export const TavernResponseSchema = z.object({
 export const HeroesResponseSchema = z.object({
   ok: z.literal(true),
   heroes: z.array(HeroSchema),
+});
+
+export const MaterialBalanceSchema = z.object({
+  materialId: z.string().min(1),
+  qty: z.number().int().nonnegative(),
+});
+
+export type MaterialBalance = z.infer<typeof MaterialBalanceSchema>;
+
+export const MaterialsResponseSchema = z.object({
+  ok: z.literal(true),
+  materials: z.array(MaterialBalanceSchema),
 });
 
 export const TeamSchema = z.object({

@@ -139,6 +139,36 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       gold: 1_002,
     });
   });
+  it("persists hero potential and material inventory", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const hero = await store.createHero(player.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+      potential: { hp: 10, attack: 2, defense: 1, speed: 0 },
+    });
+
+    expect(await store.listHeroes(player.id)).toContainEqual(hero);
+
+    const promotedShape = {
+      ...hero,
+      classId: "iron_guard",
+      level: 1,
+      exp: 0,
+      potential: { hp: 25, attack: 5, defense: 4, speed: 1 },
+    };
+    await store.setHero(player.id, promotedShape);
+    expect(await store.listHeroes(player.id)).toContainEqual(promotedShape);
+
+    await store.setMaterialQuantity(player.id, "promotion_seal_t1", 2);
+    expect(await store.listMaterials(player.id)).toContainEqual({
+      materialId: "promotion_seal_t1",
+      qty: 2,
+    });
+  });
+
   it("persists team assignments", async () => {
     const store = createStore();
     const player = await store.createGuest(sessionHash());

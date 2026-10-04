@@ -14,6 +14,7 @@ import type {
   BattleRulesSnapshot,
   DungeonRun,
   DungeonWaveReplay,
+  HeroPotential,
   HeroRarity,
   TavernOffer,
 } from "@idle/api-contract";
@@ -83,9 +84,29 @@ export const heroes = pgTable(
     rarity: varchar("rarity", { length: 16 }).$type<HeroRarity>().notNull(),
     level: integer("level").notNull().default(1),
     exp: integer("exp").notNull().default(0),
+    potential: jsonb("potential")
+      .$type<HeroPotential>()
+      .notNull()
+      .default({ hp: 0, attack: 0, defense: 0, speed: 0 }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("heroes_player_id_idx").on(table.playerId)],
+);
+
+export const playerMaterials = pgTable(
+  "player_materials",
+  {
+    playerId: uuid("player_id")
+      .notNull()
+      .references(() => players.id, { onDelete: "cascade" }),
+    materialId: text("material_id").notNull(),
+    qty: integer("qty").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.playerId, table.materialId] }),
+    index("player_materials_player_id_idx").on(table.playerId),
+  ],
 );
 
 export const teams = pgTable(
