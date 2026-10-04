@@ -1,6 +1,12 @@
+import { Pool } from "pg";
 import { chromium, type Page } from "playwright";
 
 const url = process.env.GUILDHALL_E2E_URL ?? "http://127.0.0.1:5173";
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required for dungeon E2E reward verification");
+}
 
 async function runCommand(
   page: Page,
@@ -106,8 +112,89 @@ try {
     );
   }
 
+  const beforeClaim = await page.evaluate(async () => {
+    const [stateResponse, heroesResponse] = await Promise.all([
+      fetch("/api/v1/state", { credentials: "include" }),
+      fetch("/api/v1/heroes", { credentials: "include" }),
+    ]);
+    return {
+      state: await stateResponse.json(),
+      heroes: await heroesResponse.json(),
+    };
+  });
+
+  const pool = new Pool({ connectionString: databaseUrl });
+  try {
+    await pool.query(
+      "UPDATE dungeon_runs SET last_accrued_at = now() - interval '10 minutes' WHERE status = 'active'",
+    );
+  } finally {
+    await pool.end();
+  }
+
+  await page.evaluate(async () => {
+    const response = await fetch("/api/v1/dungeon-runs", {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to accrue dungeon rewards: ${response.status}`);
+    }
+  });
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Đội & Hầm", exact: true }).click();
+
+  const claimTeam = page.locator(".team-card").first();
+  const claimButton = claimTeam.getByRole("button", {
+    name: "Nhận thưởng",
+    exact: true,
+  });
+  await page.waitForFunction(
+    () => {
+      const button = [...document.querySelectorAll("button")].find(
+        (entry) => entry.textContent?.trim() === "Nhận thưởng",
+      );
+      return button instanceof HTMLButtonElement && !button.disabled;
+    },
+    undefined,
+    { timeout: 10_000 },
+  );
+
+  await runCommand(page, claimButton);
+
+  const afterClaim = await page.evaluate(async () => {
+    const [stateResponse, heroesResponse] = await Promise.all([
+      fetch("/api/v1/state", { credentials: "include" }),
+      fetch("/api/v1/heroes", { credentials: "include" }),
+    ]);
+    return {
+      state: await stateResponse.json(),
+      heroes: await heroesResponse.json(),
+    };
+  });
+
+  const beforeGold = (beforeClaim.state as { gold: number }).gold;
+  const afterGold = (afterClaim.state as { gold: number }).gold;
+  if (afterGold <= beforeGold) {
+    throw new Error(`Expected claim to increase gold: ${beforeGold} -> ${afterGold}`);
+  }
+
+  const beforeHeroes = (beforeClaim.heroes as { heroes: Array<{ id: string; exp: number }> }).heroes;
+  const afterHeroes = (afterClaim.heroes as { heroes: Array<{ id: string; exp: number }> }).heroes;
+  for (const beforeHero of beforeHeroes) {
+    const afterHero = afterHeroes.find((hero) => hero.id === beforeHero.id);
+    if (!afterHero || afterHero.exp <= beforeHero.exp) {
+      throw new Error(`Expected hero ${beforeHero.id} EXP to increase after claim`);
+    }
+  }
+
+  await claimTeam.getByText("0 cycle", { exact: true }).waitFor({
+    state: "visible",
+    timeout: 10_000,
+  });
+
   console.log(
-    `Dungeon E2E passed: recruited 3 heroes, saved team 1, started 6-wave run, verified ${matchingCount}/${waveCount} client hashes.`,
+    `Dungeon E2E passed: 6/6 replay hashes matched and idle claim increased gold ${beforeGold} -> ${afterGold} plus EXP for ${afterHeroes.length} heroes.`,
   );
 } finally {
   await browser.close();
