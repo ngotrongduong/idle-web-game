@@ -368,3 +368,41 @@ h2 {
   color: #ffd2ca;
   background: #5a2f29;
 }
+
+.player-gold {
+  display: inline-block;
+  margin-top: 4px;
+  color: #f0d48f;
+}
+
+.idle-rewards {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #665331;
+  border-radius: 12px;
+  padding: 12px;
+  background: #282016;
+}
+
+.idle-rewards > div {
+  display: grid;
+  gap: 4px;
+}
+
+.claim-button {
+  border: 1px solid #a8823f;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #fff4de;
+  background: #5b4424;
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .idle-rewards {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

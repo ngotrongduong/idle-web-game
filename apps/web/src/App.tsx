@@ -71,6 +71,11 @@ type DungeonRun = {
   status: "active" | "stopped";
   startedAt: string;
   stoppedAt: string | null;
+  lastAccruedAt: string;
+  pendingCycles: number;
+  pendingGold: number;
+  pendingExpPerHero: number;
+  completedCycles: number;
   waves: DungeonWaveReplay[];
 };
 
@@ -92,7 +97,8 @@ type GameCommand =
   | { type: "recruit_hero"; offerId: string }
   | { type: "set_team"; slot: number; heroIds: string[] }
   | { type: "start_dungeon"; dungeonId: string; teamSlot: number }
-  | { type: "stop_dungeon"; runId: string };
+  | { type: "stop_dungeon"; runId: string }
+  | { type: "claim_dungeon_rewards"; runId: string };
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
@@ -155,6 +161,22 @@ export function App() {
     );
   }, []);
 
+  const loadDungeonProgress = useCallback(async () => {
+    const [heroesResponse, runsResponse] = await Promise.all([
+      fetch("/api/v1/heroes", { credentials: "include" }),
+      fetch("/api/v1/dungeon-runs", { credentials: "include" }),
+    ]);
+
+    if (!heroesResponse.ok || !runsResponse.ok) {
+      throw new Error(t("vi", "app.loadError"));
+    }
+
+    const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
+    const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(runsResponse);
+    setHeroes(heroesBody.heroes);
+    setRuns(runsBody.runs);
+  }, []);
+
   const bootstrap = useCallback(async () => {
     setBusy(true);
     setError(null);
@@ -194,6 +216,20 @@ export function App() {
     const timer = window.setInterval(() => setNow(Date.now()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== "dungeon" || !player) return;
+
+    const refresh = () => {
+      void loadDungeonProgress().catch((reason) => {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      });
+    };
+
+    refresh();
+    const timer = window.setInterval(refresh, 30_000);
+    return () => window.clearInterval(timer);
+  }, [activeTab, loadDungeonProgress, player]);
 
   const heroCapacity = player ? 3 + player.hallLevel : 0;
   const nextRefreshTime = tavern ? new Date(tavern.nextFreeRefreshAt).getTime() : 0;
@@ -377,7 +413,7 @@ export function App() {
                     <span>
                       <strong>{humanizeId(hero.classId)}</strong>
                       <small>
-                        {rarityLabel(hero.rarity)} · Lv.{hero.level}
+                        {rarityLabel(hero.rarity)} · Lv.{hero.level} · EXP {hero.exp}
                       </small>
                     </span>
                   </li>
@@ -394,6 +430,9 @@ export function App() {
             <span className="section-kicker">{t("vi", "dungeon.title")}</span>
             <h2>{t("vi", "dungeon.subtitle")}</h2>
             <p>{t("vi", "dungeon.help")}</p>
+            <strong className="player-gold">
+              {t("vi", "dungeon.playerGold")}: {player?.gold ?? 0}
+            </strong>
           </section>
 
           {teamSlots.map((slot) => {
@@ -451,7 +490,7 @@ export function App() {
                           <span>
                             <strong>{humanizeId(hero.classId)}</strong>
                             <small>
-                              {rarityLabel(hero.rarity)} · Lv.{hero.level}
+                              {rarityLabel(hero.rarity)} · Lv.{hero.level} · EXP {hero.exp}
                             </small>
                           </span>
                         </label>
@@ -535,6 +574,35 @@ export function App() {
                         ? t("vi", "dungeon.replayVerified")
                         : t("vi", "dungeon.replayMismatch")}
                     </span>
+
+                    <div className="idle-rewards">
+                      <div>
+                        <span className="section-kicker">{t("vi", "dungeon.idleRewards")}</span>
+                        <strong>
+                          {latestRun.pendingCycles} {t("vi", "dungeon.cycles")}
+                        </strong>
+                        <small>
+                          +{latestRun.pendingGold} gold · +{latestRun.pendingExpPerHero} EXP/
+                          {t("vi", "dungeon.hero")}
+                        </small>
+                        <small>
+                          {t("vi", "dungeon.completedCycles")}: {latestRun.completedCycles}
+                        </small>
+                      </div>
+                      <button
+                        className="claim-button"
+                        type="button"
+                        disabled={busy || latestRun.pendingCycles === 0}
+                        onClick={() =>
+                          void sendCommand({
+                            type: "claim_dungeon_rewards",
+                            runId: latestRun.id,
+                          })
+                        }
+                      >
+                        {t("vi", "dungeon.claim")}
+                      </button>
+                    </div>
 
                     <div className="wave-grid">
                       {latestRun.waves.map((wave) => {
