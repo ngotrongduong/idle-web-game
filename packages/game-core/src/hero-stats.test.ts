@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  HERO_RARITY_MULTIPLIER_BPS,
-  calculateHeroStats,
-  levelMultiplierBps,
-} from "./hero-stats";
+import { HERO_RARITY_MULTIPLIER_BPS, calculateHeroStats, levelMultiplierBps } from "./hero-stats";
 
 describe("hero stat progression", () => {
   it("matches the documented quadratic level multiplier", () => {

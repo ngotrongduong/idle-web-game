@@ -44,12 +44,7 @@ export function levelMultiplierBps(level: number): number {
   return BPS + 1_200 * n + 40 * n * n;
 }
 
-function scale(
-  base: number,
-  level: number,
-  rarity: HeroStatRarity,
-  potential: number,
-): number {
+function scale(base: number, level: number, rarity: HeroStatRarity, potential: number): number {
   const scaled = Math.floor(
     (base * levelMultiplierBps(level) * HERO_RARITY_MULTIPLIER_BPS[rarity]) / BPS_SQUARED,
   );
