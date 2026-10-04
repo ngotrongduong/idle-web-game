@@ -15,7 +15,7 @@ describe("GET /health", () => {
     expect(response.json()).toEqual({
       ok: true,
       service: "server",
-      version: "m0.6a",
+      version: "m0.6b",
     });
   });
 });
