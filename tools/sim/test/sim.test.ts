@@ -73,8 +73,7 @@ describe("sim tools", () => {
     expect(
       summary.dungeons.every(
         (dungeon) =>
-          dungeon.targetDeviationRatio === null ||
-          Math.abs(dungeon.targetDeviationRatio) <= 0.2,
+          dungeon.targetDeviationRatio === null || Math.abs(dungeon.targetDeviationRatio) <= 0.2,
       ),
     ).toBe(true);
     expect(summary.recipes[0]?.expectedOnlineMinutes).toBeLessThanOrEqual(3.6);
