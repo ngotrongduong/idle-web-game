@@ -109,10 +109,7 @@ function expectedAttemptsForLevel(level: number): number {
 
   for (let pityFailures = 0; pityFailures < 100 && survival > 1e-12; pityFailures += 1) {
     expected += survival;
-    const successBps = getUpgradeSuccessBps({
-      level,
-      pityFailures,
-    });
+    const successBps = getUpgradeSuccessBps(level + 1, pityFailures);
     survival *= 1 - successBps / 10_000;
 
     if (successBps >= 10_000) break;
