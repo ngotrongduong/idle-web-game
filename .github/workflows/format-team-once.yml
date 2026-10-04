@@ -1,4 +1,5 @@
 name: Format team slice once
+# temporary formatter; remove after one successful run
 
 on:
   push:
