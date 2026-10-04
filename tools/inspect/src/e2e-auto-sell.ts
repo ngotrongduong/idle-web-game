@@ -57,6 +57,32 @@ async function getJson<T>(page: Page, path: string): Promise<T> {
   }, path) as Promise<T>;
 }
 
+async function ensureGuest(page: Page): Promise<{ id: string; gold: number }> {
+  return page.evaluate(async () => {
+    let response = await fetch("/api/v1/state", { credentials: "include" });
+
+    if (response.status === 401) {
+      response = await fetch("/api/v1/auth/guest", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`Guest bootstrap failed with ${response.status}`);
+      }
+      const body = (await response.json()) as {
+        state: { id: string; gold: number };
+      };
+      return body.state;
+    }
+
+    if (!response.ok) {
+      throw new Error(`GET /api/v1/state failed with ${response.status}`);
+    }
+
+    return (await response.json()) as { id: string; gold: number };
+  });
+}
+
 async function seedCraftMaterials(playerId: string): Promise<void> {
   const pool = new Pool({ connectionString: databaseUrl });
   try {
@@ -80,7 +106,7 @@ try {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "domcontentloaded" });
 
-  const state = await getJson<{ id: string; gold: number }>(page, "/api/v1/state");
+  const state = await ensureGuest(page);
   await seedCraftMaterials(state.id);
   await page.reload({ waitUntil: "domcontentloaded" });
 
