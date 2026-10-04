@@ -17,7 +17,15 @@ const browser = await chromium.launch({
 
 try {
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle" });
+  await page.goto(url, { waitUntil: "domcontentloaded" });
+  await page
+    .locator("#result")
+    .waitFor({ state: "visible", timeout: 10_000 });
+  await page.waitForFunction(
+    () => document.querySelector("#result")?.textContent !== "pending",
+    undefined,
+    { timeout: 10_000 },
+  );
 
   const raw = await page.locator("#result").textContent();
   if (!raw || raw === "pending") {
