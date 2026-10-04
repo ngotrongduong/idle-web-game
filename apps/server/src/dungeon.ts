@@ -5,7 +5,7 @@ import type {
   Hero,
   InventoryItem,
 } from "@idle/api-contract";
-import { foundationGameData } from "@idle/game-data";
+import { equipmentStatValue, foundationGameData } from "@idle/game-data";
 import {
   calculateHeroStats,
   DEFAULT_BATTLE_RULES,
@@ -58,11 +58,11 @@ export function heroToCombatant(
   const equipped = equipment.filter((item) => item.equippedHeroId === hero.id);
   const equipmentAttack = equipped.reduce((sum, item) => {
     const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
-    return sum + (spec ? Math.floor((spec.attack * item.qualityBps) / 10_000) : 0);
+    return sum + (spec ? equipmentStatValue(spec.attack, item.qualityBps, item.enhanceLevel) : 0);
   }, 0);
   const equipmentDefense = equipped.reduce((sum, item) => {
     const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
-    return sum + (spec ? Math.floor((spec.defense * item.qualityBps) / 10_000) : 0);
+    return sum + (spec ? equipmentStatValue(spec.defense, item.qualityBps, item.enhanceLevel) : 0);
   }, 0);
 
   return {

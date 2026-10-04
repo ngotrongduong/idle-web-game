@@ -341,6 +341,7 @@ export class PostgresGameStore implements GameStore {
         slot: playerItems.slot,
         qualityBps: playerItems.qualityBps,
         enhanceLevel: playerItems.enhanceLevel,
+        enhancePityFailures: playerItems.enhancePityFailures,
         locked: playerItems.locked,
         equippedHeroId: playerItems.equippedHeroId,
       })
@@ -357,6 +358,7 @@ export class PostgresGameStore implements GameStore {
       slot: item.slot,
       qualityBps: item.qualityBps,
       enhanceLevel: item.enhanceLevel,
+      enhancePityFailures: item.enhancePityFailures,
       locked: item.locked,
       equippedHeroId: item.equippedHeroId,
       createdAt: new Date(),
@@ -373,6 +375,7 @@ export class PostgresGameStore implements GameStore {
         slot: item.slot,
         qualityBps: item.qualityBps,
         enhanceLevel: item.enhanceLevel,
+        enhancePityFailures: item.enhancePityFailures,
         locked: item.locked,
         equippedHeroId: item.equippedHeroId,
         updatedAt: new Date(),

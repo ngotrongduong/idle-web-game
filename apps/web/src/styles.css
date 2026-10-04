@@ -565,3 +565,50 @@ h2 {
     flex-direction: column;
   }
 }
+
+.craft-grid {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.craft-row,
+.enhance-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.craft-row {
+  border-bottom: 1px solid #3a3122;
+  padding: 7px 0;
+}
+
+.craft-row > span {
+  display: grid;
+  gap: 2px;
+}
+
+.craft-row small,
+.enhance-actions {
+  color: #aa9b87;
+  font-size: 0.76rem;
+}
+
+.craft-row button,
+.enhance-actions button {
+  border: 1px solid #8f743b;
+  border-radius: 9px;
+  padding: 8px 10px;
+  color: #fff0c7;
+  background: #4c3a20;
+}
+
+@media (max-width: 420px) {
+  .craft-row,
+  .enhance-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

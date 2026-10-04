@@ -725,6 +725,7 @@ describe("server-authoritative command pipeline", () => {
       slot: "weapon",
       qualityBps: 10_000,
       enhanceLevel: 0,
+      enhancePityFailures: 0,
       locked: false,
       equippedHeroId: null,
     });
@@ -733,6 +734,7 @@ describe("server-authoritative command pipeline", () => {
       slot: "weapon",
       qualityBps: 10_000,
       enhanceLevel: 0,
+      enhancePityFailures: 0,
       locked: false,
       equippedHeroId: null,
     });
@@ -830,6 +832,7 @@ describe("server-authoritative command pipeline", () => {
       slot: "weapon",
       qualityBps: 10_000,
       enhanceLevel: 0,
+      enhancePityFailures: 0,
       locked: false,
       equippedHeroId: hero.id,
     });
@@ -851,4 +854,70 @@ describe("server-authoritative command pipeline", () => {
     const listed = await store.listItems(guest.state.id);
     expect(listed.find((entry) => entry.id === item.id)?.equippedHeroId).toBe(hero.id);
   });
+  it("crafts from recipe materials and enhances with persisted pity state", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    await store.setMaterialQuantity(guest.state.id, "bamboo_fiber", 10);
+    await store.setMaterialQuantity(guest.state.id, "river_stone", 10);
+
+    const craft = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "craft_item", itemId: "bamboo_training_sword" },
+      },
+    });
+
+    expect(craft.statusCode).toBe(200);
+    const crafted = craft.json().events[0].item;
+    expect(crafted).toMatchObject({
+      itemId: "bamboo_training_sword",
+      enhanceLevel: 0,
+      enhancePityFailures: 0,
+      locked: false,
+      equippedHeroId: null,
+    });
+    expect(crafted.qualityBps).toBeGreaterThanOrEqual(10_000);
+    expect(crafted.qualityBps).toBeLessThanOrEqual(15_000);
+
+    const balances = new Map(
+      (await store.listMaterials(guest.state.id)).map((entry) => [entry.materialId, entry.qty]),
+    );
+    expect(balances.get("bamboo_fiber")).toBe(7);
+    expect(balances.get("river_stone")).toBe(9);
+
+    const enhance = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: { type: "enhance_item", itemInstanceId: crafted.id },
+      },
+    });
+
+    expect(enhance.statusCode).toBe(200);
+    expect(enhance.json()).toMatchObject({
+      ok: true,
+      version: 2,
+      patch: { gold: 900 },
+      events: [
+        {
+          type: "item_enhanced",
+          success: true,
+          beforeLevel: 0,
+          targetLevel: 1,
+          goldCost: 100,
+          item: { enhanceLevel: 1, enhancePityFailures: 0 },
+        },
+      ],
+    });
+  });
+
 });

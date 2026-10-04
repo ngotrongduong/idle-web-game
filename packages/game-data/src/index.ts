@@ -32,9 +32,14 @@ export {
 export const lootConfig = validateLootConfig(rawLootConfig, foundationGameData, promotionConfig);
 
 export {
+  CraftQualityTierSchema,
   EquipmentConfigSchema,
+  enhancementBonusBps,
+  enhancementGoldCost,
   equipmentConfig,
+  equipmentStatValue,
   itemSellGold,
+  type CraftQualityTier,
   type EquipmentConfig,
 } from "./equipment.js";
 export { IdleConfigSchema, idleConfig, type IdleConfig } from "./idle.js";

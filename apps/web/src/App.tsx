@@ -152,6 +152,20 @@ type ItemCatalogEntry = CatalogEntry & {
   attack: number;
   defense: number;
   sellGold: number;
+  recipe: MaterialBalance[];
+};
+
+type EquipmentRules = {
+  qualityTiers: Array<{
+    id: string;
+    nameVi: string;
+    nameEn: string;
+    weightBps: number;
+    multiplierBps: number;
+  }>;
+  enhanceBonusBps: number[];
+  enhanceGoldCosts: number[];
+  enhanceSuccessBps: number[];
 };
 
 type InventoryItem = {
@@ -160,6 +174,7 @@ type InventoryItem = {
   slot: EquipmentSlot;
   qualityBps: number;
   enhanceLevel: number;
+  enhancePityFailures: number;
   locked: boolean;
   equippedHeroId: string | null;
 };
@@ -169,6 +184,7 @@ type Catalog = {
   dungeons: CatalogEntry[];
   materials: CatalogEntry[];
   items: ItemCatalogEntry[];
+  equipment: EquipmentRules;
 };
 
 type GameCommand =
@@ -182,7 +198,9 @@ type GameCommand =
   | { type: "equip_item"; itemInstanceId: string; heroId: string }
   | { type: "unequip_item"; itemInstanceId: string }
   | { type: "set_item_locked"; itemInstanceId: string; locked: boolean }
-  | { type: "sell_item"; itemInstanceId: string };
+  | { type: "sell_item"; itemInstanceId: string }
+  | { type: "craft_item"; itemId: string }
+  | { type: "enhance_item"; itemInstanceId: string };
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
@@ -877,17 +895,53 @@ export function App() {
             <p>{t("vi", "equipment.help")}</p>
           </section>
 
+          <section className="card">
+            <span className="section-kicker">{t("vi", "craft.title")}</span>
+            <div className="craft-grid">
+              {catalog?.items.map((spec) => {
+                const canCraft = spec.recipe.every(
+                  (ingredient) =>
+                    (promotion.materials.find(
+                      (entry) => entry.materialId === ingredient.materialId,
+                    )?.qty ?? 0) >= ingredient.qty,
+                );
+                return (
+                  <div className="craft-row" key={spec.id}>
+                    <span>
+                      <strong>{spec.nameVi}</strong>
+                      <small>
+                        {spec.recipe
+                          .map(
+                            (ingredient) =>
+                              `${catalogName(catalog, "materials", ingredient.materialId)} ×${ingredient.qty}`,
+                          )
+                          .join(" · ")}
+                      </small>
+                    </span>
+                    <button
+                      type="button"
+                      disabled={busy || !canCraft}
+                      onClick={() =>
+                        void sendCommand({
+                          type: "craft_item",
+                          itemId: spec.id,
+                        })
+                      }
+                    >
+                      {t("vi", "craft.craft")}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <small>{t("vi", "craft.qualityNote")}</small>
+          </section>
+
           {inventoryItems.length ? (
             inventoryItems.map((item) => {
               const spec = catalog?.items.find((entry) => entry.id === item.itemId);
               const equippedHero = heroes.find((hero) => hero.id === item.equippedHeroId);
               const defaultTarget = equipTargets[item.id] ?? heroes[0]?.id ?? "";
-              const effectiveAttack = spec
-                ? Math.floor((spec.attack * item.qualityBps) / 10_000)
-                : 0;
-              const effectiveDefense = spec
-                ? Math.floor((spec.defense * item.qualityBps) / 10_000)
-                : 0;
               const sellValue = spec ? Math.floor((spec.sellGold * item.qualityBps) / 10_000) : 0;
 
               return (
@@ -971,6 +1025,33 @@ export function App() {
                   ) : (
                     <small>{t("vi", "equipment.needHero")}</small>
                   )}
+
+                  <div className="enhance-actions">
+                    <span>
+                      {item.enhanceLevel < 5 && nextEnhanceCost !== undefined && currentSuccess !== undefined
+                        ? `${t("vi", "enhance.next")}: ${nextEnhanceCost} gold · ${(
+                            currentSuccess / 100
+                          ).toFixed(0)}%`
+                        : t("vi", "enhance.max")}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={
+                        busy ||
+                        item.enhanceLevel >= 5 ||
+                        nextEnhanceCost === undefined ||
+                        (player?.gold ?? 0) < nextEnhanceCost
+                      }
+                      onClick={() =>
+                        void sendCommand({
+                          type: "enhance_item",
+                          itemInstanceId: item.id,
+                        })
+                      }
+                    >
+                      {t("vi", "enhance.action")}
+                    </button>
+                  </div>
 
                   <div className="equipment-footer">
                     <span>

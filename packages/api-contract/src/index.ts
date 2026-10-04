@@ -94,6 +94,7 @@ export const InventoryItemSchema = z.object({
   slot: EquipmentSlotSchema,
   qualityBps: z.number().int().min(10_000).max(20_000),
   enhanceLevel: z.number().int().min(0).max(5),
+  enhancePityFailures: z.number().int().nonnegative(),
   locked: z.boolean(),
   equippedHeroId: z.string().uuid().nullable(),
 });
@@ -113,11 +114,32 @@ export const CatalogEntrySchema = z.object({
 
 export type CatalogEntry = z.infer<typeof CatalogEntrySchema>;
 
+export const RecipeIngredientViewSchema = z.object({
+  materialId: z.string().min(1),
+  qty: z.number().int().positive(),
+});
+
 export const ItemCatalogEntrySchema = CatalogEntrySchema.extend({
   slot: EquipmentSlotSchema,
   attack: z.number().int().nonnegative(),
   defense: z.number().int().nonnegative(),
   sellGold: z.number().int().nonnegative(),
+  recipe: z.array(RecipeIngredientViewSchema).min(1),
+});
+
+export const CraftQualityTierSchema = z.object({
+  id: z.string().min(1),
+  nameVi: z.string().min(1),
+  nameEn: z.string().min(1),
+  weightBps: z.number().int().min(0).max(10_000),
+  multiplierBps: z.number().int().min(10_000).max(20_000),
+});
+
+export const EquipmentRulesViewSchema = z.object({
+  qualityTiers: z.array(CraftQualityTierSchema).min(1),
+  enhanceBonusBps: z.array(z.number().int().nonnegative()).length(6),
+  enhanceGoldCosts: z.array(z.number().int().nonnegative()).length(5),
+  enhanceSuccessBps: z.array(z.number().int().min(0).max(10_000)).length(5),
 });
 
 export const CatalogResponseSchema = z.object({
@@ -126,6 +148,7 @@ export const CatalogResponseSchema = z.object({
   dungeons: z.array(CatalogEntrySchema),
   materials: z.array(CatalogEntrySchema),
   items: z.array(ItemCatalogEntrySchema),
+  equipment: EquipmentRulesViewSchema,
 });
 
 export type CatalogResponse = z.infer<typeof CatalogResponseSchema>;
@@ -313,6 +336,16 @@ export const SellItemCommandSchema = z.object({
   itemInstanceId: z.string().uuid(),
 });
 
+export const CraftItemCommandSchema = z.object({
+  type: z.literal("craft_item"),
+  itemId: z.string().min(1),
+});
+
+export const EnhanceItemCommandSchema = z.object({
+  type: z.literal("enhance_item"),
+  itemInstanceId: z.string().uuid(),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
@@ -326,6 +359,8 @@ export const CommandSchema = z.discriminatedUnion("type", [
   UnequipItemCommandSchema,
   SetItemLockedCommandSchema,
   SellItemCommandSchema,
+  CraftItemCommandSchema,
+  EnhanceItemCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -419,6 +454,22 @@ const ItemSoldEventSchema = z.object({
   gold: z.number().int().nonnegative(),
 });
 
+const ItemCraftedEventSchema = z.object({
+  type: z.literal("item_crafted"),
+  item: InventoryItemSchema,
+  consumedMaterials: z.array(MaterialBalanceSchema),
+});
+
+const ItemEnhancedEventSchema = z.object({
+  type: z.literal("item_enhanced"),
+  item: InventoryItemSchema,
+  success: z.boolean(),
+  beforeLevel: z.number().int().min(0).max(4),
+  targetLevel: z.number().int().min(1).max(5),
+  successBps: z.number().int().min(0).max(10_000),
+  goldCost: z.number().int().nonnegative(),
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
@@ -432,6 +483,8 @@ export const CommandEventSchema = z.discriminatedUnion("type", [
   ItemUnequippedEventSchema,
   ItemLockChangedEventSchema,
   ItemSoldEventSchema,
+  ItemCraftedEventSchema,
+  ItemEnhancedEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -472,6 +525,8 @@ export const ApiErrorCodeSchema = z.enum([
   "ITEM_LOCKED",
   "ITEM_EQUIPPED",
   "ITEM_SLOT_CONFLICT",
+  "ITEM_DEFINITION_NOT_FOUND",
+  "ITEM_MAX_ENHANCE",
 ]);
 
 export const ApiErrorSchema = z.object({

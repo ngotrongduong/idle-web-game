@@ -124,6 +124,7 @@ export const playerItems = pgTable(
     slot: varchar("slot", { length: 16 }).$type<EquipmentSlot>().notNull(),
     qualityBps: integer("quality_bps").notNull().default(10_000),
     enhanceLevel: integer("enhance_level").notNull().default(0),
+    enhancePityFailures: integer("enhance_pity_failures").notNull().default(0),
     locked: boolean("locked").notNull().default(false),
     equippedHeroId: uuid("equipped_hero_id").references(() => heroes.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

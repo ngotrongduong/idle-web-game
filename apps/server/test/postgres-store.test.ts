@@ -336,6 +336,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       slot: "weapon",
       qualityBps: 10_000,
       enhanceLevel: 0,
+      enhancePityFailures: 0,
       locked: false,
       equippedHeroId: null,
     });

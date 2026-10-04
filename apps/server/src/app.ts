@@ -18,6 +18,8 @@ import {
 } from "@idle/api-contract";
 import {
   calculateHeroStats,
+  resolveUpgradeAttempt,
+  SeededRng,
   HALL_MAX_LEVEL,
   hallUpgradeGoldCost,
   heroCapacityForHall,
@@ -25,12 +27,14 @@ import {
   retainHeroPotential,
 } from "@idle/game-core";
 import {
+  enhancementGoldCost,
   equipmentConfig,
   foundationGameData,
   itemSellGold,
   promotionConfig,
   promotionRuleForTier,
 } from "@idle/game-data";
+import { randomBytes } from "node:crypto";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -105,6 +109,21 @@ async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now =
   return accruedRuns;
 }
 
+function createEquipmentSeed(): number {
+  return randomBytes(4).readUInt32BE(0);
+}
+
+function rollCraftQualityBps(seed = createEquipmentSeed()): number {
+  const rng = new SeededRng(seed);
+  const roll = rng.nextInt(10_000);
+  let cursor = 0;
+  for (const tier of equipmentConfig.qualityTiers) {
+    cursor += tier.weightBps;
+    if (roll < cursor) return tier.multiplierBps;
+  }
+  return equipmentConfig.baseQualityBps;
+}
+
 export function buildServer(options?: { store?: GameStore }) {
   const app = Fastify({ logger: false });
   const store = options?.store ?? createConfiguredGameStore();
@@ -149,7 +168,14 @@ export function buildServer(options?: { store?: GameStore }) {
       attack,
       defense,
       sellGold: itemSellGold({ attack, defense }),
+      recipe: foundationGameData.items.find((entry) => entry.id === id)!.recipe,
     })),
+    equipment: {
+      qualityTiers: equipmentConfig.qualityTiers,
+      enhanceBonusBps: equipmentConfig.enhanceBonusBps,
+      enhanceGoldCosts: equipmentConfig.enhanceGoldCosts,
+      enhanceSuccessBps: equipmentConfig.enhanceSuccessBps,
+    },
   });
   app.get("/api/v1/catalog", async () => catalog);
 
@@ -992,6 +1018,163 @@ export function buildServer(options?: { store?: GameStore }) {
               sealMaterialId: rule.sealMaterialId,
               sealQty: rule.sealQty,
               retainedPotentialBps: promotionConfig.retainedPotentialBps,
+            },
+          ],
+        });
+        const stored: StoredCommandOutcome = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "craft_item") {
+        const spec = foundationGameData.items.find(
+          (entry) => entry.id === envelope.command.itemId,
+        );
+        if (!spec) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "ITEM_DEFINITION_NOT_FOUND",
+              "Crafting item definition was not found",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+
+        const balances = new Map(
+          (await store.listMaterials(playerId)).map((entry) => [entry.materialId, entry.qty]),
+        );
+        const insufficientIngredient = spec.recipe.find(
+          (ingredient) => (balances.get(ingredient.materialId) ?? 0) < ingredient.qty,
+        );
+        if (insufficientIngredient) {
+          const insufficient: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "INSUFFICIENT_MATERIAL",
+              `Not enough ${insufficientIngredient.materialId} to craft ${spec.id}`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficient);
+          return insufficient;
+        }
+        if (state.gold < equipmentConfig.craftGoldCost) {
+          const insufficientGold: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("INSUFFICIENT_GOLD", "Not enough gold to craft item", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficientGold);
+          return insufficientGold;
+        }
+
+        for (const ingredient of spec.recipe) {
+          await store.setMaterialQuantity(
+            playerId,
+            ingredient.materialId,
+            (balances.get(ingredient.materialId) ?? 0) - ingredient.qty,
+          );
+        }
+
+        const item = await store.createItem(playerId, {
+          itemId: spec.id,
+          slot: spec.slot,
+          qualityBps: rollCraftQualityBps(),
+          enhanceLevel: 0,
+          enhancePityFailures: 0,
+          locked: false,
+          equippedHeroId: null,
+        });
+        const nextState = {
+          ...state,
+          version: state.version + 1,
+          gold: state.gold - equipmentConfig.craftGoldCost,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: equipmentConfig.craftGoldCost > 0 ? { gold: nextState.gold } : {},
+          events: [
+            {
+              type: "item_crafted",
+              item,
+              consumedMaterials: spec.recipe.map((ingredient) => ({
+                materialId: ingredient.materialId,
+                qty: ingredient.qty,
+              })),
+            },
+          ],
+        });
+        const stored: StoredCommandOutcome = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "enhance_item") {
+        const { itemInstanceId } = envelope.command;
+        const item = (await store.listItems(playerId)).find(
+          (candidate) => candidate.id === itemInstanceId,
+        );
+        if (!item) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_NOT_FOUND", "Item was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+        if (item.enhanceLevel >= equipmentConfig.maxEnhanceLevel) {
+          const maxed: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("ITEM_MAX_ENHANCE", "Item is already at maximum enhancement", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, maxed);
+          return maxed;
+        }
+
+        const goldCost = enhancementGoldCost(item.enhanceLevel);
+        if (state.gold < goldCost) {
+          const insufficient: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("INSUFFICIENT_GOLD", "Not enough gold to enhance item", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficient);
+          return insufficient;
+        }
+
+        const result = resolveUpgradeAttempt(
+          { level: item.enhanceLevel, pityFailures: item.enhancePityFailures },
+          new SeededRng(createEquipmentSeed()),
+        );
+        const enhancedItem = await store.setItem(playerId, {
+          ...item,
+          enhanceLevel: Math.min(result.afterLevel, equipmentConfig.maxEnhanceLevel),
+          enhancePityFailures: result.pityFailures,
+        });
+        const nextState = {
+          ...state,
+          version: state.version + 1,
+          gold: state.gold - goldCost,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: { gold: nextState.gold },
+          events: [
+            {
+              type: "item_enhanced",
+              item: enhancedItem,
+              success: result.success,
+              beforeLevel: result.beforeLevel,
+              targetLevel: result.targetLevel,
+              successBps: result.successBps,
+              goldCost,
             },
           ],
         });
