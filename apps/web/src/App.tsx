@@ -888,9 +888,7 @@ export function App() {
               const effectiveDefense = spec
                 ? Math.floor((spec.defense * item.qualityBps) / 10_000)
                 : 0;
-              const sellValue = spec
-                ? Math.floor((spec.sellGold * item.qualityBps) / 10_000)
-                : 0;
+              const sellValue = spec ? Math.floor((spec.sellGold * item.qualityBps) / 10_000) : 0;
 
               return (
                 <article className="card equipment-card" key={item.id}>

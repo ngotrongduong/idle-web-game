@@ -66,7 +66,8 @@ const messages = {
     "inventory.empty": "Chưa có nguyên liệu. Chạy hầm để nhặt chiến lợi phẩm.",
     "equipment.title": "Kho & Trang bị",
     "equipment.subtitle": "Quản lý trang bị của anh hùng",
-    "equipment.help": "Trang bị chỉ thay đổi chỉ số cho lần chạy hầm tiếp theo. Run đang hoạt động giữ nguyên snapshot cũ để replay luôn khớp.",
+    "equipment.help":
+      "Trang bị chỉ thay đổi chỉ số cho lần chạy hầm tiếp theo. Run đang hoạt động giữ nguyên snapshot cũ để replay luôn khớp.",
     "equipment.empty": "Kho trang bị đang trống",
     "equipment.emptyHint": "M1.6 sẽ cho phép chế tạo trang bị từ nguyên liệu hầm ngục.",
     "equipment.lock": "Khóa",
@@ -148,7 +149,8 @@ const messages = {
     "inventory.empty": "No materials yet. Run dungeons to collect loot.",
     "equipment.title": "Inventory & Equipment",
     "equipment.subtitle": "Manage hero equipment",
-    "equipment.help": "Equipment changes stats for the next dungeon run only. Active runs keep their original snapshots so replay remains deterministic.",
+    "equipment.help":
+      "Equipment changes stats for the next dungeon run only. Active runs keep their original snapshots so replay remains deterministic.",
     "equipment.empty": "Equipment inventory is empty",
     "equipment.emptyHint": "M1.6 will let you craft equipment from dungeon materials.",
     "equipment.lock": "Lock",
