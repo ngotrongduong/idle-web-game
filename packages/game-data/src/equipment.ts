@@ -33,13 +33,13 @@ export const equipmentConfig = EquipmentConfigSchema.parse({
   qualityTiers: [
     { id: "common", nameVi: "Thường", nameEn: "Common", weightBps: 7_000, multiplierBps: 10_000 },
     { id: "fine", nameVi: "Tinh xảo", nameEn: "Fine", weightBps: 2_500, multiplierBps: 11_000 },
-    { id: "rare", nameVi: "Hiếm", nameEn: "Rare", weightBps: 450, multiplierBps: 12_500 },
+    { id: "rare", nameVi: "Hiếm", nameEn: "Rare", weightBps: 450, multiplierBps: 12_000 },
     {
       id: "masterwork",
       nameVi: "Kiệt tác",
       nameEn: "Masterwork",
       weightBps: 50,
-      multiplierBps: 15_000,
+      multiplierBps: 13_000,
     },
   ],
   enhanceBonusBps: [0, 600, 1_200, 1_900, 2_700, 3_600],
@@ -54,6 +54,11 @@ const totalQualityWeight = equipmentConfig.qualityTiers.reduce(
 );
 if (totalQualityWeight !== 10_000) {
   throw new Error(`craft quality weights must total 10000 bps, got ${totalQualityWeight}`);
+}
+// GDD §5.6: crafted quality adds +0–30%.
+export const MAX_CRAFT_QUALITY_BPS = 13_000;
+if (equipmentConfig.qualityTiers.some((tier) => tier.multiplierBps > MAX_CRAFT_QUALITY_BPS)) {
+  throw new Error(`craft quality multipliers must not exceed ${MAX_CRAFT_QUALITY_BPS} bps`);
 }
 
 export function itemSellGold(item: { attack: number; defense: number }): number {

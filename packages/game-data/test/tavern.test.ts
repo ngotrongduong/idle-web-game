@@ -22,6 +22,21 @@ describe("tavern config", () => {
     });
   });
 
+  it("keeps the non-featured offers to common/elite", () => {
+    expect(tavernConfig.secondaryOfferRarityBps).toEqual({
+      common: 7_368,
+      elite: 2_632,
+      rare: 0,
+      legendary: 0,
+    });
+    expect(() =>
+      TavernConfigSchema.parse({
+        ...tavernConfig,
+        secondaryOfferRarityBps: { common: 7_000, elite: 2_500, rare: 450, legendary: 50 },
+      }),
+    ).toThrow("secondary offers must not roll rare or legendary");
+  });
+
   it("rejects rarity probabilities that do not total 10000 bps", () => {
     expect(() =>
       TavernConfigSchema.parse({

@@ -869,7 +869,7 @@ describe("server-authoritative command pipeline", () => {
       payload: {
         cmdId: randomUUID(),
         expectVersion: 0,
-        command: { type: "set_auto_sell", enabled: true, maxQualityBps: 15_000 },
+        command: { type: "set_auto_sell", enabled: true, maxQualityBps: 13_000 },
       },
     });
     expect(settings.statusCode).toBe(200);
@@ -878,7 +878,7 @@ describe("server-authoritative command pipeline", () => {
       events: [
         {
           type: "auto_sell_settings_updated",
-          autoSell: { enabled: true, maxQualityBps: 15_000 },
+          autoSell: { enabled: true, maxQualityBps: 13_000 },
         },
       ],
     });
@@ -914,7 +914,7 @@ describe("server-authoritative command pipeline", () => {
     expect(readSettings.statusCode).toBe(200);
     expect(readSettings.json()).toEqual({
       ok: true,
-      autoSell: { enabled: true, maxQualityBps: 15_000 },
+      autoSell: { enabled: true, maxQualityBps: 13_000 },
     });
   });
 
@@ -947,7 +947,7 @@ describe("server-authoritative command pipeline", () => {
       equippedHeroId: null,
     });
     expect(crafted.qualityBps).toBeGreaterThanOrEqual(10_000);
-    expect(crafted.qualityBps).toBeLessThanOrEqual(15_000);
+    expect(crafted.qualityBps).toBeLessThanOrEqual(13_000);
 
     const balances = new Map(
       (await store.listMaterials(guest.state.id)).map((entry) => [entry.materialId, entry.qty]),

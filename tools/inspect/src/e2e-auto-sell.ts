@@ -10,7 +10,7 @@ if (!databaseUrl) {
 }
 
 const ITEM_ID = "bamboo_training_sword";
-const MAX_QUALITY_BPS = 15_000;
+const MAX_QUALITY_BPS = 13_000;
 const MATERIALS = [
   { materialId: "bamboo_fiber", qty: 10 },
   { materialId: "river_stone", qty: 10 },
@@ -32,6 +32,16 @@ type InventoryItem = {
 };
 
 async function runCommand(page: Page, control: Locator): Promise<CommandBody> {
+  // The UI disables controls while it reloads after the previous command; clicking a disabled
+  // button sends no request, so wait until the control is usable first.
+  await control.waitFor({ state: "visible", timeout: 15_000 });
+  const deadline = Date.now() + 15_000;
+  while (!(await control.isEnabled())) {
+    if (Date.now() > deadline) {
+      throw new Error(`Control stayed disabled: ${await control.textContent()}`);
+    }
+    await page.waitForTimeout(100);
+  }
   const [response] = await Promise.all([
     page.waitForResponse(
       (candidate) =>

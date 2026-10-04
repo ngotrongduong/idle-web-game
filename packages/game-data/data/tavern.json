@@ -16,5 +16,11 @@
   "legendarySoftPityStart": 150,
   "legendarySoftPityStepBps": 10,
   "refreshCooldownSeconds": 7200,
-  "offersPerRefresh": 3
+  "offersPerRefresh": 3,
+  "secondaryOfferRarityBps": {
+    "common": 7368,
+    "elite": 2632,
+    "rare": 0,
+    "legendary": 0
+  }
 }

@@ -18,6 +18,7 @@ export const TavernConfigSchema = z
     legendarySoftPityStepBps: z.number().int().nonnegative(),
     refreshCooldownSeconds: z.number().int().positive(),
     offersPerRefresh: z.number().int().positive(),
+    secondaryOfferRarityBps: RarityBpsSchema,
   })
   .superRefine((config, context) => {
     const total = Object.values(config.baseRarityBps).reduce((sum, value) => sum + value, 0);
@@ -25,6 +26,20 @@ export const TavernConfigSchema = z
       context.addIssue({
         code: "custom",
         message: `base rarity probabilities must total 10000 bps, got ${total}`,
+      });
+    }
+
+    const secondary = config.secondaryOfferRarityBps;
+    if (secondary.common + secondary.elite + secondary.rare + secondary.legendary !== 10_000) {
+      context.addIssue({
+        code: "custom",
+        message: "secondary offer rarity probabilities must total 10000 bps",
+      });
+    }
+    if (secondary.rare !== 0 || secondary.legendary !== 0) {
+      context.addIssue({
+        code: "custom",
+        message: "secondary offers must not roll rare or legendary (pity only covers offer 1)",
       });
     }
 

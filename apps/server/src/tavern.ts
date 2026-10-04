@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import type { TavernOffer } from "@idle/api-contract";
 import {
+  rollSecondaryOfferRarity,
   rollTavernRarity,
   SeededRng,
   type TavernPityState,
@@ -62,14 +63,7 @@ export function refreshTavernOffers(
     const rarity =
       index === 0
         ? featured.rarity
-        : rollTavernRarity(
-            rng,
-            {
-              refreshesSinceRarePlus: 0,
-              refreshesSinceLegendary: 0,
-            },
-            rarityRules,
-          ).rarity;
+        : rollSecondaryOfferRarity(rng, tavernConfig.secondaryOfferRarityBps);
 
     offers.push({
       id: randomUUID(),
@@ -78,12 +72,10 @@ export function refreshTavernOffers(
     });
   }
 
-  // Pity counts refreshes without a hit, so a rare/legendary in any offer slot resets it.
-  const anyLegendary = offers.some((offer) => offer.rarity === "legendary");
-  const anyRarePlus = anyLegendary || offers.some((offer) => offer.rarity === "rare");
+  // Only offer 1 can be rare+, so pity follows the featured roll.
   return {
-    refreshesSinceRarePlus: anyRarePlus ? 0 : featured.nextPity.refreshesSinceRarePlus,
-    refreshesSinceLegendary: anyLegendary ? 0 : featured.nextPity.refreshesSinceLegendary,
+    refreshesSinceRarePlus: featured.nextPity.refreshesSinceRarePlus,
+    refreshesSinceLegendary: featured.nextPity.refreshesSinceLegendary,
     nextFreeRefreshAt: new Date(now.getTime() + TAVERN_REFRESH_MS),
     offers,
   };

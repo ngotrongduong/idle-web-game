@@ -30,6 +30,23 @@ function assertNonNegativeInteger(value: number, label: string): void {
   }
 }
 
+/**
+ * Rarity for the non-featured offers of a refresh. These slots never touch pity and, per docs/03
+ * §7, roll only common/elite so a refresh contains a rare+ about once in 20.
+ */
+export function rollSecondaryOfferRarity(
+  rng: SeededRng,
+  weights: Record<HeroRarity, number>,
+): HeroRarity {
+  const roll = rng.nextInt(BPS);
+  let cursor = 0;
+  for (const rarity of ["legendary", "rare", "elite", "common"] as const) {
+    cursor += weights[rarity];
+    if (roll < cursor) return rarity;
+  }
+  return "common";
+}
+
 function legendaryChanceBps(state: TavernPityState, rules: TavernRarityRules): number {
   const attempt = state.refreshesSinceLegendary + 1;
   const softSteps = Math.max(0, attempt - rules.legendarySoftPityStart + 1);

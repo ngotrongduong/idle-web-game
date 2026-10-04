@@ -111,7 +111,7 @@ M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tun
   - craft gold sink remains intentionally disabled until cost can scale by item/tier
 - M1.6 crafting/enhancement (implemented):
   - recipes are read directly from validated `items.csv` and crafting consumes player materials inside the player transaction
-  - provisional closed-beta quality tiers live in `game-data/equipment.ts`: Common 70% ×1.00, Fine 25% ×1.10, Rare 4.5% ×1.25, Masterwork 0.5% ×1.50
+  - provisional closed-beta quality tiers live in `game-data/equipment.ts`: Common 70% ×1.00, Fine 25% ×1.10, Rare 4.5% ×1.20, Masterwork 0.5% ×1.30 (capped at +30% per GDD §5.6; migration `0011` remaps older 12500/15000 rows once, recorded in `data_migrations`)
   - enhancement +1…+5 uses documented success rates 100/95/90/80/70%, pity +5% per failure and documented stat bonuses +6/+12/+19/+27/+36%
   - current +1…+5 cost is gold-only (100/160/256/410/655); Forging Dust is intentionally deferred because the game currently has no earnable Forging Dust material/source
   - quality and enhancement multipliers are included in newly started dungeon snapshots

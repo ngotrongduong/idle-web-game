@@ -180,12 +180,12 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
 
     await store.setAutoSellSettings(player.id, {
       enabled: true,
-      maxQualityBps: 12_500,
+      maxQualityBps: 12_000,
     });
 
     expect(await store.getAutoSellSettings(player.id)).toEqual({
       enabled: true,
-      maxQualityBps: 12_500,
+      maxQualityBps: 12_000,
     });
   });
 

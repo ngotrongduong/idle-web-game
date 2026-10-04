@@ -27,6 +27,10 @@ describe("Forge odds", () => {
     expect(equipmentConfig.qualityTiers.map((tier) => tier.weightBps)).toEqual([
       7_000, 2_500, 450, 50,
     ]);
+    // GDD §5.6: crafted quality adds +0–30%.
+    expect(equipmentConfig.qualityTiers.map((tier) => tier.multiplierBps)).toEqual([
+      10_000, 11_000, 12_000, 13_000,
+    ]);
     for (const tier of equipmentConfig.qualityTiers) {
       const expected = tier.weightBps / 10_000;
       const observed = (counts.get(tier.multiplierBps) ?? 0) / samples;

@@ -45,6 +45,7 @@ export {
   heroCapacityForHall,
 } from "./economy.js";
 export {
+  rollSecondaryOfferRarity,
   rollTavernRarity,
   type HeroRarity,
   type TavernPityState,

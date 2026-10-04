@@ -12,13 +12,6 @@ function refreshWith(seed: number) {
   );
 }
 
-function findSeed(predicate: (state: ReturnType<typeof refreshWith>) => boolean) {
-  for (let seed = 0; seed < 200_000; seed += 1) {
-    if (predicate(refreshWith(seed))) return seed;
-  }
-  throw new Error("no matching seed");
-}
-
 describe("tavern refresh", () => {
   it("reads the cooldown and offer count from game-data", () => {
     const state = refreshWith(1);
@@ -27,39 +20,45 @@ describe("tavern refresh", () => {
     expect(state.nextFreeRefreshAt.getTime() - now.getTime()).toBe(TAVERN_REFRESH_MS);
   });
 
-  it("resets rare+ pity when a non-featured offer rolls rare", () => {
-    const seed = findSeed(
-      (state) =>
-        state.offers[0]!.rarity !== "rare" &&
-        state.offers[0]!.rarity !== "legendary" &&
-        state.offers.slice(1).some((offer) => offer.rarity === "rare") &&
-        !state.offers.some((offer) => offer.rarity === "legendary"),
-    );
-    expect(refreshWith(seed)).toMatchObject({
-      refreshesSinceRarePlus: 0,
-      refreshesSinceLegendary: 11,
-    });
+  it("only lets the featured offer roll rare or legendary", () => {
+    for (let seed = 0; seed < 20_000; seed += 1) {
+      const secondary = refreshWith(seed).offers.slice(1);
+      expect(
+        secondary.every((offer) => offer.rarity === "common" || offer.rarity === "elite"),
+      ).toBe(true);
+    }
   });
 
-  it("resets both pity counters when a non-featured offer rolls legendary", () => {
-    const seed = findSeed(
-      (state) =>
-        state.offers[0]!.rarity !== "legendary" &&
-        state.offers.slice(1).some((offer) => offer.rarity === "legendary"),
-    );
-    expect(refreshWith(seed)).toMatchObject({
-      refreshesSinceRarePlus: 0,
-      refreshesSinceLegendary: 0,
-    });
+  it("contains a rare+ hero once per 20 refreshes before pity, ~1 per 17 with it (docs/03 §7)", () => {
+    const refreshes = 120_000;
+    let state = emptyTavernState();
+    let withRarePlus = 0;
+    let longestDrought = 0;
+    for (let index = 0; index < refreshes; index += 1) {
+      state = refreshTavernOffers(state, now, (Math.imul(index, 2654435761) + 17) >>> 0);
+      if (state.offers.some((offer) => offer.rarity === "rare" || offer.rarity === "legendary")) {
+        withRarePlus += 1;
+      }
+      longestDrought = Math.max(longestDrought, state.refreshesSinceRarePlus);
+    }
+
+    // Base rare+ is 5%; hard pity at 40 makes the mean wait (1 - 0.95^40) / 0.05 ≈ 17.4 refreshes,
+    // i.e. ≈5.7%, plus a little from legendary soft pity.
+    const rate = withRarePlus / refreshes;
+    expect(rate).toBeGreaterThan(0.055);
+    expect(rate).toBeLessThan(0.063);
+    expect(longestDrought).toBeLessThan(tavernConfig.rarePityRefreshes);
   });
 
-  it("keeps counting when no offer reaches the tier", () => {
-    const seed = findSeed((state) =>
-      state.offers.every((offer) => offer.rarity === "common" || offer.rarity === "elite"),
-    );
-    expect(refreshWith(seed)).toMatchObject({
-      refreshesSinceRarePlus: 11,
-      refreshesSinceLegendary: 11,
-    });
+  it("advances pity from the featured roll only", () => {
+    const state = refreshWith(3);
+    const featured = state.offers[0]!.rarity;
+    if (featured === "legendary") {
+      expect(state).toMatchObject({ refreshesSinceRarePlus: 0, refreshesSinceLegendary: 0 });
+    } else if (featured === "rare") {
+      expect(state).toMatchObject({ refreshesSinceRarePlus: 0, refreshesSinceLegendary: 11 });
+    } else {
+      expect(state).toMatchObject({ refreshesSinceRarePlus: 11, refreshesSinceLegendary: 11 });
+    }
   });
 });
