@@ -54,11 +54,7 @@ function sendStored(reply: FastifyReply, outcome: StoredCommandOutcome) {
   return reply.code(outcome.statusCode).send(outcome.body);
 }
 
-async function accrueActiveDungeonRuns(
-  store: GameStore,
-  playerId: string,
-  now = new Date(),
-) {
+async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now = new Date()) {
   const runs = await store.listDungeonRuns(playerId);
   const accruedRuns = [];
 
@@ -613,18 +609,15 @@ export function buildServer(options?: { store?: GameStore }) {
         if (!existing) {
           const missingRun: StoredCommandOutcome = {
             statusCode: 409,
-            body: apiError(
-              "DUNGEON_RUN_NOT_FOUND",
-              "Dungeon run was not found",
-              state.version,
-            ),
+            body: apiError("DUNGEON_RUN_NOT_FOUND", "Dungeon run was not found", state.version),
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, missingRun);
           return missingRun;
         }
 
         const accrued = accrueDungeonRunRewards(existing);
-        const run = accrued === existing ? existing : await store.updateDungeonRun(playerId, accrued);
+        const run =
+          accrued === existing ? existing : await store.updateDungeonRun(playerId, accrued);
 
         if (run.pendingCycles <= 0) {
           const empty: StoredCommandOutcome = {
