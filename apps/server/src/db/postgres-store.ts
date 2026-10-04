@@ -237,16 +237,18 @@ export class PostgresGameStore implements GameStore {
       ...input,
     };
 
-    await this.database().insert(heroes).values({
-      id: hero.id,
-      playerId,
-      classId: hero.classId,
-      rarity: hero.rarity,
-      level: hero.level,
-      exp: hero.exp,
-      potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
-      createdAt: new Date(),
-    });
+    await this.database()
+      .insert(heroes)
+      .values({
+        id: hero.id,
+        playerId,
+        classId: hero.classId,
+        rarity: hero.rarity,
+        level: hero.level,
+        exp: hero.exp,
+        potential: hero.potential ?? { hp: 0, attack: 0, defense: 0, speed: 0 },
+        createdAt: new Date(),
+      });
 
     return {
       ...hero,
