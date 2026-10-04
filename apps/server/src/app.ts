@@ -1070,8 +1070,9 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "unequip_item") {
+        const { itemInstanceId } = envelope.command;
         const item = (await store.listItems(playerId)).find(
-          (candidate) => candidate.id === envelope.command.itemInstanceId,
+          (candidate) => candidate.id === itemInstanceId,
         );
         if (!item) {
           const missing: StoredCommandOutcome = {
@@ -1100,8 +1101,9 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "set_item_locked") {
+        const { itemInstanceId, locked: shouldLock } = envelope.command;
         const item = (await store.listItems(playerId)).find(
-          (candidate) => candidate.id === envelope.command.itemInstanceId,
+          (candidate) => candidate.id === itemInstanceId,
         );
         if (!item) {
           const missing: StoredCommandOutcome = {
@@ -1114,7 +1116,7 @@ export function buildServer(options?: { store?: GameStore }) {
 
         const lockedItem = await store.setItem(playerId, {
           ...item,
-          locked: envelope.command.locked,
+          locked: shouldLock,
         });
         const nextState = { ...state, version: state.version + 1 };
         await store.setPlayer(nextState);
@@ -1130,8 +1132,9 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "sell_item") {
+        const { itemInstanceId } = envelope.command;
         const item = (await store.listItems(playerId)).find(
-          (candidate) => candidate.id === envelope.command.itemInstanceId,
+          (candidate) => candidate.id === itemInstanceId,
         );
         if (!item) {
           const missing: StoredCommandOutcome = {
