@@ -119,6 +119,11 @@ export const dungeonRuns = pgTable(
     waves: jsonb("waves").$type<DungeonWaveReplay[]>().notNull(),
     startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
     stoppedAt: timestamp("stopped_at", { withTimezone: true }),
+    lastAccruedAt: timestamp("last_accrued_at", { withTimezone: true }).notNull(),
+    pendingCycles: integer("pending_cycles").notNull().default(0),
+    pendingGold: integer("pending_gold").notNull().default(0),
+    pendingExpPerHero: integer("pending_exp_per_hero").notNull().default(0),
+    completedCycles: integer("completed_cycles").notNull().default(0),
   },
   (table) => [index("dungeon_runs_player_id_idx").on(table.playerId)],
 );

@@ -7,7 +7,7 @@ import type {
   TavernOffer,
   Team,
 } from "@idle/api-contract";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, eq, gt, inArray, lt, sql } from "drizzle-orm";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool, type PoolClient } from "pg";
 import {
@@ -247,6 +247,17 @@ export class PostgresGameStore implements GameStore {
     return hero;
   }
 
+  async addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]> {
+    if (heroIds.length === 0 || expEach === 0) return [];
+
+    await this.database()
+      .update(heroes)
+      .set({ exp: sql`${heroes.exp} + ${expEach}` })
+      .where(and(eq(heroes.playerId, playerId), inArray(heroes.id, heroIds)));
+
+    return (await this.listHeroes(playerId)).filter((hero) => heroIds.includes(hero.id));
+  }
+
   async listTeams(playerId: string): Promise<Team[]> {
     const rows = await this.database()
       .select({
@@ -293,6 +304,11 @@ export class PostgresGameStore implements GameStore {
         waves: dungeonRuns.waves,
         startedAt: dungeonRuns.startedAt,
         stoppedAt: dungeonRuns.stoppedAt,
+        lastAccruedAt: dungeonRuns.lastAccruedAt,
+        pendingCycles: dungeonRuns.pendingCycles,
+        pendingGold: dungeonRuns.pendingGold,
+        pendingExpPerHero: dungeonRuns.pendingExpPerHero,
+        completedCycles: dungeonRuns.completedCycles,
       })
       .from(dungeonRuns)
       .where(eq(dungeonRuns.playerId, playerId));
@@ -307,6 +323,11 @@ export class PostgresGameStore implements GameStore {
       waves: row.waves,
       startedAt: row.startedAt.toISOString(),
       stoppedAt: row.stoppedAt?.toISOString() ?? null,
+      lastAccruedAt: row.lastAccruedAt.toISOString(),
+      pendingCycles: row.pendingCycles,
+      pendingGold: row.pendingGold,
+      pendingExpPerHero: row.pendingExpPerHero,
+      completedCycles: row.completedCycles,
     }));
   }
 
@@ -329,7 +350,34 @@ export class PostgresGameStore implements GameStore {
         waves: run.waves,
         startedAt: new Date(run.startedAt),
         stoppedAt: run.stoppedAt ? new Date(run.stoppedAt) : null,
+        lastAccruedAt: new Date(run.lastAccruedAt),
+        pendingCycles: run.pendingCycles,
+        pendingGold: run.pendingGold,
+        pendingExpPerHero: run.pendingExpPerHero,
+        completedCycles: run.completedCycles,
       });
+
+    return run;
+  }
+
+  async updateDungeonRun(playerId: string, run: DungeonRun): Promise<DungeonRun> {
+    const [row] = await this.database()
+      .update(dungeonRuns)
+      .set({
+        status: run.status,
+        stoppedAt: run.stoppedAt ? new Date(run.stoppedAt) : null,
+        lastAccruedAt: new Date(run.lastAccruedAt),
+        pendingCycles: run.pendingCycles,
+        pendingGold: run.pendingGold,
+        pendingExpPerHero: run.pendingExpPerHero,
+        completedCycles: run.completedCycles,
+      })
+      .where(and(eq(dungeonRuns.playerId, playerId), eq(dungeonRuns.id, run.id)))
+      .returning({ id: dungeonRuns.id });
+
+    if (!row) {
+      throw new Error(`Dungeon run ${run.id} was not found`);
+    }
 
     return run;
   }
@@ -362,6 +410,11 @@ export class PostgresGameStore implements GameStore {
         waves: dungeonRuns.waves,
         startedAt: dungeonRuns.startedAt,
         stoppedAt: dungeonRuns.stoppedAt,
+        lastAccruedAt: dungeonRuns.lastAccruedAt,
+        pendingCycles: dungeonRuns.pendingCycles,
+        pendingGold: dungeonRuns.pendingGold,
+        pendingExpPerHero: dungeonRuns.pendingExpPerHero,
+        completedCycles: dungeonRuns.completedCycles,
       });
 
     return row
@@ -375,6 +428,11 @@ export class PostgresGameStore implements GameStore {
           waves: row.waves,
           startedAt: row.startedAt.toISOString(),
           stoppedAt: row.stoppedAt?.toISOString() ?? null,
+          lastAccruedAt: row.lastAccruedAt.toISOString(),
+          pendingCycles: row.pendingCycles,
+          pendingGold: row.pendingGold,
+          pendingExpPerHero: row.pendingExpPerHero,
+          completedCycles: row.completedCycles,
         }
       : undefined;
   }

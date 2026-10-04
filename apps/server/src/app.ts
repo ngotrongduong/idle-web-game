@@ -27,6 +27,7 @@ import {
   createDungeonSeed,
   simulateDungeonCycle,
 } from "./dungeon.js";
+import { accrueDungeonRunRewards } from "./idle.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
 import { emptyTavernState, refreshTavernOffers, serializeTavernState } from "./tavern.js";
@@ -51,6 +52,25 @@ async function authenticate(
 
 function sendStored(reply: FastifyReply, outcome: StoredCommandOutcome) {
   return reply.code(outcome.statusCode).send(outcome.body);
+}
+
+async function accrueActiveDungeonRuns(
+  store: GameStore,
+  playerId: string,
+  now = new Date(),
+) {
+  const runs = await store.listDungeonRuns(playerId);
+  const accruedRuns = [];
+
+  for (const run of runs) {
+    const accrued = accrueDungeonRunRewards(run, now);
+    accruedRuns.push(accrued);
+    if (accrued !== run) {
+      await store.updateDungeonRun(playerId, accrued);
+    }
+  }
+
+  return accruedRuns;
 }
 
 export function buildServer(options?: { store?: GameStore }) {
@@ -126,9 +146,13 @@ export function buildServer(options?: { store?: GameStore }) {
       return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
     }
 
+    const runs = await store.withPlayerLock(playerId, () =>
+      accrueActiveDungeonRuns(store, playerId),
+    );
+
     return DungeonRunsResponseSchema.parse({
       ok: true,
-      runs: await store.listDungeonRuns(playerId),
+      runs,
     });
   });
 
@@ -513,6 +537,11 @@ export function buildServer(options?: { store?: GameStore }) {
           status: "active",
           startedAt,
           stoppedAt: null,
+          lastAccruedAt: startedAt,
+          pendingCycles: 0,
+          pendingGold: 0,
+          pendingExpPerHero: 0,
+          completedCycles: 0,
           waves,
         });
 
@@ -537,6 +566,7 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "stop_dungeon") {
+        await accrueActiveDungeonRuns(store, playerId);
         const run = await store.stopDungeonRun(
           playerId,
           envelope.command.runId,
@@ -566,6 +596,96 @@ export function buildServer(options?: { store?: GameStore }) {
           version: nextState.version,
           patch: {},
           events: [{ type: "dungeon_stopped", run }],
+        });
+        const stored: StoredCommandOutcome = {
+          statusCode: 200,
+          body: success,
+        };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "claim_dungeon_rewards") {
+        const existing = (await store.listDungeonRuns(playerId)).find(
+          (run) => run.id === envelope.command.runId,
+        );
+
+        if (!existing) {
+          const missingRun: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_RUN_NOT_FOUND",
+              "Dungeon run was not found",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missingRun);
+          return missingRun;
+        }
+
+        const accrued = accrueDungeonRunRewards(existing);
+        const run = accrued === existing ? existing : await store.updateDungeonRun(playerId, accrued);
+
+        if (run.pendingCycles <= 0) {
+          const empty: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "DUNGEON_REWARDS_EMPTY",
+              "No completed idle dungeon cycles are ready to claim",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, empty);
+          return empty;
+        }
+
+        const heroIds = [...new Set(run.waves[0]?.allies.map((hero) => hero.id) ?? [])];
+        if (heroIds.length === 0) {
+          const staleTeam: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "TEAM_HERO_NOT_FOUND",
+              "Dungeon run does not contain a valid hero snapshot",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, staleTeam);
+          return staleTeam;
+        }
+
+        const claimedCycles = run.pendingCycles;
+        const claimedGold = run.pendingGold;
+        const claimedExpPerHero = run.pendingExpPerHero;
+
+        await store.addHeroExp(playerId, heroIds, claimedExpPerHero);
+        await store.updateDungeonRun(playerId, {
+          ...run,
+          pendingCycles: 0,
+          pendingGold: 0,
+          pendingExpPerHero: 0,
+        });
+
+        const nextState: FoundationPlayerState = {
+          ...state,
+          version: state.version + 1,
+          gold: state.gold + claimedGold,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: { gold: nextState.gold },
+          events: [
+            {
+              type: "dungeon_rewards_claimed",
+              runId: run.id,
+              cycles: claimedCycles,
+              gold: claimedGold,
+              expPerHero: claimedExpPerHero,
+              heroIds,
+            },
+          ],
         });
         const stored: StoredCommandOutcome = {
           statusCode: 200,

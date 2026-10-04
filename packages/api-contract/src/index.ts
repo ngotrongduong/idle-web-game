@@ -132,6 +132,11 @@ export const DungeonRunSchema = z.object({
   status: z.enum(["active", "stopped"]),
   startedAt: z.string().datetime(),
   stoppedAt: z.string().datetime().nullable(),
+  lastAccruedAt: z.string().datetime(),
+  pendingCycles: z.number().int().nonnegative(),
+  pendingGold: z.number().int().nonnegative(),
+  pendingExpPerHero: z.number().int().nonnegative(),
+  completedCycles: z.number().int().nonnegative(),
   waves: z.array(DungeonWaveReplaySchema).min(1).max(20),
 });
 
@@ -172,6 +177,11 @@ export const StopDungeonCommandSchema = z.object({
   runId: z.string().uuid(),
 });
 
+export const ClaimDungeonRewardsCommandSchema = z.object({
+  type: z.literal("claim_dungeon_rewards"),
+  runId: z.string().uuid(),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
@@ -179,6 +189,7 @@ export const CommandSchema = z.discriminatedUnion("type", [
   SetTeamCommandSchema,
   StartDungeonCommandSchema,
   StopDungeonCommandSchema,
+  ClaimDungeonRewardsCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -229,6 +240,15 @@ const DungeonStoppedEventSchema = z.object({
   run: DungeonRunSchema,
 });
 
+const DungeonRewardsClaimedEventSchema = z.object({
+  type: z.literal("dungeon_rewards_claimed"),
+  runId: z.string().uuid(),
+  cycles: z.number().int().positive(),
+  gold: z.number().int().nonnegative(),
+  expPerHero: z.number().int().nonnegative(),
+  heroIds: z.array(z.string().uuid()).min(1).max(4),
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
@@ -236,6 +256,7 @@ export const CommandEventSchema = z.discriminatedUnion("type", [
   TeamUpdatedEventSchema,
   DungeonStartedEventSchema,
   DungeonStoppedEventSchema,
+  DungeonRewardsClaimedEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -265,6 +286,7 @@ export const ApiErrorCodeSchema = z.enum([
   "DUNGEON_NOT_FOUND",
   "DUNGEON_RUN_ALREADY_ACTIVE",
   "DUNGEON_RUN_NOT_FOUND",
+  "DUNGEON_REWARDS_EMPTY",
 ]);
 
 export const ApiErrorSchema = z.object({

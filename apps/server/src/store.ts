@@ -30,10 +30,12 @@ export interface GameStore {
   setTavernState(playerId: string, state: StoredTavernState): Promise<void>;
   listHeroes(playerId: string): Promise<Hero[]>;
   createHero(playerId: string, input: Omit<Hero, "id">): Promise<Hero>;
+  addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
   createDungeonRun(playerId: string, input: Omit<DungeonRun, "id">): Promise<DungeonRun>;
+  updateDungeonRun(playerId: string, run: DungeonRun): Promise<DungeonRun>;
   stopDungeonRun(
     playerId: string,
     runId: string,
@@ -142,6 +144,16 @@ export class InMemoryGameStore implements GameStore {
     return { ...hero };
   }
 
+  async addHeroExp(playerId: string, heroIds: string[], expEach: number): Promise<Hero[]> {
+    const targetIds = new Set(heroIds);
+    const heroes = this.heroes.get(playerId) ?? [];
+    const updated = heroes.map((hero) =>
+      targetIds.has(hero.id) ? { ...hero, exp: hero.exp + expEach } : hero,
+    );
+    this.heroes.set(playerId, updated);
+    return updated.filter((hero) => targetIds.has(hero.id)).map((hero) => ({ ...hero }));
+  }
+
   async listTeams(playerId: string): Promise<Team[]> {
     return [...(this.teams.get(playerId)?.values() ?? [])]
       .sort((left, right) => left.slot - right.slot)
@@ -170,6 +182,18 @@ export class InMemoryGameStore implements GameStore {
     };
     const runs = this.dungeonRuns.get(playerId) ?? [];
     runs.push(copyDungeonRun(run));
+    this.dungeonRuns.set(playerId, runs);
+    return copyDungeonRun(run);
+  }
+
+  async updateDungeonRun(playerId: string, run: DungeonRun): Promise<DungeonRun> {
+    const runs = this.dungeonRuns.get(playerId) ?? [];
+    const index = runs.findIndex((candidate) => candidate.id === run.id);
+    if (index < 0) {
+      throw new Error(`Dungeon run ${run.id} was not found`);
+    }
+
+    runs[index] = copyDungeonRun(run);
     this.dungeonRuns.set(playerId, runs);
     return copyDungeonRun(run);
   }

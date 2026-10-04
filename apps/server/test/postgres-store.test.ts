@@ -194,6 +194,12 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     });
 
     expect(await store.listHeroes(player.id)).toContainEqual(hero);
+
+    await store.addHeroExp(player.id, [hero.id], 25);
+    expect(await store.listHeroes(player.id)).toContainEqual({
+      ...hero,
+      exp: 25,
+    });
   });
   it("persists and stops dungeon run snapshots", async () => {
     const store = createStore();
@@ -220,6 +226,11 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       status: "active",
       startedAt,
       stoppedAt: null,
+      lastAccruedAt: startedAt,
+      pendingCycles: 0,
+      pendingGold: 0,
+      pendingExpPerHero: 0,
+      completedCycles: 0,
       waves: [
         {
           wave: 1,

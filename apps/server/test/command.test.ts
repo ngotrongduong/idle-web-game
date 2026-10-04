@@ -282,6 +282,116 @@ describe("server-authoritative command pipeline", () => {
     expect(reuseHero.statusCode).toBe(409);
     expect(reuseHero.json().code).toBe("TEAM_HERO_ALREADY_ASSIGNED");
   });
+  it("accrues idle dungeon cycles and claims gold plus EXP exactly once", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    await store.setTeam(guest.state.id, {
+      slot: 1,
+      heroIds: [hero.id],
+    });
+
+    const start = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: {
+          type: "start_dungeon",
+          dungeonId: "bamboo_grove",
+          teamSlot: 1,
+        },
+      },
+    });
+    expect(start.statusCode).toBe(200);
+
+    const run = start.json().events[0].run;
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1_000).toISOString();
+    await store.updateDungeonRun(guest.state.id, {
+      ...run,
+      lastAccruedAt: tenMinutesAgo,
+    });
+
+    const goldPerCycle = run.waves.reduce(
+      (sum: number, wave: { rewardGold: number }) => sum + wave.rewardGold,
+      0,
+    );
+    const expPerCycle = run.waves.reduce(
+      (sum: number, wave: { rewardExp: number }) => sum + wave.rewardExp,
+      0,
+    );
+
+    const claim = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: {
+          type: "claim_dungeon_rewards",
+          runId: run.id,
+        },
+      },
+    });
+
+    expect(claim.statusCode).toBe(200);
+    expect(claim.json()).toMatchObject({
+      ok: true,
+      version: 2,
+      patch: { gold: 1_000 + goldPerCycle * 7 },
+      events: [
+        {
+          type: "dungeon_rewards_claimed",
+          runId: run.id,
+          cycles: 7,
+          gold: goldPerCycle * 7,
+          expPerHero: expPerCycle * 7,
+          heroIds: [hero.id],
+        },
+      ],
+    });
+
+    expect(await store.listHeroes(guest.state.id)).toContainEqual({
+      ...hero,
+      exp: expPerCycle * 7,
+    });
+
+    const [claimedRun] = await store.listDungeonRuns(guest.state.id);
+    expect(claimedRun).toMatchObject({
+      pendingCycles: 0,
+      pendingGold: 0,
+      pendingExpPerHero: 0,
+      completedCycles: 7,
+    });
+
+    const duplicate = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 2,
+        command: {
+          type: "claim_dungeon_rewards",
+          runId: run.id,
+        },
+      },
+    });
+    expect(duplicate.statusCode).toBe(409);
+    expect(duplicate.json().code).toBe("DUNGEON_REWARDS_EMPTY");
+  });
+
   it("starts and stops a replay-safe six-wave dungeon run", async () => {
     const store = new InMemoryGameStore();
     const app = buildServer({ store });

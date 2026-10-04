@@ -17,4 +17,5 @@ export {
 
 export const foundationGameData = validateGameData(generatedConfig);
 
+export { IdleConfigSchema, idleConfig, type IdleConfig } from "./idle.js";
 export { TavernConfigSchema, tavernConfig, type TavernConfig } from "./tavern.js";

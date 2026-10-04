@@ -1,6 +1,11 @@
 export { fnv1a32 } from "./hash.js";
 export { SeededRng } from "./rng.js";
 export {
+  calculateIdleAccrual,
+  type IdleAccrualInput,
+  type IdleAccrualResult,
+} from "./idle.js";
+export {
   DEFAULT_BATTLE_RULES,
   scaleStat,
   simulateWave,
