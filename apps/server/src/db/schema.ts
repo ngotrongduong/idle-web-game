@@ -98,7 +98,6 @@ export const teams = pgTable(
   ],
 );
 
-
 export const dungeonRuns = pgTable(
   "dungeon_runs",
   {

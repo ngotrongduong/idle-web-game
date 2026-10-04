@@ -34,7 +34,11 @@ export interface GameStore {
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
   createDungeonRun(playerId: string, input: Omit<DungeonRun, "id">): Promise<DungeonRun>;
-  stopDungeonRun(playerId: string, runId: string, stoppedAt: string): Promise<DungeonRun | undefined>;
+  stopDungeonRun(
+    playerId: string,
+    runId: string,
+    stoppedAt: string,
+  ): Promise<DungeonRun | undefined>;
   withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T>;
   close?(): Promise<void>;
 }
@@ -46,7 +50,6 @@ function copyTavernState(state: StoredTavernState): StoredTavernState {
     offers: state.offers.map((offer) => ({ ...offer })),
   };
 }
-
 
 function copyDungeonRun(run: DungeonRun): DungeonRun {
   return {
@@ -160,10 +163,7 @@ export class InMemoryGameStore implements GameStore {
     return (this.dungeonRuns.get(playerId) ?? []).map(copyDungeonRun);
   }
 
-  async createDungeonRun(
-    playerId: string,
-    input: Omit<DungeonRun, "id">,
-  ): Promise<DungeonRun> {
+  async createDungeonRun(playerId: string, input: Omit<DungeonRun, "id">): Promise<DungeonRun> {
     const run: DungeonRun = {
       id: randomUUID(),
       ...input,

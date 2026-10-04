@@ -75,7 +75,6 @@ export const TeamsResponseSchema = z.object({
   teams: z.array(TeamSchema).max(4),
 });
 
-
 export const BattleUnitSnapshotSchema = z.object({
   id: z.string().min(1),
   hp: z.number().int().positive(),

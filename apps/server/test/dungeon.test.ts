@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Hero } from "@idle/api-contract";
 import { foundationGameData } from "@idle/game-data";
-import {
-  deriveWaveSeed,
-  heroToCombatant,
-  simulateDungeonCycle,
-} from "../src/dungeon.js";
+import { deriveWaveSeed, heroToCombatant, simulateDungeonCycle } from "../src/dungeon.js";
 
 const heroes: Hero[] = [
   {
@@ -40,9 +36,7 @@ describe("dungeon replay generation", () => {
     expect(left).toEqual(right);
     expect(left).toHaveLength(6);
     expect(left.map((wave) => wave.seed)).toEqual(
-      Array.from({ length: 6 }, (_, index) =>
-        deriveWaveSeed(123_456, index + 1),
-      ),
+      Array.from({ length: 6 }, (_, index) => deriveWaveSeed(123_456, index + 1)),
     );
   });
 
@@ -53,8 +47,7 @@ describe("dungeon replay generation", () => {
       seed: 42,
     });
     const boss = foundationGameData.enemies.find(
-      (enemy) =>
-        enemy.dungeonId === "bamboo_grove" && enemy.rank === "boss",
+      (enemy) => enemy.dungeonId === "bamboo_grove" && enemy.rank === "boss",
     );
 
     expect(boss).toBeDefined();

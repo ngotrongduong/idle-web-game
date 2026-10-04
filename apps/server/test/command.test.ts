@@ -349,5 +349,4 @@ describe("server-authoritative command pipeline", () => {
     expect(stop.json().events[0].run.status).toBe("stopped");
     expect(stop.json().events[0].run.stoppedAt).toBeTruthy();
   });
-
 });

@@ -247,5 +247,4 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       stoppedAt,
     });
   });
-
 });

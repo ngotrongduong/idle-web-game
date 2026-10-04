@@ -22,10 +22,7 @@ import {
   SESSION_COOKIE,
   sessionCookieHeader,
 } from "./session.js";
-import {
-  createDungeonSeed,
-  simulateDungeonCycle,
-} from "./dungeon.js";
+import { createDungeonSeed, simulateDungeonCycle } from "./dungeon.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
 import { emptyTavernState, refreshTavernOffers, serializeTavernState } from "./tavern.js";
@@ -427,9 +424,7 @@ export function buildServer(options?: { store?: GameStore }) {
 
       if (envelope.command.type === "start_dungeon") {
         const { dungeonId, teamSlot } = envelope.command;
-        const dungeon = foundationGameData.dungeons.find(
-          (entry) => entry.id === dungeonId,
-        );
+        const dungeon = foundationGameData.dungeons.find((entry) => entry.id === dungeonId);
         if (!dungeon) {
           const missingDungeon: StoredCommandOutcome = {
             statusCode: 409,
@@ -460,11 +455,7 @@ export function buildServer(options?: { store?: GameStore }) {
         if (team.heroIds.length === 0) {
           const emptyTeam: StoredCommandOutcome = {
             statusCode: 409,
-            body: apiError(
-              "TEAM_EMPTY",
-              `Team slot ${teamSlot} has no heroes`,
-              state.version,
-            ),
+            body: apiError("TEAM_EMPTY", `Team slot ${teamSlot} has no heroes`, state.version),
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, emptyTeam);
           return emptyTeam;

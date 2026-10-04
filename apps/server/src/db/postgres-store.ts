@@ -308,26 +308,25 @@ export class PostgresGameStore implements GameStore {
     }));
   }
 
-  async createDungeonRun(
-    playerId: string,
-    input: Omit<DungeonRun, "id">,
-  ): Promise<DungeonRun> {
+  async createDungeonRun(playerId: string, input: Omit<DungeonRun, "id">): Promise<DungeonRun> {
     const run: DungeonRun = {
       id: randomUUID(),
       ...input,
     };
 
-    await this.database().insert(dungeonRuns).values({
-      id: run.id,
-      playerId,
-      dungeonId: run.dungeonId,
-      teamSlot: run.teamSlot,
-      seed: run.seed,
-      status: run.status,
-      waves: run.waves,
-      startedAt: new Date(run.startedAt),
-      stoppedAt: run.stoppedAt ? new Date(run.stoppedAt) : null,
-    });
+    await this.database()
+      .insert(dungeonRuns)
+      .values({
+        id: run.id,
+        playerId,
+        dungeonId: run.dungeonId,
+        teamSlot: run.teamSlot,
+        seed: run.seed,
+        status: run.status,
+        waves: run.waves,
+        startedAt: new Date(run.startedAt),
+        stoppedAt: run.stoppedAt ? new Date(run.stoppedAt) : null,
+      });
 
     return run;
   }
