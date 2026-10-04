@@ -26,7 +26,9 @@ skipped.
 ## Preconditions and fixes
 
 - **PostgreSQL** (`DATABASE_URL`, default
-  `postgresql://postgres:postgres@127.0.0.1:5432/guildhall_test`):
+  `postgresql://postgres:postgres@127.0.0.1:5432/guildhall_test`). In Claude Code cloud sessions
+  the SessionStart hook (`.claude/hooks/session-start.sh`) already starts it and creates the
+  database; rerun it with `CLAUDE_CODE_REMOTE=true .claude/hooks/session-start.sh`, or by hand:
   - Debian/Ubuntu container with a local cluster: `pg_lsclusters` shows the version, then
     `pg_ctlcluster <version> main start`, and create the role/database if missing:
     `su postgres -c "psql -c \"ALTER USER postgres PASSWORD 'postgres'\""` and

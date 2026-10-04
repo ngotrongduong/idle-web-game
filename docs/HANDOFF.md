@@ -3,6 +3,13 @@
 ## Current branch
 `chatgpt/m0-foundation`
 
+## Resuming in a new session
+- Start the session on `chatgpt/m0-foundation` (`main` only has a README until PR #2 merges).
+- In a Claude Code cloud session the SessionStart hook installs dependencies and starts PostgreSQL
+  with `guildhall_test`; check its status line. Elsewhere follow the `local-ci` skill.
+- Read this file, then run `scripts/ci-local.sh --quick` to confirm the checkout is green before
+  changing anything.
+
 ## Current milestone
 M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle rewards and dungeon progression landed; next M1.7 buildings).
 

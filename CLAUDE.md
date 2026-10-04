@@ -33,3 +33,5 @@ Skills: `/ship-feature <item>` (end-to-end playbook for a roadmap item), `/local
   recommended option, then record the answer in `docs/HANDOFF.md` → Decisions.
 - A PostToolUse hook runs Prettier on every file Claude edits; run `pnpm format` if a file was
   written another way.
+- In cloud sessions a SessionStart hook (`.claude/hooks/session-start.sh`) runs `pnpm install` and
+  starts PostgreSQL with the `guildhall_test` database; its status line says whether that worked.
