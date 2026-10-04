@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { launchBrowser } from "./browser.ts";
 
 const expected = {
   result: "win",
@@ -10,10 +10,7 @@ const url =
   process.env.BATTLE_GOLDEN_URL ??
   "http://127.0.0.1:5174/browser-golden.html";
 
-const browser = await chromium.launch({
-  channel: "chrome",
-  headless: true,
-});
+const browser = await launchBrowser();
 
 try {
   const page = await browser.newPage();

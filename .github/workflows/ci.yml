@@ -79,7 +79,7 @@ jobs:
           fi
           pnpm --filter @idle/inspect golden:battle
 
-      - name: Dungeon UI replay E2E
+      - name: Dungeon replay and promotion UI E2E
         run: |
           pnpm --filter @idle/server exec tsx src/index.ts > /tmp/e2e-server.log 2>&1 &
           SERVER_PID=$!
@@ -103,6 +103,7 @@ jobs:
             exit 1
           fi
           pnpm --filter @idle/inspect e2e:dungeon
+          pnpm --filter @idle/inspect e2e:promotion
 
       - name: Build
         run: pnpm build

@@ -4,10 +4,12 @@
 `chatgpt/m0-foundation`
 
 ## Current milestone
-M1 — Core loop.
+M1 — Core loop (M1.1–M1.4 done; next M1.5 equipment/crafting).
 
 ## Verified status
-- GitHub Actions CI run #214 passed on commit `cc7f03d24dc220429e5f5942393fe73ccbb5315c`.
+- M1.4B (promotion + dungeon loot) is verified locally with the full CI-equivalent run: frozen install, migrations through `0007`, lint, Prettier, typecheck, unit/integration tests (InMemory + PostgreSQL), Chromium golden battle (`c080875a`, unchanged by the content re-theme), dungeon E2E, the new promotion E2E, build and Docker Compose validation.
+- New browser/PostgreSQL flow (`pnpm --filter @idle/inspect e2e:promotion`): guest → recruit 3 heroes → Team 1 → start → backdate past the 8h cap → claim 450 cycles (all heroes reach Lv.10) → stop/restart so the run snapshots the capped heroes → backdate + claim 450 cycles → inventory equals the sum of both claims and holds T1 seals → stop → promote through the Tavern UI → hero is T2 Lv.1 with retained potential, 1 seal and 500 gold spent.
+- Earlier: GitHub Actions CI run #214 passed on commit `cc7f03d24dc220429e5f5942393fe73ccbb5315c`.
 - M1.4A hero EXP → level progression is verified end-to-end: dungeon claim now applies the documented XP curve, persists level/EXP consistently in memory and PostgreSQL, and discards EXP beyond the current class tier cap.
 - The verified browser/PostgreSQL flow now covers guest → Tavern refresh → recruit 3 heroes → save Team 1 → start a deterministic 6-wave dungeon → verify 6/6 client replay hashes → simulate +3 hours offline → accrue exactly 168 cycles → claim exact gold + EXP → reset pending rewards to zero.
 - Idle timing now matches the balancing document: 8 seconds per wave × 6 waves = 48-second nominal cycle; at 75% offline efficiency that becomes 64 seconds per credited cycle, capped at 8 hours.
@@ -52,7 +54,7 @@ M1 — Core loop.
   - rewards stored as replay metadata only; payout/idle accumulation is intentionally deferred
   - current M1 hero stat scaling uses the existing 4%/level simulator formula plus rarity multipliers
   - replay stores the complete battle rules because unit snapshots + seed alone are insufficient if balance constants change later
-  - each wave currently starts from its persisted full-stat snapshot; cross-wave HP/MP carryover is not implemented yet
+  - each wave starts from its persisted full-stat snapshot (full HP/MP every wave, see Decisions)
 - M1.2 client replay/UI verification:
   - four editable team slots in the React Team & Dungeon screen
   - dungeon start/stop and persisted 6-wave summaries
@@ -76,16 +78,35 @@ M1 — Core loop.
   - server progression service derives tier from validated class data; DB adapters only persist level/EXP
   - Chromium E2E independently re-computes expected T1 progression instead of calling production helpers
 
-## Next implementation work
-1. M1.4B: implement T1 → T2 → T3 branch selection/promotion plus the 20% retained-potential rule; promotion-seal inventory must be integrated cleanly rather than bypassed.
-2. Define promotion-seal material IDs/costs in game-data and persist player material inventory before exposing promotion commands.
-3. Decide cross-wave HP/MP carryover semantics before deeper dungeon difficulty/progression depends on them.
-4. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
-5. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+- M1.4B tier promotion:
+  - `promotion.json`: T1→T2 costs 1 `promotion_seal_t1` + 500 gold, T2→T3 costs 2 `promotion_seal_t2` + 3000 gold; 20% of the current scaled stats is retained as hero `potential` (jsonb)
+  - server-authoritative `promote_hero` (direct child classes only, hero must be at its tier cap and not inside an active run); GET `/api/v1/promotion` and `/api/v1/materials`
+  - `player_materials` inventory table (migration `0006`), Tavern roster shows tier/cap/cost, seal counts and promote buttons
+- M1.4B dungeon loot:
+  - `packages/game-data/data/loot.json`: per dungeon × enemy rank rules (`chanceBps`, `minQty`, `maxQty`); validation requires existing dungeons/materials, no duplicates, and at least one boss source for every promotion seal
+  - provisional rates: normal 0.5%, elite 5%, boss 10% (qty 1–2) per dungeon material; `promotion_seal_t1` 3% from Thornwood/Mistmoor bosses, `promotion_seal_t2` 1.5% from Sunken Abbey/Dragonfire Crags bosses
+  - `game-core/loot.ts`: `deriveCycleLootSeed(runSeed, cycleIndex)` + `rollLoot` on `SeededRng`; every idle cycle index has its own seed, so splitting claims never changes the total
+  - only enemies from won waves drop loot (same rule as gold/EXP); accrual adds to `dungeon_runs.pending_materials` (migration `0007`), claim credits `player_materials` and reports `materials` in `dungeon_rewards_claimed`
+  - public GET `/api/v1/catalog` serves localized class/dungeon/material names; the web client no longer shows legacy ids
+  - web shows pending loot, a last-claim notice and a materials inventory card
+- Content re-theme to western high fantasy: display names in `dungeons/enemies/materials/items/classes.csv` changed (Thornwood Forest, Mistmoor Marsh, Sunken Abbey, Dragonfire Crags, goblins, lizardfolk, liches, wyrms…). All ids and stats are unchanged.
 
-## Known M1.3 limitations
+## Decisions
+- HP/MP fully reset at the start of every wave (each wave replays from the persisted full-stat snapshot). This is the intended M1 rule, not a missing feature; revisit only if dungeon difficulty needs attrition.
+- Setting is western high fantasy. Ids such as `bamboo_grove`, `sunken_shrine`, `storm_scribe` are legacy internal identifiers kept for replay/test stability and must never be shown to players; the UI reads names from `/api/v1/catalog`.
+- A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run, so the player stops and restarts the run to use the new class.
+- Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
+
+## Next implementation work
+1. M1.5 per `docs/07`: equipment + crafting that consumes dungeon materials (recipes already exist in `items.csv`), then enhancement.
+2. Economy pass with `tools/sim`: idle gold (~180 gold/cycle in Thornwood with a Lv.1 team) and material/seal rates were not tuned together yet.
+3. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
+4. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+
+## Known limitations
 - Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
-- Cross-wave HP/MP carryover is still not implemented; each stored wave currently begins from its persisted full-stat snapshot.
+- Material ids are still the legacy snake_case names; only display names were re-themed.
+- Browser scripts default to the Chrome channel (as on CI); set `GUILDHALL_BROWSER=chromium` to use Playwright's bundled Chromium locally.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.

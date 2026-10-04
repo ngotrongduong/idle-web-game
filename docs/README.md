@@ -20,16 +20,18 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 - Thể loại: **Idle RPG treo máy**, cụ thể là idle guild master (giống fworldgm).
 - Quy mô: **solo / 1–2 người**, ra **MVP** trong ~14 tuần tới closed beta.
 - Stack: **TypeScript full-stack** (React + Vite PWA, Node + Fastify, PostgreSQL, Socket.IO, pnpm monorepo).
+- Bối cảnh: **high fantasy phương Tây** (02 §2). Tên game vẫn là tên tạm "Project Guildhall".
+- Art direction: **pixel art HD-2D lite** (05 §1).
+- Pháp lý: **closed beta miễn phí**, quyết phương án thu tiền sau (08 §3).
+- Chiến đấu: **mỗi wave hồi đầy HP/MP** (02 §5.4).
 
-## Quyết định còn mở (cần bạn chốt trước M0)
+## Quyết định còn mở
 
-1. Tên game và bối cảnh (đề xuất: huyền huyễn pha văn hóa dân gian Việt; 02 §2).
-2. Art direction: pixel HD-2D lite (đề xuất) hay chibi vector (05 §1).
-3. Phương án pháp lý trước khi thu tiền: closed beta miễn phí → đối tác phát hành hay tự xin G1 (08 §3).
-4. Hosting beta: Singapore (rẻ, nhanh) hay VPS Việt Nam ngay từ đầu (04 §11).
+1. Tên game chính thức.
+2. Phương án thu tiền sau closed beta: đối tác phát hành hay tự xin G1 (08 §3).
+3. Hosting beta: Singapore (rẻ, nhanh) hay VPS Việt Nam ngay từ đầu (04 §11).
 
 ## Bước tiếp theo ngay
 
-1. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.
-2. Chốt 4 quyết định còn mở.
-3. Bắt đầu **M0** (07): scaffold `apps/` + `packages/` trong monorepo (`pnpm-workspace.yaml` đã có sẵn), viết `packages/game-core` + `tools/sim` trước tiên.
+1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.4 đã xong; tiếp theo là M1.5 (trang bị, chế tạo).
+2. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.

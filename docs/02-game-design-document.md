@@ -22,8 +22,9 @@
 
 ## 2. Bối cảnh và IP (gốc)
 
-- Thế giới: **Đại lục Vân Hải** (tên tạm), một vùng huyền huyễn pha phương Đông–phương Tây, với các dải hầm ngục xuất hiện sau một "vết nứt trời".
-- Gợi ý khác biệt: mượn **văn hóa dân gian Việt Nam** (thuộc phạm vi công cộng) cho quái, boss và địa danh (rừng tre, đầm lầy, hang Sơn Đoòng huyền bí, thủy cung…), kết hợp class fantasy quen thuộc. Phải là thiết kế gốc, **không** dùng tên hay hình tượng thuộc IP của người khác.
+- **Đã chốt: high fantasy phương Tây.** Thế giới (tên tạm) là một vương quốc trung cổ với các dải hầm ngục xuất hiện sau một "vết nứt trời": rừng gai, đầm lầy sương mù, tu viện chìm, vách núi của rồng lửa.
+- Quái và boss dùng các motif fantasy phổ biến thuộc phạm vi công cộng (goblin, người thằn lằn, phù thủy đầm lầy, lich, wyrm…), kết hợp class fantasy quen thuộc. Phải là thiết kế gốc, **không** dùng tên hay hình tượng thuộc IP của người khác.
+- Nội dung MVP hiện có: Rừng Gai Thornwood, Đầm Lầy Sương Mù (Mistmoor), Tu Viện Chìm (Sunken Abbey), Vách Đá Lửa Rồng (Dragonfire Crags). Id trong dữ liệu (`bamboo_grove`, `sunken_shrine`…) là định danh nội bộ cũ, giữ lại để không vỡ replay, không bao giờ hiển thị cho người chơi.
 - Giọng văn: hài hước nhẹ, ngắn gọn (idle game không cần cốt truyện dài). Mỗi hầm có 1 đoạn lore 2–3 câu, mỗi boss 1 câu thoại.
 
 ## 3. Core loop
@@ -104,11 +105,14 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Tier n có n nhánh để chọn (như fworldgm), cuối cùng mỗi họ có 8 nhánh. MVP T1–T3: mỗi họ 1 + 2 + 3 = 6 class, tổng 24 class.
 - Mỗi class có: đòn đánh thường, **1 ULT** (đầy 100 MP), **1 nội tại**. Từ T4 thêm 1 kỹ năng chủ động thứ hai (Later).
 - **Khắc hệ** vòng tròn giữa các họ: ×1.2 / ×0.85.
-- **Thăng tier**: đạt level cap (10 × tier) + **Ấn Thăng Cấp** (rơi từ boss hầm cùng tier) + vàng. Level reset về 1 nhưng giữ **20% chỉ số cũ** dạng "tiềm năng", để thăng tier không cảm giác bị yếu đi.
+- **Thăng tier**: đạt level cap (10 × tier) + **Ấn Thăng Cấp** + vàng. Level reset về 1 nhưng giữ **20% chỉ số cũ** dạng "tiềm năng", để thăng tier không cảm giác bị yếu đi.
+  - Đã cài (M1.4B): T1→T2 cần 1 Ấn Thăng Cấp I + 500 vàng, Ấn I rơi từ boss hầm 1–2; T2→T3 cần 2 Ấn Thăng Cấp II + 3000 vàng, Ấn II rơi từ boss hầm 3–4. Chỉ được chọn class con trực tiếp, và hero không được đang ở trong một lượt chạy hầm.
 
 ### 5.4 Hầm ngục và chiến đấu
 
 - Mỗi hầm: 5 wave thường (2–3 quái) + **wave 6 là boss hầm** (mỗi 10 vòng). Đội lặp lại liên tục.
+  - Bản M1 hiện tại: boss xuất hiện ở wave 6 của **mọi** vòng, nên tỉ lệ rơi ở [03 §8](03-economy-balancing.md#8-loot) được tính cho từng vòng.
+- **Đã chốt: mỗi wave bắt đầu với HP/MP đầy**, không mang sát thương sang wave sau. Mỗi wave replay độc lập từ snapshot đầy đủ chỉ số. Chỉ xem lại nếu cần cơ chế hao mòn để tăng độ khó hầm.
 - Mở khóa hầm theo quest chính / tiến độ. MVP 4 hầm (Lv đề xuất 1 / 10 / 20 / 30).
 - **Độ khó hầm (Difficulty)** 1–10 trong mỗi hầm: tăng chỉ số quái và tỉ lệ rơi, tạo ngưỡng mục tiêu dài hạn với cùng một bộ asset.
 - Chiến đấu: theo lượt, thứ tự theo SPD, MP +10/lượt và +5 khi trúng, ULT tự động khi đầy. Cap 60 lượt mỗi wave; quá cap thì **hòa** (rút lui, không cộng thưởng) thay vì "cả đội chết".
@@ -162,7 +166,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 | Phút | Sự kiện | Cảm xúc mục tiêu |
 |---|---|---|
 | 0:00 | Vào game không cần đăng ký (guest). Cutscene 3 khung tranh: vết nứt trời, hội quán đổ nát | tò mò |
-| 0:30 | Nhận 2 hero (1 Chiến Binh, 1 Pháp Sư), quest "Gửi đội vào Rừng Tre" | dễ hiểu |
+| 0:30 | Nhận 2 hero (1 Chiến Binh, 1 Pháp Sư), quest "Gửi đội vào Rừng Gai" | dễ hiểu |
 | 1:00 | Trận đầu: thấy ULT đầu tiên ở wave 2, boss nhỏ ở wave 6 | "wow" |
 | 3:00 | Lên Lv2–3, nhận nguyên liệu, quest "Chế tạo vũ khí đầu tiên", trang bị ngay | thấy mạnh lên |
 | 6:00 | Mở Tavern, tuyển hero thứ 3 (bảo đảm Xạ Thủ), mở **đội thứ 2** chạy song song | fantasy quản lý |

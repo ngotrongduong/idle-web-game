@@ -1,5 +1,6 @@
 import { Pool } from "pg";
-import { chromium, type Page } from "playwright";
+import { type Page } from "playwright";
+import { launchBrowser } from "./browser.ts";
 
 const url = process.env.GUILDHALL_E2E_URL ?? "http://127.0.0.1:5173";
 const databaseUrl = process.env.DATABASE_URL;
@@ -51,10 +52,7 @@ async function runCommand(
   }
 }
 
-const browser = await chromium.launch({
-  channel: "chrome",
-  headless: true,
-});
+const browser = await launchBrowser();
 
 try {
   const page = await browser.newPage();
