@@ -204,6 +204,12 @@ export const ClaimDungeonRewardsCommandSchema = z.object({
   runId: z.string().uuid(),
 });
 
+export const PromoteHeroCommandSchema = z.object({
+  type: z.literal("promote_hero"),
+  heroId: z.string().uuid(),
+  targetClassId: z.string().min(1),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
@@ -212,6 +218,7 @@ export const CommandSchema = z.discriminatedUnion("type", [
   StartDungeonCommandSchema,
   StopDungeonCommandSchema,
   ClaimDungeonRewardsCommandSchema,
+  PromoteHeroCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -271,6 +278,17 @@ const DungeonRewardsClaimedEventSchema = z.object({
   heroIds: z.array(z.string().uuid()).min(1).max(4),
 });
 
+const HeroPromotedEventSchema = z.object({
+  type: z.literal("hero_promoted"),
+  hero: HeroSchema,
+  fromClassId: z.string().min(1),
+  toClassId: z.string().min(1),
+  goldCost: z.number().int().nonnegative(),
+  sealMaterialId: z.string().min(1),
+  sealQty: z.number().int().positive(),
+  retainedPotentialBps: z.number().int().min(0).max(10_000),
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
@@ -279,6 +297,7 @@ export const CommandEventSchema = z.discriminatedUnion("type", [
   DungeonStartedEventSchema,
   DungeonStoppedEventSchema,
   DungeonRewardsClaimedEventSchema,
+  HeroPromotedEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({
@@ -309,6 +328,12 @@ export const ApiErrorCodeSchema = z.enum([
   "DUNGEON_RUN_ALREADY_ACTIVE",
   "DUNGEON_RUN_NOT_FOUND",
   "DUNGEON_REWARDS_EMPTY",
+  "HERO_NOT_FOUND",
+  "HERO_NOT_AT_LEVEL_CAP",
+  "HERO_PROMOTION_INVALID_BRANCH",
+  "HERO_MAX_TIER",
+  "HERO_BUSY",
+  "INSUFFICIENT_MATERIAL",
 ]);
 
 export const ApiErrorSchema = z.object({

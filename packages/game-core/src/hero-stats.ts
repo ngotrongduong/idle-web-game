@@ -74,3 +74,23 @@ export function calculateHeroStats(input: HeroStatInput): HeroComputedStats {
     speed: scale(Math.max(1, input.baseSpeed), input.level, input.rarity, potential.speed),
   };
 }
+
+export function retainHeroPotential(
+  stats: HeroComputedStats,
+  retainedPotentialBps: number,
+): HeroStatPotential {
+  if (
+    !Number.isInteger(retainedPotentialBps) ||
+    retainedPotentialBps < 0 ||
+    retainedPotentialBps > BPS
+  ) {
+    throw new Error("retainedPotentialBps must be between 0 and 10000");
+  }
+
+  return {
+    hp: Math.floor((stats.hp * retainedPotentialBps) / BPS),
+    attack: Math.floor((stats.attack * retainedPotentialBps) / BPS),
+    defense: Math.floor((stats.defense * retainedPotentialBps) / BPS),
+    speed: Math.floor((stats.speed * retainedPotentialBps) / BPS),
+  };
+}

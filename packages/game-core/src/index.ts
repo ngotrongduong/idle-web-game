@@ -12,6 +12,7 @@ export {
   HERO_RARITY_MULTIPLIER_BPS,
   calculateHeroStats,
   levelMultiplierBps,
+  retainHeroPotential,
   type HeroComputedStats,
   type HeroStatPotential,
   type HeroStatRarity,

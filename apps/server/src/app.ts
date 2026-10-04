@@ -7,13 +7,25 @@ import {
   GuestAuthResponseSchema,
   HealthResponseSchema,
   HeroesResponseSchema,
+  MaterialsResponseSchema,
   TavernResponseSchema,
   TeamsResponseSchema,
   type ApiError,
   type FoundationPlayerState,
 } from "@idle/api-contract";
-import { HALL_MAX_LEVEL, hallUpgradeGoldCost, heroCapacityForHall } from "@idle/game-core";
-import { foundationGameData } from "@idle/game-data";
+import {
+  calculateHeroStats,
+  HALL_MAX_LEVEL,
+  hallUpgradeGoldCost,
+  heroCapacityForHall,
+  levelCapForTier,
+  retainHeroPotential,
+} from "@idle/game-core";
+import {
+  foundationGameData,
+  promotionConfig,
+  promotionRuleForTier,
+} from "@idle/game-data";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -122,6 +134,18 @@ export function buildServer(options?: { store?: GameStore }) {
     return TavernResponseSchema.parse({
       ok: true,
       tavern: serializeTavernState(tavern),
+    });
+  });
+
+  app.get("/api/v1/materials", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    return MaterialsResponseSchema.parse({
+      ok: true,
+      materials: await store.listMaterials(playerId),
     });
   });
 
@@ -699,6 +723,166 @@ export function buildServer(options?: { store?: GameStore }) {
           statusCode: 200,
           body: success,
         };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
+      if (envelope.command.type === "promote_hero") {
+        const { heroId, targetClassId } = envelope.command;
+        const hero = (await store.listHeroes(playerId)).find((candidate) => candidate.id === heroId);
+        if (!hero) {
+          const missing: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("HERO_NOT_FOUND", "Hero was not found", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, missing);
+          return missing;
+        }
+
+        const currentClass = foundationGameData.classes.find((entry) => entry.id === hero.classId);
+        if (!currentClass) throw new Error(`Unknown hero class: ${hero.classId}`);
+
+        if (currentClass.tier >= 3) {
+          const maxTier: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("HERO_MAX_TIER", "Hero is already at maximum tier", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, maxTier);
+          return maxTier;
+        }
+
+        const requiredLevel = levelCapForTier(currentClass.tier);
+        if (hero.level !== requiredLevel) {
+          const notCapped: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_NOT_AT_LEVEL_CAP",
+              `Hero must reach level ${requiredLevel} before promotion`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, notCapped);
+          return notCapped;
+        }
+
+        const targetClass = foundationGameData.classes.find((entry) => entry.id === targetClassId);
+        if (
+          !targetClass ||
+          targetClass.parentClassId !== currentClass.id ||
+          targetClass.tier !== currentClass.tier + 1
+        ) {
+          const invalidBranch: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_PROMOTION_INVALID_BRANCH",
+              "Target class is not a direct promotion branch for this hero",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, invalidBranch);
+          return invalidBranch;
+        }
+
+        const isBusy = (await store.listDungeonRuns(playerId)).some(
+          (run) =>
+            run.status === "active" &&
+            (run.waves[0]?.allies.some((ally) => ally.id === hero.id) ?? false),
+        );
+        if (isBusy) {
+          const busy: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "HERO_BUSY",
+              "Hero cannot be promoted while an active dungeon run uses its snapshot",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, busy);
+          return busy;
+        }
+
+        const rule = promotionRuleForTier(currentClass.tier);
+        if (!rule) throw new Error(`Missing promotion rule for tier ${currentClass.tier}`);
+
+        if (state.gold < rule.goldCost) {
+          const insufficientGold: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError("INSUFFICIENT_GOLD", "Not enough gold for promotion", state.version),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficientGold);
+          return insufficientGold;
+        }
+
+        const sealBalance =
+          (await store.listMaterials(playerId)).find(
+            (entry) => entry.materialId === rule.sealMaterialId,
+          )?.qty ?? 0;
+        if (sealBalance < rule.sealQty) {
+          const insufficientSeal: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "INSUFFICIENT_MATERIAL",
+              `Promotion requires ${rule.sealQty} ${rule.sealMaterialId}`,
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficientSeal);
+          return insufficientSeal;
+        }
+
+        const currentStats = calculateHeroStats({
+          baseHp: currentClass.baseHp,
+          baseAttack: currentClass.baseAttack,
+          baseDefense: currentClass.baseDefense,
+          baseSpeed: currentClass.baseSpeed,
+          level: hero.level,
+          rarity: hero.rarity,
+          ...(hero.potential ? { potential: hero.potential } : {}),
+        });
+        const potential = retainHeroPotential(
+          currentStats,
+          promotionConfig.retainedPotentialBps,
+        );
+        const promotedHero = {
+          ...hero,
+          classId: targetClass.id,
+          level: 1,
+          exp: 0,
+          potential,
+        };
+
+        await store.setHero(playerId, promotedHero);
+        await store.setMaterialQuantity(
+          playerId,
+          rule.sealMaterialId,
+          sealBalance - rule.sealQty,
+        );
+
+        const nextState: FoundationPlayerState = {
+          ...state,
+          version: state.version + 1,
+          gold: state.gold - rule.goldCost,
+        };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: { gold: nextState.gold },
+          events: [
+            {
+              type: "hero_promoted",
+              hero: promotedHero,
+              fromClassId: currentClass.id,
+              toClassId: targetClass.id,
+              goldCost: rule.goldCost,
+              sealMaterialId: rule.sealMaterialId,
+              sealQty: rule.sealQty,
+              retainedPotentialBps: promotionConfig.retainedPotentialBps,
+            },
+          ],
+        });
+        const stored: StoredCommandOutcome = { statusCode: 200, body: success };
         await store.setCommandOutcome(playerId, envelope.cmdId, stored);
         return stored;
       }

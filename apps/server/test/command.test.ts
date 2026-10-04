@@ -404,6 +404,156 @@ describe("server-authoritative command pipeline", () => {
     expect(duplicate.json().code).toBe("DUNGEON_REWARDS_EMPTY");
   });
 
+  it("promotes a capped hero down a direct branch with seal, gold and retained potential", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 10,
+      exp: 0,
+    });
+    await store.setMaterialQuantity(guest.state.id, "promotion_seal_t1", 1);
+
+    const promote = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: {
+          type: "promote_hero",
+          heroId: hero.id,
+          targetClassId: "iron_guard",
+        },
+      },
+    });
+
+    expect(promote.statusCode).toBe(200);
+    expect(promote.json()).toMatchObject({
+      ok: true,
+      version: 1,
+      patch: { gold: 500 },
+      events: [
+        {
+          type: "hero_promoted",
+          fromClassId: "ward_squire",
+          toClassId: "iron_guard",
+          hero: {
+            id: hero.id,
+            classId: "iron_guard",
+            level: 1,
+            exp: 0,
+            potential: { hp: 100, attack: 16, defense: 15, speed: 4 },
+          },
+        },
+      ],
+    });
+    expect(await store.listMaterials(guest.state.id)).toContainEqual({
+      materialId: "promotion_seal_t1",
+      qty: 0,
+    });
+    expect(await store.getPlayer(guest.state.id)).toMatchObject({ version: 1, gold: 500 });
+  });
+
+  it("rejects invalid or underfunded promotion before spending resources", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 9,
+      exp: 0,
+    });
+
+    const notCapped = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "promote_hero", heroId: hero.id, targetClassId: "iron_guard" },
+      },
+    });
+    expect(notCapped.statusCode).toBe(409);
+    expect(notCapped.json().code).toBe("HERO_NOT_AT_LEVEL_CAP");
+
+    await store.setHero(guest.state.id, { ...hero, level: 10 });
+    const invalidBranch = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "promote_hero", heroId: hero.id, targetClassId: "gale_marksman" },
+      },
+    });
+    expect(invalidBranch.statusCode).toBe(409);
+    expect(invalidBranch.json().code).toBe("HERO_PROMOTION_INVALID_BRANCH");
+
+    const noSeal = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "promote_hero", heroId: hero.id, targetClassId: "blade_runner" },
+      },
+    });
+    expect(noSeal.statusCode).toBe(409);
+    expect(noSeal.json().code).toBe("INSUFFICIENT_MATERIAL");
+    expect(await store.getPlayer(guest.state.id)).toMatchObject({ version: 0, gold: 1_000 });
+  });
+
+  it("blocks promotion while an active dungeon run contains the hero snapshot", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    const hero = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 10,
+      exp: 0,
+    });
+    await store.setTeam(guest.state.id, { slot: 1, heroIds: [hero.id] });
+    await store.setMaterialQuantity(guest.state.id, "promotion_seal_t1", 1);
+
+    const start = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "start_dungeon", dungeonId: "bamboo_grove", teamSlot: 1 },
+      },
+    });
+    expect(start.statusCode).toBe(200);
+
+    const promote = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: { type: "promote_hero", heroId: hero.id, targetClassId: "iron_guard" },
+      },
+    });
+    expect(promote.statusCode).toBe(409);
+    expect(promote.json().code).toBe("HERO_BUSY");
+  });
+
   it("starts and stops a replay-safe six-wave dungeon run", async () => {
     const store = new InMemoryGameStore();
     const app = buildServer({ store });
