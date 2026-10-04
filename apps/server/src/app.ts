@@ -1027,7 +1027,8 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "craft_item") {
-        const spec = foundationGameData.items.find((entry) => entry.id === envelope.command.itemId);
+        const { itemId } = envelope.command;
+        const spec = foundationGameData.items.find((entry) => entry.id === itemId);
         if (!spec) {
           const missing: StoredCommandOutcome = {
             statusCode: 409,
