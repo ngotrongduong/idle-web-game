@@ -145,10 +145,30 @@ type CatalogEntry = {
   nameEn: string;
 };
 
+type EquipmentSlot = "weapon" | "helmet" | "armor" | "accessory";
+
+type ItemCatalogEntry = CatalogEntry & {
+  slot: EquipmentSlot;
+  attack: number;
+  defense: number;
+  sellGold: number;
+};
+
+type InventoryItem = {
+  id: string;
+  itemId: string;
+  slot: EquipmentSlot;
+  qualityBps: number;
+  enhanceLevel: number;
+  locked: boolean;
+  equippedHeroId: string | null;
+};
+
 type Catalog = {
   classes: CatalogEntry[];
   dungeons: CatalogEntry[];
   materials: CatalogEntry[];
+  items: ItemCatalogEntry[];
 };
 
 type GameCommand =
@@ -158,7 +178,11 @@ type GameCommand =
   | { type: "start_dungeon"; dungeonId: string; teamSlot: number }
   | { type: "stop_dungeon"; runId: string }
   | { type: "claim_dungeon_rewards"; runId: string }
-  | { type: "promote_hero"; heroId: string; targetClassId: string };
+  | { type: "promote_hero"; heroId: string; targetClassId: string }
+  | { type: "equip_item"; itemInstanceId: string; heroId: string }
+  | { type: "unequip_item"; itemInstanceId: string }
+  | { type: "set_item_locked"; itemInstanceId: string; locked: boolean }
+  | { type: "sell_item"; itemInstanceId: string };
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
@@ -183,6 +207,8 @@ export function App() {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [runs, setRuns] = useState<DungeonRun[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [equipTargets, setEquipTargets] = useState<Record<string, string>>({});
   const [promotion, setPromotion] = useState<PromotionState>({
     materials: [],
     heroes: [],
@@ -201,21 +227,29 @@ export function App() {
   const [now, setNow] = useState(() => Date.now());
 
   const loadCollections = useCallback(async () => {
-    const [tavernResponse, heroesResponse, teamsResponse, runsResponse, promotionResponse] =
-      await Promise.all([
-        fetch("/api/v1/tavern", { credentials: "include" }),
-        fetch("/api/v1/heroes", { credentials: "include" }),
-        fetch("/api/v1/teams", { credentials: "include" }),
-        fetch("/api/v1/dungeon-runs", { credentials: "include" }),
-        fetch("/api/v1/promotion", { credentials: "include" }),
-      ]);
+    const [
+      tavernResponse,
+      heroesResponse,
+      teamsResponse,
+      runsResponse,
+      promotionResponse,
+      inventoryResponse,
+    ] = await Promise.all([
+      fetch("/api/v1/tavern", { credentials: "include" }),
+      fetch("/api/v1/heroes", { credentials: "include" }),
+      fetch("/api/v1/teams", { credentials: "include" }),
+      fetch("/api/v1/dungeon-runs", { credentials: "include" }),
+      fetch("/api/v1/promotion", { credentials: "include" }),
+      fetch("/api/v1/inventory", { credentials: "include" }),
+    ]);
 
     if (
       !tavernResponse.ok ||
       !heroesResponse.ok ||
       !teamsResponse.ok ||
       !runsResponse.ok ||
-      !promotionResponse.ok
+      !promotionResponse.ok ||
+      !inventoryResponse.ok
     ) {
       throw new Error(t("vi", "app.loadError"));
     }
@@ -225,11 +259,13 @@ export function App() {
     const teamsBody = await readJson<{ ok: true; teams: Team[] }>(teamsResponse);
     const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(runsResponse);
     const promotionBody = await readJson<{ ok: true } & PromotionState>(promotionResponse);
+    const inventoryBody = await readJson<{ ok: true; items: InventoryItem[] }>(inventoryResponse);
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
     setTeams(teamsBody.teams);
     setRuns(runsBody.runs);
+    setInventoryItems(inventoryBody.items);
     setPromotion({
       materials: promotionBody.materials,
       heroes: promotionBody.heroes,
@@ -832,6 +868,139 @@ export function App() {
               </article>
             );
           })}
+        </section>
+      ) : activeTab === "forge" ? (
+        <section className="stack forge-stack">
+          <section className="card">
+            <span className="section-kicker">{t("vi", "equipment.title")}</span>
+            <h2>{t("vi", "equipment.subtitle")}</h2>
+            <p>{t("vi", "equipment.help")}</p>
+          </section>
+
+          {inventoryItems.length ? (
+            inventoryItems.map((item) => {
+              const spec = catalog?.items.find((entry) => entry.id === item.itemId);
+              const equippedHero = heroes.find((hero) => hero.id === item.equippedHeroId);
+              const defaultTarget = equipTargets[item.id] ?? heroes[0]?.id ?? "";
+              const effectiveAttack = spec
+                ? Math.floor((spec.attack * item.qualityBps) / 10_000)
+                : 0;
+              const effectiveDefense = spec
+                ? Math.floor((spec.defense * item.qualityBps) / 10_000)
+                : 0;
+              const sellValue = spec
+                ? Math.floor((spec.sellGold * item.qualityBps) / 10_000)
+                : 0;
+
+              return (
+                <article className="card equipment-card" key={item.id}>
+                  <div className="equipment-heading">
+                    <div>
+                      <span className="equipment-slot">{item.slot}</span>
+                      <strong>{catalogName(catalog, "items", item.itemId)}</strong>
+                      <small>
+                        ATK +{effectiveAttack} · DEF +{effectiveDefense} · Q{" "}
+                        {(item.qualityBps / 100).toFixed(0)}% · +{item.enhanceLevel}
+                      </small>
+                    </div>
+                    <button
+                      type="button"
+                      className={item.locked ? "lock-button locked" : "lock-button"}
+                      disabled={busy}
+                      onClick={() =>
+                        void sendCommand({
+                          type: "set_item_locked",
+                          itemInstanceId: item.id,
+                          locked: !item.locked,
+                        })
+                      }
+                    >
+                      {item.locked ? t("vi", "equipment.unlock") : t("vi", "equipment.lock")}
+                    </button>
+                  </div>
+
+                  {equippedHero ? (
+                    <div className="equipment-equipped">
+                      <span>
+                        {t("vi", "equipment.equippedBy")}:{" "}
+                        <strong>{catalogName(catalog, "classes", equippedHero.classId)}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() =>
+                          void sendCommand({
+                            type: "unequip_item",
+                            itemInstanceId: item.id,
+                          })
+                        }
+                      >
+                        {t("vi", "equipment.unequip")}
+                      </button>
+                    </div>
+                  ) : heroes.length ? (
+                    <div className="equipment-actions">
+                      <select
+                        aria-label={t("vi", "equipment.selectHero") + " " + item.id}
+                        value={defaultTarget}
+                        onChange={(event) =>
+                          setEquipTargets((current) => ({
+                            ...current,
+                            [item.id]: event.target.value,
+                          }))
+                        }
+                      >
+                        {heroes.map((hero) => (
+                          <option key={hero.id} value={hero.id}>
+                            {catalogName(catalog, "classes", hero.classId)} · Lv.{hero.level}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        disabled={busy || !defaultTarget}
+                        onClick={() =>
+                          void sendCommand({
+                            type: "equip_item",
+                            itemInstanceId: item.id,
+                            heroId: defaultTarget,
+                          })
+                        }
+                      >
+                        {t("vi", "equipment.equip")}
+                      </button>
+                    </div>
+                  ) : (
+                    <small>{t("vi", "equipment.needHero")}</small>
+                  )}
+
+                  <div className="equipment-footer">
+                    <span>
+                      {t("vi", "equipment.sellValue")}: {sellValue} gold
+                    </span>
+                    <button
+                      type="button"
+                      className="danger-button"
+                      disabled={busy || item.locked || Boolean(item.equippedHeroId)}
+                      onClick={() =>
+                        void sendCommand({
+                          type: "sell_item",
+                          itemInstanceId: item.id,
+                        })
+                      }
+                    >
+                      {t("vi", "equipment.sell")}
+                    </button>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <section className="card empty-state">
+              <strong>{t("vi", "equipment.empty")}</strong>
+              <p>{t("vi", "equipment.emptyHint")}</p>
+            </section>
+          )}
         </section>
       ) : (
         <section className="card empty-state">
