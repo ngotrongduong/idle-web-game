@@ -5,7 +5,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -29,8 +29,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: chatgpt/m0-foundation
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -46,30 +44,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Format M1.1 server files once
-        run: >
-          pnpm exec prettier --write
-          apps/server/src/app.ts
-          apps/server/src/db/postgres-store.ts
-          apps/server/src/db/schema.ts
-          apps/server/src/store.ts
-          apps/server/test/command.test.ts
-          apps/server/test/postgres-store.test.ts
-          packages/api-contract/src/index.ts
-          apps/web/src/App.tsx
-
-      - name: Commit M1.1 formatting
-        if: github.event_name == 'pull_request'
-        run: |
-          if git diff --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apps/server/src/app.ts apps/server/src/db/postgres-store.ts apps/server/src/db/schema.ts apps/server/src/store.ts apps/server/test/command.test.ts apps/server/test/postgres-store.test.ts packages/api-contract/src/index.ts apps/web/src/App.tsx
-          git commit -m "Format M1.1 tavern server files"
-          git push origin HEAD:chatgpt/m0-foundation
 
       - name: Migrate test database
         run: pnpm --filter @idle/server db:migrate
