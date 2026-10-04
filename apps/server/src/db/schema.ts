@@ -81,7 +81,6 @@ export const heroes = pgTable(
   (table) => [index("heroes_player_id_idx").on(table.playerId)],
 );
 
-
 export const teams = pgTable(
   "teams",
   {

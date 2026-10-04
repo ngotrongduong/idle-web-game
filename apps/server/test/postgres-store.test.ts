@@ -154,9 +154,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       heroIds: [hero.id],
     });
 
-    expect(await store.listTeams(player.id)).toEqual([
-      { slot: 1, heroIds: [hero.id] },
-    ]);
+    expect(await store.listTeams(player.id)).toEqual([{ slot: 1, heroIds: [hero.id] }]);
   });
 
   it("persists tavern offers and recruited heroes", async () => {

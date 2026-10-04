@@ -348,9 +348,7 @@ export function buildServer(options?: { store?: GameStore }) {
 
         const heroes = await store.listHeroes(playerId);
         const ownedHeroIds = new Set(heroes.map((hero) => hero.id));
-        const missingHeroId = envelope.command.heroIds.find(
-          (heroId) => !ownedHeroIds.has(heroId),
-        );
+        const missingHeroId = envelope.command.heroIds.find((heroId) => !ownedHeroIds.has(heroId));
         if (missingHeroId) {
           const missingHero: StoredCommandOutcome = {
             statusCode: 409,

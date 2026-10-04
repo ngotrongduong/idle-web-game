@@ -282,5 +282,4 @@ describe("server-authoritative command pipeline", () => {
     expect(reuseHero.statusCode).toBe(409);
     expect(reuseHero.json().code).toBe("TEAM_HERO_ALREADY_ASSIGNED");
   });
-
 });
