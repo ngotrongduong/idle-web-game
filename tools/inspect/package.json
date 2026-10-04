@@ -14,7 +14,8 @@
     "fworldgm:tabulate": "tsx src/tabulate-fworldgm.ts",
     "fworldgm:report": "tsx src/report-fworldgm-data.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx test/selftest.ts"
+    "test": "tsx test/selftest.ts",
+    "golden:battle": "tsx src/golden-battle.ts"
   },
   "dependencies": {
     "playwright": "1.56.1"

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Battle Golden</title>
+  </head>
+  <body>
+    <pre id="result">pending</pre>
+    <script type="module">
+      import { simulateWave } from "./src/index.ts";
+
+      const battle = simulateWave({
+        seed: 123456,
+        allies: [
+          {
+            id: "warrior",
+            hp: 180,
+            attack: 42,
+            defense: 28,
+            speed: 12,
+            critBps: 1000,
+          },
+          {
+            id: "mage",
+            hp: 110,
+            attack: 55,
+            defense: 12,
+            speed: 15,
+            critBps: 1400,
+          },
+        ],
+        enemies: [
+          {
+            id: "slime_a",
+            hp: 95,
+            attack: 25,
+            defense: 10,
+            speed: 8,
+            critBps: 500,
+          },
+          {
+            id: "slime_b",
+            hp: 105,
+            attack: 27,
+            defense: 12,
+            speed: 9,
+            critBps: 500,
+          },
+        ],
+      });
+
+      document.querySelector("#result").textContent = JSON.stringify({
+        result: battle.result,
+        turns: battle.turns,
+        hash: battle.hash,
+      });
+    </script>
+  </body>
+</html>

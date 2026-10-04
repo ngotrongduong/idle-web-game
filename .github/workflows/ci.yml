@@ -60,6 +60,25 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Chromium golden battle
+        run: |
+          pnpm --filter @idle/web exec vite packages/game-core --host 127.0.0.1 --port 5174 --strictPort > /tmp/golden-vite.log 2>&1 &
+          VITE_PID=$!
+          trap 'kill "$VITE_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5174/browser-golden.html >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/golden-vite.log
+            exit 1
+          fi
+          pnpm --filter @idle/inspect golden:battle
+
       - name: Build
         run: pnpm build
 
