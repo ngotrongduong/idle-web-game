@@ -247,8 +247,9 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "recruit_hero") {
+        const offerId = envelope.command.offerId;
         const tavern = (await store.getTavernState(playerId)) ?? emptyTavernState();
-        const offer = tavern.offers.find((candidate) => candidate.id === envelope.command.offerId);
+        const offer = tavern.offers.find((candidate) => candidate.id === offerId);
 
         if (!offer) {
           const missingOffer: StoredCommandOutcome = {
