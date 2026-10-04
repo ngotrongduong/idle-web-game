@@ -23,7 +23,9 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 - Bối cảnh: **high fantasy phương Tây** (02 §2). Tên game vẫn là tên tạm "Project Guildhall".
 - Art direction: **pixel art HD-2D lite** (05 §1).
 - Pháp lý: **closed beta miễn phí**, quyết phương án thu tiền sau (08 §3).
-- Chiến đấu: **mỗi wave hồi đầy HP/MP** (02 §5.4).
+- Chiến đấu: **mỗi wave bắt đầu đầy HP, 50% MP**, công thức sát thương v2 theo 03 §3 (02 §5.4).
+- Thưởng idle: **kỳ vọng của 30 vòng mẫu**, vòng dừng ở wave thua đầu tiên (04 §6).
+- Tiến độ: **mở hầm theo thứ tự** sau khi hạ boss hầm trước; số đội song song theo cấp Sảnh (02 §5.1, §5.4).
 
 ## Quyết định còn mở
 
@@ -33,5 +35,6 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 
 ## Bước tiếp theo ngay
 
-1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.4 đã xong; tiếp theo là M1.5 (trang bị, chế tạo).
-2. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.
+1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.6 đã xong; tiếp theo là M1.7 (công trình có thời gian xây).
+2. Quy tắc làm việc cho mọi agent (Claude Code, Codex) nằm ở [`AGENTS.md`](../AGENTS.md); đội agent của Claude Code ở [`CLAUDE.md`](../CLAUDE.md).
+3. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.

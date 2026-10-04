@@ -116,6 +116,7 @@ M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle
   - enhancement +1…+5 uses documented success rates 100/95/90/80/70%, pity +5% per failure and documented stat bonuses +6/+12/+19/+27/+36%
   - current +1…+5 cost is gold-only (100/160/256/410/655); Forging Dust is intentionally deferred because the game currently has no earnable Forging Dust material/source
   - quality and enhancement multipliers are included in newly started dungeon snapshots
+- Agent tooling: `AGENTS.md` (rules shared by Claude Code, ChatGPT/Codex and humans), `CLAUDE.md` (Claude Code agent team), seven specialists in `.claude/agents/` (game-core, server, web, balance, QA, plan review, docs), skills in `.claude/skills/` (`ship-feature`, `local-ci`, `new-migration`, `balance-pass`, `steward`), a Prettier PostToolUse hook, and `scripts/ci-local.sh` (`pnpm ci:local`), which runs the whole GitHub Actions pipeline locally in about a minute (`--quick` for lint/format/typecheck/test).
 - Content re-theme to western high fantasy: display names in `dungeons/enemies/materials/items/classes.csv` changed (Thornwood Forest, Mistmoor Marsh, Sunken Abbey, Dragonfire Crags, goblins, lizardfolk, liches, wyrms…). All ids and stats are unchanged.
 
 ## Decisions
