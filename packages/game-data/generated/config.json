@@ -917,7 +917,7 @@
       "ultimateKind": "damage",
       "ultimateTargeting": "lowest_hp",
       "ultimatePowerBps": 16000,
-      "nameVi": "Xuyên Thiên Tiễn",
+      "nameVi": "Cung Thủ Xuyên Mây",
       "nameEn": "Sky Piercer"
     },
     {
@@ -1053,7 +1053,7 @@
       "ultimateKind": "damage",
       "ultimateTargeting": "highest_attack",
       "ultimatePowerBps": 14500,
-      "nameVi": "Thợ Khắc Phù Lôi",
+      "nameVi": "Thợ Rèn Phù Văn Bão",
       "nameEn": "Storm Runesmith"
     },
     {
@@ -1087,7 +1087,7 @@
       "ultimateKind": "heal",
       "ultimateTargeting": "lowest_hp",
       "ultimatePowerBps": 18000,
-      "nameVi": "Hộ Đăng",
+      "nameVi": "Người Giữ Đèn",
       "nameEn": "Light Keeper"
     },
     {
@@ -1104,7 +1104,7 @@
       "ultimateKind": "heal",
       "ultimateTargeting": "lowest_hp",
       "ultimatePowerBps": 18000,
-      "nameVi": "Dưỡng Linh Sư",
+      "nameVi": "Y Sư Linh Hồn",
       "nameEn": "Spirit Mender"
     },
     {
@@ -1138,7 +1138,7 @@
       "ultimateKind": "damage",
       "ultimateTargeting": "highest_attack",
       "ultimatePowerBps": 14500,
-      "nameVi": "Dẫn Đăng Sư",
+      "nameVi": "Người Dẫn Đèn",
       "nameEn": "Lantern Guide"
     },
     {
