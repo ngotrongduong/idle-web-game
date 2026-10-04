@@ -113,33 +113,91 @@ try {
   }
 
   const beforeClaim = await page.evaluate(async () => {
-    const [stateResponse, heroesResponse] = await Promise.all([
+    const [stateResponse, heroesResponse, runsResponse] = await Promise.all([
       fetch("/api/v1/state", { credentials: "include" }),
       fetch("/api/v1/heroes", { credentials: "include" }),
+      fetch("/api/v1/dungeon-runs", { credentials: "include" }),
     ]);
     return {
       state: await stateResponse.json(),
       heroes: await heroesResponse.json(),
+      runs: await runsResponse.json(),
     };
   });
+
+  const beforeRuns = (
+    beforeClaim.runs as {
+      runs: Array<{
+        id: string;
+        status: string;
+        waves: Array<{ rewardGold: number; rewardExp: number }>;
+      }>;
+    }
+  ).runs;
+  const activeRun = beforeRuns.find((run) => run.status === "active");
+  if (!activeRun) {
+    throw new Error("Expected one active dungeon run before idle catch-up");
+  }
+
+  const expectedCycles = 135;
+  const goldPerCycle = activeRun.waves.reduce(
+    (sum, wave) => sum + wave.rewardGold,
+    0,
+  );
+  const expPerHeroPerCycle = activeRun.waves.reduce(
+    (sum, wave) => sum + wave.rewardExp,
+    0,
+  );
 
   const pool = new Pool({ connectionString: databaseUrl });
   try {
     await pool.query(
-      "UPDATE dungeon_runs SET last_accrued_at = now() - interval '10 minutes' WHERE status = 'active'",
+      "UPDATE dungeon_runs SET last_accrued_at = now() - interval '3 hours' WHERE id = $1",
+      [activeRun.id],
     );
   } finally {
     await pool.end();
   }
 
-  await page.evaluate(async () => {
+  const accrued = await page.evaluate(async () => {
     const response = await fetch("/api/v1/dungeon-runs", {
       credentials: "include",
     });
     if (!response.ok) {
       throw new Error(`Failed to accrue dungeon rewards: ${response.status}`);
     }
+    return response.json();
   });
+
+  const accruedRun = (
+    accrued as {
+      runs: Array<{
+        id: string;
+        pendingCycles: number;
+        pendingGold: number;
+        pendingExpPerHero: number;
+      }>;
+    }
+  ).runs.find((run) => run.id === activeRun.id);
+
+  if (!accruedRun) {
+    throw new Error("Accrued dungeon run was not returned");
+  }
+  if (accruedRun.pendingCycles !== expectedCycles) {
+    throw new Error(
+      `Expected ${expectedCycles} cycles after 3h catch-up, got ${accruedRun.pendingCycles}`,
+    );
+  }
+  if (accruedRun.pendingGold !== goldPerCycle * expectedCycles) {
+    throw new Error(
+      `Expected pending gold ${goldPerCycle * expectedCycles}, got ${accruedRun.pendingGold}`,
+    );
+  }
+  if (accruedRun.pendingExpPerHero !== expPerHeroPerCycle * expectedCycles) {
+    throw new Error(
+      `Expected pending EXP/hero ${expPerHeroPerCycle * expectedCycles}, got ${accruedRun.pendingExpPerHero}`,
+    );
+  }
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Đội & Hầm", exact: true }).click();
@@ -175,16 +233,24 @@ try {
 
   const beforeGold = (beforeClaim.state as { gold: number }).gold;
   const afterGold = (afterClaim.state as { gold: number }).gold;
-  if (afterGold <= beforeGold) {
-    throw new Error(`Expected claim to increase gold: ${beforeGold} -> ${afterGold}`);
+  const expectedGold = beforeGold + accruedRun.pendingGold;
+  if (afterGold !== expectedGold) {
+    throw new Error(`Expected gold ${expectedGold} after claim, got ${afterGold}`);
   }
 
-  const beforeHeroes = (beforeClaim.heroes as { heroes: Array<{ id: string; exp: number }> }).heroes;
-  const afterHeroes = (afterClaim.heroes as { heroes: Array<{ id: string; exp: number }> }).heroes;
+  const beforeHeroes = (
+    beforeClaim.heroes as { heroes: Array<{ id: string; exp: number }> }
+  ).heroes;
+  const afterHeroes = (
+    afterClaim.heroes as { heroes: Array<{ id: string; exp: number }> }
+  ).heroes;
   for (const beforeHero of beforeHeroes) {
     const afterHero = afterHeroes.find((hero) => hero.id === beforeHero.id);
-    if (!afterHero || afterHero.exp <= beforeHero.exp) {
-      throw new Error(`Expected hero ${beforeHero.id} EXP to increase after claim`);
+    const expectedExp = beforeHero.exp + accruedRun.pendingExpPerHero;
+    if (!afterHero || afterHero.exp !== expectedExp) {
+      throw new Error(
+        `Expected hero ${beforeHero.id} EXP ${expectedExp} after claim, got ${afterHero?.exp}`,
+      );
     }
   }
 
@@ -194,7 +260,7 @@ try {
   });
 
   console.log(
-    `Dungeon E2E passed: 6/6 replay hashes matched and idle claim increased gold ${beforeGold} -> ${afterGold} plus EXP for ${afterHeroes.length} heroes.`,
+    `Dungeon E2E passed: 6/6 replay hashes matched; +3h catch-up produced exactly ${expectedCycles} cycles, ${accruedRun.pendingGold} gold and ${accruedRun.pendingExpPerHero} EXP/hero; claim reset pending rewards.`,
   );
 } finally {
   await browser.close();
