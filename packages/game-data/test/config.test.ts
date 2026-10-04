@@ -1,5 +1,9 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { foundationGameData, loadGameDataFromCsv, parseCsv, validateGameData } from "../src/index";
+
+const readData = (name: string) =>
+  readFileSync(new URL(`../data/${name}.csv`, import.meta.url), "utf8");
 
 describe("game-data pipeline", () => {
   it("parses quoted CSV fields", () => {
@@ -97,6 +101,22 @@ describe("game-data pipeline", () => {
     };
 
     expect(() => validateGameData(invalid)).toThrow("references missing material missing_material");
+  });
+
+  it("keeps generated/config.json in sync with the CSV sources", () => {
+    const rebuilt = loadGameDataFromCsv(
+      {
+        materials: readData("materials"),
+        items: readData("items"),
+        dungeons: readData("dungeons"),
+        classFamilies: readData("class-families"),
+        classes: readData("classes"),
+        enemies: readData("enemies"),
+      },
+      foundationGameData.version,
+    );
+
+    expect(rebuilt).toEqual(foundationGameData);
   });
 
   it("rejects a recipe that lists the same material twice", () => {
