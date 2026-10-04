@@ -89,8 +89,9 @@ Chrome channel unless `GUILDHALL_BROWSER=chromium`.
 - Active branch: `chatgpt/m0-foundation` (draft PR #2), **shared by Claude Code and ChatGPT/Codex.**
   Before every push: `git fetch` and **merge** (never rebase, amend or force-push shared history).
   On a conflict in `generated/config.json`, rerun the data build instead of merging by hand.
-- Start new cloud sessions (Claude Code on the web, Codex) on `chatgpt/m0-foundation`: `main` only
-  holds a README until PR #2 merges, so a session started there has none of these rules or tools.
+- Start new cloud sessions (Claude Code on the web, Codex) on `chatgpt/m0-foundation`. `main` (a
+  README) and PR #2's base `claude/web-game-analysis-plan-xumrt0` (plan docs only) have none of the
+  code, these rules or the agent tooling yet.
 - Small commits, one logical step each, imperative subject, body says why.
 - Keep PR #2 a draft until M1 is complete.
 - Code, comments and `docs/HANDOFF.md` in English; design docs 01–08 in Vietnamese; UI text via i18n.
