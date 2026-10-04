@@ -602,9 +602,8 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "claim_dungeon_rewards") {
-        const existing = (await store.listDungeonRuns(playerId)).find(
-          (run) => run.id === envelope.command.runId,
-        );
+        const { runId } = envelope.command;
+        const existing = (await store.listDungeonRuns(playerId)).find((run) => run.id === runId);
 
         if (!existing) {
           const missingRun: StoredCommandOutcome = {
