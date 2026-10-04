@@ -4,10 +4,11 @@
 `chatgpt/m0-foundation`
 
 ## Current milestone
-M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
+M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tuning in progress).
 
 ## Verified status
-- M1.5B persisted quality-threshold auto-sell passed full GitHub Actions CI #291 on commit `7b901ffb9a8534bfe24970d1348645029990fa61`; browser E2E is now being added.
+- M1.5B auto-sell browser E2E and the full pipeline passed GitHub Actions CI #301 on commit `a2b876c2ab2b45d2885be0c29200fa2ccd1ce832`: settings persist across reload, a matching new craft is removed atomically, and the exact quality-scaled manual-sell-equivalent gold is credited.
+- M1.5B persisted quality-threshold auto-sell backend/DB/UI passed full GitHub Actions CI #291 on commit `7b901ffb9a8534bfe24970d1348645029990fa61`.
 - Forge equipment browser E2E passed GitHub Actions CI #282 on commit `ccf6a5a15bf4e9339576d69cbd1ffcb56516ebc6`: baseline dungeon → craft → guaranteed +1 → equip → stronger fresh dungeon snapshot → replay match.
 - M1.6 crafting/quality/enhancement core passed GitHub Actions CI #280 on commit `7d66a812a5f45adba113bd1b4cefc1d474a754ad`.
 - M1.5A inventory/equipment + Forge UI passed GitHub Actions CI #269 on commit `a4da8e92437ec54cbaea85bd321a7cdc5ea0fbdb`.
@@ -116,8 +117,8 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. Verify the new auto-sell browser E2E: settings persist, matching craft disappears, exact manual-sell-equivalent gold is credited.
-2. Economy pass with `tools/sim`: idle gold, sell values, material/seal rates, crafting costs and enhancement costs must be tuned together.
+1. Run and review the new combined `sim:economy` report: gold/hour, passive cap output, expected loot/seals, recipe acquisition time and +5 expected gold cost.
+2. Tune gold rewards, loot rates, crafting costs and enhancement costs together from that report; keep changes in game-data rather than server logic.
 5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
