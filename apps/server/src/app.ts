@@ -22,7 +22,7 @@ import {
   SESSION_COOKIE,
   sessionCookieHeader,
 } from "./session.js";
-import { createDungeonSeed, simulateDungeonCycle } from "./dungeon.js";
+import { CURRENT_DUNGEON_BATTLE_RULES, createDungeonSeed, simulateDungeonCycle } from "./dungeon.js";
 import { createConfiguredGameStore } from "./store-factory.js";
 import { type GameStore, type StoredCommandOutcome } from "./store.js";
 import { emptyTavernState, refreshTavernOffers, serializeTavernState } from "./tavern.js";
