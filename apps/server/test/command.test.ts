@@ -15,80 +15,7 @@ async function createGuest(app: ReturnType<typeof buildServer>) {
   const response = await app.inject({
     method: "POST",
     url: "/api/v1/auth/guest",
-    it("persists team assignment and prevents one hero joining two teams", async () => {
-    const store = new InMemoryGameStore();
-    const app = buildServer({ store });
-    apps.push(app);
-    const guest = await createGuest(app);
-
-    const heroA = await store.createHero(guest.state.id, {
-      classId: "ward_squire",
-      rarity: "common",
-      level: 1,
-      exp: 0,
-    });
-    const heroB = await store.createHero(guest.state.id, {
-      classId: "trail_archer",
-      rarity: "common",
-      level: 1,
-      exp: 0,
-    });
-
-    const setTeam = await app.inject({
-      method: "POST",
-      url: "/api/v1/cmd",
-      headers: { cookie: guest.cookie },
-      payload: {
-        cmdId: randomUUID(),
-        expectVersion: 0,
-        command: {
-          type: "set_team",
-          slot: 1,
-          heroIds: [heroA.id, heroB.id],
-        },
-      },
-    });
-
-    expect(setTeam.statusCode).toBe(200);
-    expect(setTeam.json()).toMatchObject({
-      ok: true,
-      version: 1,
-      events: [
-        {
-          type: "team_updated",
-          team: { slot: 1, heroIds: [heroA.id, heroB.id] },
-        },
-      ],
-    });
-
-    const teams = await app.inject({
-      method: "GET",
-      url: "/api/v1/teams",
-      headers: { cookie: guest.cookie },
-    });
-    expect(teams.json()).toMatchObject({
-      ok: true,
-      teams: [{ slot: 1, heroIds: [heroA.id, heroB.id] }],
-    });
-
-    const reuseHero = await app.inject({
-      method: "POST",
-      url: "/api/v1/cmd",
-      headers: { cookie: guest.cookie },
-      payload: {
-        cmdId: randomUUID(),
-        expectVersion: 1,
-        command: {
-          type: "set_team",
-          slot: 2,
-          heroIds: [heroA.id],
-        },
-      },
-    });
-    expect(reuseHero.statusCode).toBe(409);
-    expect(reuseHero.json().code).toBe("TEAM_HERO_ALREADY_ASSIGNED");
   });
-});
   expect(response.statusCode).toBe(200);
 
   const setCookie = response.headers["set-cookie"];
@@ -282,4 +209,78 @@ describe("server-authoritative command pipeline", () => {
       currentVersion: 1,
     });
   });
+  it("persists team assignment and prevents one hero joining two teams", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+
+    const heroA = await store.createHero(guest.state.id, {
+      classId: "ward_squire",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+    const heroB = await store.createHero(guest.state.id, {
+      classId: "trail_archer",
+      rarity: "common",
+      level: 1,
+      exp: 0,
+    });
+
+    const setTeam = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: {
+          type: "set_team",
+          slot: 1,
+          heroIds: [heroA.id, heroB.id],
+        },
+      },
+    });
+
+    expect(setTeam.statusCode).toBe(200);
+    expect(setTeam.json()).toMatchObject({
+      ok: true,
+      version: 1,
+      events: [
+        {
+          type: "team_updated",
+          team: { slot: 1, heroIds: [heroA.id, heroB.id] },
+        },
+      ],
+    });
+
+    const teams = await app.inject({
+      method: "GET",
+      url: "/api/v1/teams",
+      headers: { cookie: guest.cookie },
+    });
+    expect(teams.json()).toMatchObject({
+      ok: true,
+      teams: [{ slot: 1, heroIds: [heroA.id, heroB.id] }],
+    });
+
+    const reuseHero = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: {
+          type: "set_team",
+          slot: 2,
+          heroIds: [heroA.id],
+        },
+      },
+    });
+    expect(reuseHero.statusCode).toBe(409);
+    expect(reuseHero.json().code).toBe("TEAM_HERO_ALREADY_ASSIGNED");
+  });
+
 });
