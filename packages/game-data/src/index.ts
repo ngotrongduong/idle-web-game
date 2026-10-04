@@ -13,7 +13,7 @@ export {
   RecipeIngredientSchema,
   validateGameData,
   type GameData,
-} from "./schema";
+} from "./schema.js";
 
 export const foundationGameData = validateGameData(generatedConfig);
 
