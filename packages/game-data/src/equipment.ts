@@ -33,7 +33,13 @@ export const equipmentConfig = EquipmentConfigSchema.parse({
     { id: "common", nameVi: "Thường", nameEn: "Common", weightBps: 7_000, multiplierBps: 10_000 },
     { id: "fine", nameVi: "Tinh xảo", nameEn: "Fine", weightBps: 2_500, multiplierBps: 11_000 },
     { id: "rare", nameVi: "Hiếm", nameEn: "Rare", weightBps: 450, multiplierBps: 12_500 },
-    { id: "masterwork", nameVi: "Kiệt tác", nameEn: "Masterwork", weightBps: 50, multiplierBps: 15_000 },
+    {
+      id: "masterwork",
+      nameVi: "Kiệt tác",
+      nameEn: "Masterwork",
+      weightBps: 50,
+      multiplierBps: 15_000,
+    },
   ],
   enhanceBonusBps: [0, 600, 1_200, 1_900, 2_700, 3_600],
   enhanceGoldCosts: [100, 160, 256, 410, 655],
@@ -73,11 +79,7 @@ export function enhancementGoldCost(currentLevel: number): number {
   return equipmentConfig.enhanceGoldCosts[currentLevel]!;
 }
 
-export function equipmentStatValue(
-  base: number,
-  qualityBps: number,
-  enhanceLevel: number,
-): number {
+export function equipmentStatValue(base: number, qualityBps: number, enhanceLevel: number): number {
   const enhanceMultiplierBps = 10_000 + enhancementBonusBps(enhanceLevel);
   return Math.floor((base * qualityBps * enhanceMultiplierBps) / 100_000_000);
 }

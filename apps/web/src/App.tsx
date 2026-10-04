@@ -901,9 +901,8 @@ export function App() {
               {catalog?.items.map((spec) => {
                 const canCraft = spec.recipe.every(
                   (ingredient) =>
-                    (promotion.materials.find(
-                      (entry) => entry.materialId === ingredient.materialId,
-                    )?.qty ?? 0) >= ingredient.qty,
+                    (promotion.materials.find((entry) => entry.materialId === ingredient.materialId)
+                      ?.qty ?? 0) >= ingredient.qty,
                 );
                 return (
                   <div className="craft-row" key={spec.id}>
@@ -1028,7 +1027,9 @@ export function App() {
 
                   <div className="enhance-actions">
                     <span>
-                      {item.enhanceLevel < 5 && nextEnhanceCost !== undefined && currentSuccess !== undefined
+                      {item.enhanceLevel < 5 &&
+                      nextEnhanceCost !== undefined &&
+                      currentSuccess !== undefined
                         ? `${t("vi", "enhance.next")}: ${nextEnhanceCost} gold · ${(
                             currentSuccess / 100
                           ).toFixed(0)}%`

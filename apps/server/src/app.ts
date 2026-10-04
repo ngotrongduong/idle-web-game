@@ -1027,9 +1027,7 @@ export function buildServer(options?: { store?: GameStore }) {
       }
 
       if (envelope.command.type === "craft_item") {
-        const spec = foundationGameData.items.find(
-          (entry) => entry.id === envelope.command.itemId,
-        );
+        const spec = foundationGameData.items.find((entry) => entry.id === envelope.command.itemId);
         if (!spec) {
           const missing: StoredCommandOutcome = {
             statusCode: 409,
@@ -1130,7 +1128,11 @@ export function buildServer(options?: { store?: GameStore }) {
         if (item.enhanceLevel >= equipmentConfig.maxEnhanceLevel) {
           const maxed: StoredCommandOutcome = {
             statusCode: 409,
-            body: apiError("ITEM_MAX_ENHANCE", "Item is already at maximum enhancement", state.version),
+            body: apiError(
+              "ITEM_MAX_ENHANCE",
+              "Item is already at maximum enhancement",
+              state.version,
+            ),
           };
           await store.setCommandOutcome(playerId, envelope.cmdId, maxed);
           return maxed;

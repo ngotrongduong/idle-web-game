@@ -170,7 +170,8 @@ const messages = {
     "equipment.sell": "Sell",
     "craft.title": "Crafting",
     "craft.craft": "Craft",
-    "craft.qualityNote": "Craft quality is rolled from the provisional closed-beta game-data table.",
+    "craft.qualityNote":
+      "Craft quality is rolled from the provisional closed-beta game-data table.",
     "enhance.next": "Next enhancement",
     "enhance.max": "Maximum +5 reached",
     "enhance.action": "Enhance",
