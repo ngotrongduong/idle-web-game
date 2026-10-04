@@ -484,3 +484,84 @@ h2 {
   border-bottom: 1px solid #3a3122;
   padding: 4px 0;
 }
+
+.forge-stack {
+  margin-top: 0;
+}
+
+.equipment-card {
+  display: grid;
+  gap: 12px;
+}
+
+.equipment-heading,
+.equipment-equipped,
+.equipment-actions,
+.equipment-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.equipment-heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.equipment-heading small,
+.equipment-footer,
+.equipment-equipped {
+  color: #aa9b87;
+  font-size: 0.78rem;
+}
+
+.equipment-slot {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: #dbc898;
+  background: #3a3024;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+}
+
+.lock-button,
+.equipment-actions button,
+.equipment-equipped button {
+  border: 1px solid #6e5a43;
+  border-radius: 9px;
+  padding: 8px 10px;
+  color: #f5ead7;
+  background: #2b2118;
+}
+
+.lock-button.locked {
+  border-color: #9b803d;
+  color: #ffdf83;
+}
+
+.equipment-actions select {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #6e5a43;
+  border-radius: 9px;
+  padding: 9px 10px;
+  color: #f5ead7;
+  background: #241c16;
+}
+
+.equipment-footer {
+  border-top: 1px solid #44372a;
+  padding-top: 10px;
+}
+
+@media (max-width: 420px) {
+  .equipment-heading,
+  .equipment-equipped,
+  .equipment-actions,
+  .equipment-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
