@@ -18,7 +18,7 @@ western high fantasy, TypeScript full-stack, solo/1–2 dev MVP towards a free c
 
 | Path | Owns |
 |---|---|
-| `packages/game-core` | Pure deterministic rules: seeded RNG, battle (`simulateWave`, versioned formulas), hero stats, combatant builders, idle accrual, loot, tavern odds, crafting, enhancement, economy curves. No I/O. |
+| `packages/game-core` | Pure deterministic rules: seeded RNG, battle (`simulateWave`, versioned formulas), hero stats, combatant builders, idle accrual, loot, tavern odds, crafting, enhancement, building timers, economy curves. No I/O. |
 | `packages/game-data` | Content: `data/*.csv` + `data/*.json`, zod schemas and cross-reference validation, `generated/config.json`. |
 | `packages/api-contract` | zod schemas for every API payload, command, patch, event and error code. |
 | `packages/i18n` | vi/en strings. |
@@ -35,7 +35,7 @@ pnpm install                       # Node 22+, pnpm 10
 pnpm dev                           # server :3001 + web :5173 (in-memory store unless DATABASE_URL is set)
 pnpm test                          # all unit/integration tests (PostgreSQL tests run when DATABASE_URL is set)
 scripts/ci-local.sh --quick        # lint + Prettier + typecheck + tests
-scripts/ci-local.sh                # everything GitHub Actions runs: migrations twice, goldens, 4 E2Es, build
+scripts/ci-local.sh                # everything GitHub Actions runs: migrations twice, goldens, 5 E2Es, build
 pnpm format                        # fix Prettier
 pnpm --filter @idle/game-data build        # regenerate generated/config.json after editing data/*.csv
 pnpm --filter @idle/server db:migrate      # apply migrations (needs DATABASE_URL)

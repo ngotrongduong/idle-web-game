@@ -11,9 +11,10 @@
   changing anything.
 
 ## Current milestone
-M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle rewards and dungeon progression landed; next M1.7 buildings).
+M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle rewards, dungeon progression and buildings landed; next M1.8 vi/en language switch).
 
 ## Verified status
+- M1.7 buildings: verified locally (Windows, PostgreSQL 18) with the CI steps — migrations twice, lint, Prettier, typecheck, 222 unit/integration tests including the PostgreSQL ones, `sim:economy`, Chromium goldens unchanged (v1 `c080875a`, v2 `fce81aeb`), the five browser E2Es (dungeon, promotion, equipment, auto-sell and the new buildings flow) and the build. `scripts/ci-local.sh` itself was not run (bash/Linux script).
 - Review follow-up (commits `50696c0`…`0fa1927`) is green on GitHub Actions and locally: lint, Prettier, typecheck, 165 unit/integration tests with PostgreSQL, migrations run twice, Chromium goldens v1 `c080875a` + v2 `fce81aeb`, and the dungeon, promotion, equipment and auto-sell E2Es.
 - M1.5B auto-sell browser E2E and the full pipeline passed GitHub Actions CI #301 on commit `a2b876c2ab2b45d2885be0c29200fa2ccd1ce832`: settings persist across reload, a matching new craft is removed atomically, and the exact quality-scaled manual-sell-equivalent gold is credited.
 - M1.5B persisted quality-threshold auto-sell backend/DB/UI passed full GitHub Actions CI #291 on commit `7b901ffb9a8534bfe24970d1348645029990fa61`.
@@ -123,6 +124,16 @@ M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle
   - enhancement +1…+5 uses documented success rates 100/95/90/80/70%, pity +5% per failure and documented stat bonuses +6/+12/+19/+27/+36%
   - current +1…+5 cost is gold-only (100/160/256/410/655); Forging Dust is intentionally deferred because the game currently has no earnable Forging Dust material/source
   - quality and enhancement multipliers are included in newly started dungeon snapshots
+- M1.7 buildings (numbers in `packages/game-data/data/buildings.json`, rules in docs/03 §5–6):
+  - `upgrade_building {building: hall | forge}` replaces the instant `upgrade_hall`: gold (and, for the Forge, dungeon materials) is paid at once and the level applies when the build time has passed. Hall follows docs/03 §6 (300 × 2.6^(L−1) gold, 60 s × 1.9^(L−1)); the Forge costs 0.8× in gold and time plus materials.
+  - One builder: `players.construction` (jsonb, migration `0014`) holds the single running upgrade; a second one answers `BUILDER_BUSY`.
+  - Completion is lazy and pure (`settleConstruction` in game-core): every command and `GET /api/v1/state` / `GET /api/v1/buildings` see the level as of the server clock; nothing is written on read and the version does not change. The next state a command writes persists it.
+  - `speed_up_construction {items}` spends Builder's Hourglasses (300 s each, 2% boss drop in every dungeon); the server never uses more than the remaining time needs.
+  - Forge level (`players.forge_level`): caps enhancement (Lv1 locked, Lv2 +2, Lv3 +3, Lv4 +4, Lv5+ +5; `FORGE_LEVEL_TOO_LOW`) and shifts craft quality odds 3% per level from Common to the better tiers.
+  - Forge Dust: `dismantle_item` turns an unlocked, unequipped item into 1/2/3/5 dust by quality; every enhancement attempt costs 1/2/3/4/5 dust next to the gold (≈18.3 dust expected for +5).
+  - `buildServer({ now })` takes a clock, so tests move build timers without waiting.
+  - Web: buildings card with countdown, hourglass speed-up, Forge odds and enhancement lock, dismantle button; `e2e:buildings` drives the whole flow in the browser.
+  - `sim:economy` reports `buildings` (total gold and build hours, earliest second team) and `enhancement.expectedDust`, with a warning when the second team is slower than the docs/03 §4 target.
 - Agent tooling: `AGENTS.md` (rules shared by Claude Code, ChatGPT/Codex and humans), `CLAUDE.md` (Claude Code agent team), seven specialists in `.claude/agents/` (game-core, server, web, balance, QA, plan review, docs), skills in `.claude/skills/` (`ship-feature`, `local-ci`, `new-migration`, `balance-pass`, `steward`), a Prettier PostToolUse hook, and `scripts/ci-local.sh` (`pnpm ci:local`), which runs the whole GitHub Actions pipeline locally in about a minute (`--quick` for lint/format/typecheck/test).
 - Content re-theme to western high fantasy: display names in `dungeons/enemies/materials/items/classes.csv` changed (Thornwood Forest, Mistmoor Marsh, Sunken Abbey, Dragonfire Crags, goblins, lizardfolk, liches, wyrms…). All ids and stats are unchanged.
 
@@ -131,7 +142,10 @@ M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle
 - Battle formula v2 (docs/03 §3) is selected by `battleRules.formulaVersion: 2`; runs persisted earlier have no version and replay with the original v1 code path, bit-for-bit (fixture test in `apps/web/src/replay.test.ts`). Never change v1 or `DEFAULT_BATTLE_RULES`; add a new version instead.
 - Stats use one continuous level multiplier across tiers (T2 Lv1 = T1 Lv10, T3 Lv1 = T2 Lv20) and a 1–30 combat level for K; class base stats are unchanged. Promotion therefore never weakens a hero (test over every parent → child pair).
 - Idle rewards are the expected value of `rewardSampleCycles` (30) sampled cycles stored on the run; each cycle stops at its first lost wave, cycle c pays sample c % 30, and the run seed hashes player + dungeon + team snapshot + rules so restarting with the same team cannot reroll.
-- Dungeons unlock in order (`dungeons.csv` `unlock_after`) once a claim includes a boss kill in the previous dungeon. Parallel teams are capped by Hall level (1/1/2/2/2/3/3/3/4/4); team 2 now needs Hall Lv3 (1,080 gold), later than the docs/03 §4 "team 2 at 6 minutes" milestone — revisit with the M1.7 build timers.
+- Dungeons unlock in order (`dungeons.csv` `unlock_after`) once a claim includes a boss kill in the previous dungeon. Parallel teams are capped by Hall level (1/1/2/2/2/3/3/3/4/4). Team 2 needs Hall Lv3 (1,080 gold, 60 s + 114 s of building); with the 1,000 starting gold and dungeon 1 passive income that is reachable at minute ≈3.1 when the Hall is upgraded first (`sim:economy` → `buildings.teamTwo`), inside the docs/03 §4 "team 2 at 6 minutes" target, so the unlock levels stay as in GDD §5.1. The main quest (M2.1) has to steer new players to the two Hall upgrades.
+- Building levels are settled lazily from the server clock instead of by a job: a finished construction is applied (without a version bump) whenever the player state is read for a command or returned by the API. Costs are never refunded and a construction cannot be cancelled.
+- Enhancement is gated by the Forge level and costs Forge Dust on every attempt, win or lose. Dismantling does not refund enhancement levels. Migration `0014` raised the Forge of players who had already enhanced items so they keep that level.
+- Builder's Hourglass and Forge Dust numbers (drop rate, seconds per item, dust yields and costs, Forge material costs and quality odds) are provisional closed-beta values.
 - Tavern: only offer 1 can be rare+ (with pity); offers 2–3 roll common/elite. Craft quality tops out at ×1.30.
 - Setting is western high fantasy. Ids such as `bamboo_grove`, `sunken_shrine`, `storm_scribe` are legacy internal identifiers kept for replay/test stability and must never be shown to players; the UI reads names from `/api/v1/catalog`.
 - A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run **or a stopped run still owes it rewards**, so the player stops, claims, promotes and restarts. Otherwise EXP earned at the old tier cap would be paid into the new tier.
@@ -139,15 +153,18 @@ M1 — Core loop (M1.1–M1.6 implemented; review fixes, combat v2, sampled idle
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. M1.7 buildings: Hall/Forge build timers and Forge level (quality odds, enhancement unlock), then decide when team 2 should open in the FTUE.
-2. Economy sim: weight gold/EXP/loot by the sampled win rate of a reference team per dungeon instead of assuming every wave is won.
-3. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
-4. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
-5. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+1. M1.8 i18n: the web still calls `t("vi", …)` everywhere; add a locale switch that changes language without a reload (strings already exist in vi + en).
+2. Buildings follow-ups: Tavern and Storage levels (docs/03 §6 ×0.6 / ×0.5), an auto-dismantle option next to auto-sell, and quest/mail sources for Builder's Hourglasses (M2).
+3. Economy sim: weight gold/EXP/loot by the sampled win rate of a reference team per dungeon instead of assuming every wave is won.
+4. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
+5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
+6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Known limitations
 - Passive dungeon accrual currently uses the 75% idle/offline rate uniformly. The architecture's separate 100% online rate needs an explicit presence/heartbeat definition before implementation.
 - Material ids are still the legacy snake_case names; only display names were re-themed.
+- A finished construction is not pushed to the client: the web polls `GET /api/v1/buildings` when its countdown ends. Commands never include a level that settled during them in their patch (except `speed_up_construction`, which finishes the build itself).
+- Tavern and Storage have no building level yet; the Hall costs gold only.
 - Browser scripts default to the Chrome channel (as on CI); set `GUILDHALL_BROWSER=chromium` to use Playwright's bundled Chromium locally.
 
 ## Review findings (2026-10-04)
@@ -168,7 +185,6 @@ Design decisions taken by the user and implemented afterwards:
 - `tools/sim` builds teams and enemies with the server's own builders (`buildHeroCombatant`, `buildEnemyCombatant`, `selectWaveEnemies`).
 
 Still open:
-- Forge building level, dismantle/Forge Dust and Hall build timers (M1.7).
 - The economy sim still assumes every wave is won; with sampled rewards, real gold/hour also depends on the team's win rate, and the server always pays the 75% passive rate (no online presence yet).
 
 ## Important constraints

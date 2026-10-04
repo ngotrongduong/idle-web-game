@@ -92,6 +92,13 @@
 
 Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở cấp thấp (1–7 phút cho Lv1–5) và dài dần (~3 giờ ở Lv9→10, xem [03 §6](03-economy-balancing.md#6-công-trình)). Thời gian xây là lý do để quay lại, và có thể tăng tốc bằng vật phẩm.
 
+**Đã cài (M1.7)**: Sảnh Hội và Lò Rèn (Quán Rượu và Kho chưa có cấp). Bảng số ở [03 §6](03-economy-balancing.md#6-công-trình).
+
+- Bấm nâng cấp thì trả vàng (Lò Rèn thêm nguyên liệu hầm) ngay, cấp mới có hiệu lực khi hết thời gian xây. Đồng hồ chạy theo server, kể cả khi đóng tab.
+- Chỉ có một thợ xây: mỗi lúc chỉ xây một công trình.
+- Tăng tốc bằng **Đồng Hồ Cát Thợ Xây** (rơi từ boss hầm, sau này từ quest): mỗi cái bớt 5 phút.
+- **Lò Rèn** Lv1 chỉ chế tạo; Lv2 mở cường hóa tới +2, mỗi cấp sau thêm một mức cho tới +5 ở Lv5. Mỗi cấp Lò Rèn giảm 3% tỉ lệ ra đồ Thường và chia cho Tinh xảo / Hiếm / Kiệt tác.
+
 ### 5.2 Hero
 
 - Thuộc tính: `class` (họ, nhánh, tier), `level`, `exp`, `personality`, `equipment[4]`, `stars` (sao hero, Later), `status` (rảnh / trong hầm / nghỉ).
@@ -135,6 +142,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Chế tạo: chọn công thức (2–3 nguyên liệu), có tỉ lệ roll phẩm chất. Lò rèn cấp cao tăng tỉ lệ.
 - Cường hóa +1…+10 (MVP +5): xem [03 §5](03-economy-balancing.md#5-cường-hóa-trang-bị). Có **mốc an toàn +5** và **pity**.
 - Phân rã đồ thừa thành bụi (Dust) để dùng cho cường hóa, thay vì chỉ bán lấy vàng.
+  - Đã cài (M1.7): nút **Phân rã** cạnh nút Bán, trả 1–5 Bụi Rèn theo phẩm chất; mỗi lần cường hóa tốn vàng và Bụi Rèn ([03 §5](03-economy-balancing.md#5-cường-hóa-trang-bị)). Đồ đang khóa hoặc đang mặc không phân rã được.
 
 ### 5.7 Tuyển mộ (Tavern)
 

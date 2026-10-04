@@ -14,7 +14,7 @@ argument-hint: "[--quick | --no-e2e | --install | --help]"
 | `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test` | ✓ | ✓ |
 | `sim:economy` report | ✓ | |
 | Chromium golden battle (v1 + v2 hashes) | ✓ | |
-| browser E2Es: dungeon, promotion, equipment, auto-sell | ✓ (skip with `--no-e2e`) | |
+| browser E2Es: dungeon, promotion, equipment, auto-sell, buildings | ✓ (skip with `--no-e2e`) | |
 | `pnpm build`, `docker compose config` | ✓ | |
 
 Use `--quick` while iterating and the full run before a push. A green full run takes about a minute

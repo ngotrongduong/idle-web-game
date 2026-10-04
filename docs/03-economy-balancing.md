@@ -100,6 +100,7 @@ thời lượng wave   = 8 giây (online, tốc độ replay x1); offline hiệu
 
 - **Pity**: mỗi lần thất bại +5% tỉ lệ cho lần sau, reset khi thành công. Hiển thị rõ "tỉ lệ hiện tại".
 - Chi phí mỗi lần: `100 · 1.6^n` vàng + Bụi Rèn (+ Đá Rèn từ +6).
+- **Đã cài (M1.7, số tạm cho closed beta)**: mỗi lần thử +1…+5 tốn thêm 1 / 2 / 3 / 4 / 5 Bụi Rèn, mất cả khi thất bại (giống vàng). Kỳ vọng tới +5: ~5,8 lần thử, ~1.969 vàng và ~18,3 Bụi Rèn. Bụi Rèn chỉ có từ **phân rã** trang bị: Thường 1 · Tinh xảo 2 · Hiếm 3 · Kiệt tác 5 mỗi món (không hoàn lại cấp cường hóa, không phân rã được đồ đang khóa hoặc đang mặc). Cấp Lò Rèn giới hạn mức cường hóa, xem §6.
 - **Kỳ vọng số lần** (mô phỏng 20.000 lần): +5 ≈ 5,8 · +8 ≈ 17 · +10 ≈ **49**. So với fworldgm: +9 ≈ **3.621** (tỉ lệ 100 − 10n%, thất bại ≥ +6 về 0). Đây là khác biệt "công bằng" có thể dùng làm điểm marketing.
 
 ## 6. Công trình
@@ -110,6 +111,29 @@ thời lượng wave   = 8 giây (online, tốc độ replay x1); offline hiệu
 | Thời gian xây | 1 phút | 2 phút | 4 phút | 7 phút | 13 phút | 25 phút | 47 phút | 1,5 giờ | 2,8 giờ |
 
 Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kho/Lò Rèn dùng hệ số ×0.6 / ×0.5 / ×0.8 so với Sảnh, kèm nguyên liệu hầm tương ứng. Chỉ xây 1 công trình cùng lúc (thêm thợ xây thứ 2 qua thẻ tháng).
+
+**Đã cài (M1.7)**: Sảnh Hội và Lò Rèn, bảng số nằm ở `packages/game-data/data/buildings.json`. Quán Rượu và Kho chưa có cấp.
+
+| Lò Rèn Lv → Lv+1 | 1→2 | 2→3 | 3→4 | 4→5 | 5→6 | 6→7 | 7→8 | 8→9 | 9→10 |
+|---|---|---|---|---|---|---|---|---|---|
+| Vàng (×0,8) | 240 | 624 | 1.624 | 4.216 | 10.968 | 28.512 | 74.136 | 192.760 | 501.184 |
+| Thời gian (×0,8) | 48 giây | 1,5 phút | 3 phút | 5,5 phút | 10 phút | 20 phút | 38 phút | 1,2 giờ | 2,3 giờ |
+| Nguyên liệu | 3 Đá Lửa | 8 Đá Lửa, 8 Vỏ Cây Gai | 10 Lõi Gỗ Đầm, 10 Sợi Cói Đầm Lầy | 20 Ngọc Ma Trơi, 20 Lõi Gỗ Đầm | 30 Bụi Mộ, 30 Mảnh Thánh Tích | 50 Tinh Thể Linh Hồn, 50 Lụa Liệm | 80 Quặng Đá Than, 80 Da Kỳ Nhông | 120 Thủy Tinh Rồng, 120 Mảnh Hắc Diện | 200 Mảnh Hắc Diện, 200 Thảo Dược Hoa Lửa |
+
+| Cấp Lò Rèn | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Cường hóa tối đa | khóa | +2 | +3 | +4 | +5 | +5 | +5 | +5 | +5 | +5 |
+| Chế tạo ra Thường | 70% | 67% | 64% | 61% | 58% | 55% | 52% | 49% | 46% | 43% |
+| Tinh xảo | 25% | 27% | 29% | 31% | 33% | 35% | 37% | 39% | 41% | 43% |
+| Hiếm | 4,5% | 5,3% | 6,1% | 6,9% | 7,7% | 8,5% | 9,3% | 10,1% | 10,9% | 11,7% |
+| Kiệt tác | 0,5% | 0,7% | 0,9% | 1,1% | 1,3% | 1,5% | 1,7% | 1,9% | 2,1% | 2,3% |
+
+- Vàng (và nguyên liệu của Lò Rèn) bị trừ ngay khi bấm nâng cấp; cấp mới chỉ có hiệu lực khi hết thời gian xây, tính theo đồng hồ server nên không cần mở tab. Sảnh Hội chỉ tốn vàng.
+- Một thợ xây: đang xây công trình này thì chưa nâng được công trình khác.
+- **Tăng tốc** bằng Đồng Hồ Cát Thợ Xây: mỗi cái bớt 5 phút, server không bao giờ dùng nhiều hơn số cần để xây xong. Nguồn tạm thời: boss của cả 4 hầm rơi 2% (≈9 cái sau một đêm 8 giờ với một đội hạ được boss, tức ~45 phút tăng tốc). Quest và sự kiện (M2) sẽ là nguồn chính.
+- Tổng thời gian xây 1→10: Sảnh ~6 giờ, Lò Rèn ~4,8 giờ; lần dài nhất 2,8 giờ. Thứ chặn công trình vẫn là vàng (Sảnh ~1,02 triệu, Lò Rèn ~0,81 triệu), thời gian xây chỉ tạo nhịp quay lại.
+- **Nhịp đội 2**: với 1.000 vàng khởi đầu và vàng thụ động hầm 1, Sảnh Lv3 (mở đội 2) xong sớm nhất ở phút ~3,1 nếu ưu tiên Sảnh (`sim:economy` → `buildings.teamTwo`), nằm trong mốc 6 phút ở §4. Vì vậy giữ nguyên mốc Lv1 / Lv3 / Lv6 / Lv9; quest chính (M2.1) cần dẫn người chơi nâng Sảnh hai lần trước.
+- Cường hóa +5 cần Lò Rèn Lv5 (cộng dồn 6.704 vàng và ~11 phút xây), phù hợp mốc "cường hóa +5 ở D4–D5".
 
 ## 7. Tuyển mộ và gacha
 
@@ -144,6 +168,7 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 
 - Lý do lệch so với bảng thiết kế: bảng gốc cho ra quá nhiều nguyên liệu cho recipe hiện tại. Economy pass M1 cho thấy mức 0,5% / 5% / 10% khiến món craft đầu tiên mất ~9,8 phút thay vì mục tiêu 3 phút. Bảng đang cài dùng 2% / 15% / 30%, tương đương ~0,78 nguyên liệu mỗi loại mỗi vòng, ~351 mỗi loại sau cap offline 8 giờ và ~3,1 phút kỳ vọng để đủ nguyên liệu cho món craft đầu tiên.
 - Ấn I hào phóng có chủ ý (~13 mỗi đêm khi đội đã hạ được boss), để level cap chứ không phải ấn là thứ chặn lần thăng T2 đầu tiên. Nút thắt ấn bắt đầu từ T2→T3.
+- M1.7: boss của mọi hầm còn rơi **Đồng Hồ Cát Thợ Xây** 2% × 1 (vật phẩm tăng tốc xây, xem §6). Luật này nằm cuối bảng nên không làm đổi kết quả rơi của các nguyên liệu khác với cùng seed.
 - Chỉ quái ở wave **thắng** mới rơi đồ, giống vàng và EXP. Mỗi vòng có seed riêng (`deriveCycleLootSeed`), nên chia nhỏ số lần nhận không làm đổi tổng.
 - `tools/sim sim:economy` chạy trong CI để kiểm tra đồng thời gold/hour, nguyên liệu, ấn, thời gian craft và chi phí cường hóa. Economy pass M1 đã đưa gold/hour của 4 hầm về sát các target ở §4 và material rate về nhịp craft đầu ~3 phút.
 

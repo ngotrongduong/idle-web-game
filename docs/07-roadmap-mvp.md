@@ -47,7 +47,7 @@ Tuần:  0    1-2        3-6             7-9            10-12          13-14    
 | M1.4 | Level, EXP, thăng tier, chọn nhánh, tiềm năng 20% | thăng T1 → T2 → T3 chạy end-to-end |
 | M1.5 | Kho, trang bị, mặc/tháo, bán, khóa, auto-sell | không mất item khi thao tác nhanh |
 | M1.6 | Chế tạo (phẩm chất ngẫu nhiên), Lò Rèn, cường hóa +1…+5 | tỉ lệ thực tế khớp bảng (test thống kê) |
-| M1.7 | Công trình có thời gian xây, tăng tốc | |
+| M1.7 | Công trình có thời gian xây, tăng tốc; cấp Lò Rèn, phân rã đồ ra Bụi Rèn | cấp mới chỉ có hiệu lực khi hết giờ theo đồng hồ server; một thợ xây; tăng tốc không dùng thừa vật phẩm |
 | M1.8 | i18n vi/en cho toàn bộ chuỗi đã có | đổi ngôn ngữ không reload |
 
 **Mốc M1**: người thử chơi được 30 phút liên tục với placeholder art, không bị kẹt.
