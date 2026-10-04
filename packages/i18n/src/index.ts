@@ -31,6 +31,11 @@ const messages = {
     "tavern.roster": "Đội ngũ hiện có",
     "tavern.emptyRoster": "Bạn chưa tuyển anh hùng nào.",
     "tavern.loadError": "Không tải được dữ liệu Tavern.",
+    "promotion.seals": "Ấn thăng cấp",
+    "promotion.requirement": "Yêu cầu",
+    "promotion.needCap": "Cần đạt",
+    "promotion.busy": "Đang chạy hầm — cần dừng trước khi thăng cấp",
+    "promotion.promote": "Thăng",
     "dungeon.title": "Đội & Hầm",
     "dungeon.subtitle": "Xếp đội và chạy hầm ngục",
     "dungeon.help":
@@ -90,6 +95,11 @@ const messages = {
     "tavern.roster": "Current roster",
     "tavern.emptyRoster": "You have not recruited any heroes yet.",
     "tavern.loadError": "Could not load Tavern data.",
+    "promotion.seals": "Promotion seals",
+    "promotion.requirement": "Requires",
+    "promotion.needCap": "Reach",
+    "promotion.busy": "Active in a dungeon — stop the run before promotion",
+    "promotion.promote": "Promote",
     "dungeon.title": "Teams & Dungeons",
     "dungeon.subtitle": "Build teams and run dungeons",
     "dungeon.help":

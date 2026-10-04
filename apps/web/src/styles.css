@@ -406,3 +406,55 @@ h2 {
     flex-direction: column;
   }
 }
+
+.roster-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.seal-summary {
+  color: #d7b96f;
+  font-size: 0.72rem;
+}
+
+.hero-roster-item {
+  align-items: flex-start !important;
+  gap: 12px;
+}
+
+.hero-roster-item > span {
+  display: grid;
+  gap: 3px;
+}
+
+.promotion-actions {
+  display: grid;
+  gap: 6px;
+  min-width: 145px;
+}
+
+.promotion-actions button {
+  border: 1px solid #8f743b;
+  border-radius: 9px;
+  padding: 8px 10px;
+  color: #fff0c7;
+  background: #4c3a20;
+}
+
+.promotion-actions button:disabled {
+  opacity: 0.45;
+}
+
+@media (max-width: 420px) {
+  .roster-heading,
+  .hero-roster-item {
+    align-items: stretch !important;
+    flex-direction: column;
+  }
+
+  .promotion-actions {
+    min-width: 0;
+  }
+}

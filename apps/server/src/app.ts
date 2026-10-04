@@ -8,6 +8,7 @@ import {
   HealthResponseSchema,
   HeroesResponseSchema,
   MaterialsResponseSchema,
+  PromotionStateResponseSchema,
   TavernResponseSchema,
   TeamsResponseSchema,
   type ApiError,
@@ -142,6 +143,61 @@ export function buildServer(options?: { store?: GameStore }) {
     return MaterialsResponseSchema.parse({
       ok: true,
       materials: await store.listMaterials(playerId),
+    });
+  });
+
+  app.get("/api/v1/promotion", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    const [heroes, runs, materials] = await Promise.all([
+      store.listHeroes(playerId),
+      store.listDungeonRuns(playerId),
+      store.listMaterials(playerId),
+    ]);
+    const activeHeroIds = new Set(
+      runs
+        .filter((run) => run.status === "active")
+        .flatMap((run) => run.waves[0]?.allies.map((ally) => ally.id) ?? []),
+    );
+
+    return PromotionStateResponseSchema.parse({
+      ok: true,
+      materials,
+      heroes: heroes.map((hero) => {
+        const heroClass = foundationGameData.classes.find((entry) => entry.id === hero.classId);
+        if (!heroClass) throw new Error(`Unknown hero class: ${hero.classId}`);
+
+        const rule = promotionRuleForTier(heroClass.tier);
+        const targets = foundationGameData.classes
+          .filter((entry) => entry.parentClassId === heroClass.id)
+          .map((entry) => ({
+            classId: entry.id,
+            nameVi: entry.nameVi,
+            nameEn: entry.nameEn,
+            tier: entry.tier,
+          }));
+
+        return {
+          heroId: hero.id,
+          currentClassId: heroClass.id,
+          currentClassNameVi: heroClass.nameVi,
+          currentTier: heroClass.tier,
+          levelCap: levelCapForTier(heroClass.tier),
+          atLevelCap: hero.level === levelCapForTier(heroClass.tier),
+          busy: activeHeroIds.has(hero.id),
+          targets,
+          rule: rule
+            ? {
+                goldCost: rule.goldCost,
+                sealMaterialId: rule.sealMaterialId,
+                sealQty: rule.sealQty,
+              }
+            : null,
+        };
+      }),
     });
   });
 

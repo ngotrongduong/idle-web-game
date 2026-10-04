@@ -85,6 +85,41 @@ export const MaterialsResponseSchema = z.object({
   materials: z.array(MaterialBalanceSchema),
 });
 
+export const PromotionTargetSchema = z.object({
+  classId: z.string().min(1),
+  nameVi: z.string().min(1),
+  nameEn: z.string().min(1),
+  tier: z.number().int().min(2).max(3),
+});
+
+export const PromotionRuleViewSchema = z.object({
+  goldCost: z.number().int().nonnegative(),
+  sealMaterialId: z.string().min(1),
+  sealQty: z.number().int().positive(),
+});
+
+export const HeroPromotionStateSchema = z.object({
+  heroId: z.string().uuid(),
+  currentClassId: z.string().min(1),
+  currentClassNameVi: z.string().min(1),
+  currentTier: z.number().int().min(1).max(3),
+  levelCap: z.number().int().positive(),
+  atLevelCap: z.boolean(),
+  busy: z.boolean(),
+  targets: z.array(PromotionTargetSchema),
+  rule: PromotionRuleViewSchema.nullable(),
+});
+
+export type HeroPromotionState = z.infer<typeof HeroPromotionStateSchema>;
+
+export const PromotionStateResponseSchema = z.object({
+  ok: z.literal(true),
+  materials: z.array(MaterialBalanceSchema),
+  heroes: z.array(HeroPromotionStateSchema),
+});
+
+export type PromotionStateResponse = z.infer<typeof PromotionStateResponseSchema>;
+
 export const TeamSchema = z.object({
   slot: z.number().int().min(1).max(4),
   heroIds: z.array(z.string().uuid()).max(4),

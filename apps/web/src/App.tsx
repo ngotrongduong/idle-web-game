@@ -35,6 +35,43 @@ type Hero = {
   rarity: TavernOffer["rarity"];
   level: number;
   exp: number;
+  potential?: {
+    hp: number;
+    attack: number;
+    defense: number;
+    speed: number;
+  };
+};
+
+type MaterialBalance = {
+  materialId: string;
+  qty: number;
+};
+
+type HeroPromotionState = {
+  heroId: string;
+  currentClassId: string;
+  currentClassNameVi: string;
+  currentTier: number;
+  levelCap: number;
+  atLevelCap: boolean;
+  busy: boolean;
+  targets: Array<{
+    classId: string;
+    nameVi: string;
+    nameEn: string;
+    tier: number;
+  }>;
+  rule: {
+    goldCost: number;
+    sealMaterialId: string;
+    sealQty: number;
+  } | null;
+};
+
+type PromotionState = {
+  materials: MaterialBalance[];
+  heroes: HeroPromotionState[];
 };
 
 type Team = {
@@ -98,7 +135,8 @@ type GameCommand =
   | { type: "set_team"; slot: number; heroIds: string[] }
   | { type: "start_dungeon"; dungeonId: string; teamSlot: number }
   | { type: "stop_dungeon"; runId: string }
-  | { type: "claim_dungeon_rewards"; runId: string };
+  | { type: "claim_dungeon_rewards"; runId: string }
+  | { type: "promote_hero"; heroId: string; targetClassId: string };
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
@@ -119,6 +157,10 @@ export function App() {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [runs, setRuns] = useState<DungeonRun[]>([]);
+  const [promotion, setPromotion] = useState<PromotionState>({
+    materials: [],
+    heroes: [],
+  });
   const [teamDrafts, setTeamDrafts] = useState<Record<number, string[]>>({});
   const [selectedDungeons, setSelectedDungeons] = useState<Record<number, string>>({
     1: dungeonOptions[0],
@@ -131,14 +173,22 @@ export function App() {
   const [now, setNow] = useState(() => Date.now());
 
   const loadCollections = useCallback(async () => {
-    const [tavernResponse, heroesResponse, teamsResponse, runsResponse] = await Promise.all([
-      fetch("/api/v1/tavern", { credentials: "include" }),
-      fetch("/api/v1/heroes", { credentials: "include" }),
-      fetch("/api/v1/teams", { credentials: "include" }),
-      fetch("/api/v1/dungeon-runs", { credentials: "include" }),
-    ]);
+    const [tavernResponse, heroesResponse, teamsResponse, runsResponse, promotionResponse] =
+      await Promise.all([
+        fetch("/api/v1/tavern", { credentials: "include" }),
+        fetch("/api/v1/heroes", { credentials: "include" }),
+        fetch("/api/v1/teams", { credentials: "include" }),
+        fetch("/api/v1/dungeon-runs", { credentials: "include" }),
+        fetch("/api/v1/promotion", { credentials: "include" }),
+      ]);
 
-    if (!tavernResponse.ok || !heroesResponse.ok || !teamsResponse.ok || !runsResponse.ok) {
+    if (
+      !tavernResponse.ok ||
+      !heroesResponse.ok ||
+      !teamsResponse.ok ||
+      !runsResponse.ok ||
+      !promotionResponse.ok
+    ) {
       throw new Error(t("vi", "app.loadError"));
     }
 
@@ -146,11 +196,16 @@ export function App() {
     const heroesBody = await readJson<{ ok: true; heroes: Hero[] }>(heroesResponse);
     const teamsBody = await readJson<{ ok: true; teams: Team[] }>(teamsResponse);
     const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(runsResponse);
+    const promotionBody = await readJson<{ ok: true } & PromotionState>(promotionResponse);
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
     setTeams(teamsBody.teams);
     setRuns(runsBody.runs);
+    setPromotion({
+      materials: promotionBody.materials,
+      heroes: promotionBody.heroes,
+    });
     setTeamDrafts(
       Object.fromEntries(
         teamSlots.map((slot) => [
@@ -405,19 +460,86 @@ export function App() {
           </section>
 
           <section className="card roster">
-            <span className="section-kicker">{t("vi", "tavern.roster")}</span>
+            <div className="roster-heading">
+              <span className="section-kicker">{t("vi", "tavern.roster")}</span>
+              <span className="seal-summary">
+                {t("vi", "promotion.seals")}: I ×
+                {promotion.materials.find((entry) => entry.materialId === "promotion_seal_t1")
+                  ?.qty ?? 0}
+                {" · "}II ×
+                {promotion.materials.find((entry) => entry.materialId === "promotion_seal_t2")
+                  ?.qty ?? 0}
+              </span>
+            </div>
             {heroes.length ? (
               <ul>
-                {heroes.map((hero) => (
-                  <li key={hero.id}>
-                    <span>
-                      <strong>{humanizeId(hero.classId)}</strong>
-                      <small>
-                        {rarityLabel(hero.rarity)} · Lv.{hero.level} · EXP {hero.exp}
-                      </small>
-                    </span>
-                  </li>
-                ))}
+                {heroes.map((hero) => {
+                  const promotionState = promotion.heroes.find((entry) => entry.heroId === hero.id);
+                  const rule = promotionState?.rule;
+                  const sealBalance = rule
+                    ? (promotion.materials.find(
+                        (entry) => entry.materialId === rule.sealMaterialId,
+                      )?.qty ?? 0)
+                    : 0;
+                  const canAfford = Boolean(
+                    player &&
+                      rule &&
+                      player.gold >= rule.goldCost &&
+                      sealBalance >= rule.sealQty,
+                  );
+                  const canPromote = Boolean(
+                    promotionState?.atLevelCap &&
+                      !promotionState.busy &&
+                      rule &&
+                      canAfford,
+                  );
+
+                  return (
+                    <li className="hero-roster-item" key={hero.id}>
+                      <span>
+                        <strong>{promotionState?.currentClassNameVi ?? humanizeId(hero.classId)}</strong>
+                        <small>
+                          {rarityLabel(hero.rarity)} · T{promotionState?.currentTier ?? "?"} · Lv.
+                          {hero.level} · EXP {hero.exp}
+                        </small>
+                        {promotionState?.targets.length && rule ? (
+                          <small>
+                            {t("vi", "promotion.requirement")}: {rule.goldCost} gold · {rule.sealQty}{" "}
+                            {humanizeId(rule.sealMaterialId)}
+                          </small>
+                        ) : null}
+                        {promotionState?.busy ? (
+                          <small>{t("vi", "promotion.busy")}</small>
+                        ) : promotionState && !promotionState.atLevelCap && promotionState.targets.length ? (
+                          <small>
+                            {t("vi", "promotion.needCap")} Lv.{promotionState.levelCap}
+                          </small>
+                        ) : null}
+                      </span>
+
+                      {promotionState?.targets.length ? (
+                        <div className="promotion-actions">
+                          {promotionState.targets.map((target) => (
+                            <button
+                              type="button"
+                              key={target.classId}
+                              disabled={busy || !canPromote}
+                              onClick={() =>
+                                void sendCommand({
+                                  type: "promote_hero",
+                                  heroId: hero.id,
+                                  targetClassId: target.classId,
+                                })
+                              }
+                            >
+                              {t("vi", "promotion.promote")} → {target.nameVi}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p>{t("vi", "tavern.emptyRoster")}</p>
