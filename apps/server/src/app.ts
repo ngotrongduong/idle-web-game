@@ -1161,7 +1161,9 @@ export function buildServer(options?: { store?: GameStore }) {
         const spec = foundationGameData.items.find((entry) => entry.id === item.itemId);
         if (!spec) throw new Error(`Unknown item definition: ${item.itemId}`);
         const baseSellGold = itemSellGold(spec);
-        const sellGold = Math.floor((baseSellGold * item.qualityBps) / equipmentConfig.baseQualityBps);
+        const sellGold = Math.floor(
+          (baseSellGold * item.qualityBps) / equipmentConfig.baseQualityBps,
+        );
 
         await store.deleteItem(playerId, item.id);
         const nextState = {
