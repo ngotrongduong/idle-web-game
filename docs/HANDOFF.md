@@ -7,8 +7,8 @@
 M1 — Core loop.
 
 ## Verified status
-- GitHub Actions CI run #175 passed on commit `b4a145bc9885a72f1b94a826a258d4721ef3962b` for M1.2B backend fixes plus the Team & Dungeon web screen.
-- Client-side replay hash verification passed full CI #182 on commit `8eb3eb72c26b4f0e426ac9a7c04a456ece878204`.
+- GitHub Actions CI run #184 passed on commit `3e4fcbe7f6e49ba6165903c7e4dc3cde9e3ab82f`.
+- The verified flow now includes M1.2B backend, Team & Dungeon UI, client-side replay hash checks, and a real Chromium E2E path: guest → Tavern refresh → recruit 3 heroes → save Team 1 → start a 6-wave dungeon → verify 6/6 client hashes match the persisted server hashes.
 - Frozen install, PostgreSQL migrations, lint, Prettier check, typecheck, unit/integration tests, Chromium golden battle, build and Docker Compose validation are green.
 - PostgreSQL integration tests cover session expiry, 24h idempotency retention/pruning, transaction rollback, row-lock serialization, Tavern persistence and recruited heroes.
 - Temporary format-once workflows have been removed; CI is read-only again.
@@ -51,12 +51,18 @@ M1 — Core loop.
   - current M1 hero stat scaling uses the existing 4%/level simulator formula plus rarity multipliers
   - replay stores the complete battle rules because unit snapshots + seed alone are insufficient if balance constants change later
   - each wave currently starts from its persisted full-stat snapshot; cross-wave HP/MP carryover is not implemented yet
+- M1.2 client replay/UI verification:
+  - four editable team slots in the React Team & Dungeon screen
+  - dungeon start/stop and persisted 6-wave summaries
+  - browser client replays every wave from persisted snapshots + seed + battle-rule snapshot
+  - visible per-wave hash match/mismatch state
+  - Chromium E2E drives the full real UI/API/PostgreSQL flow and verifies all six client hashes match the server
 
 ## Next implementation work
-1. Verify M1.2B through the full CI/PostgreSQL pipeline.
-2. Verify the new end-to-end browser flow: guest → Tavern → recruit → team → dungeon → client/server replay hash match.
-5. Add idle cycle accumulation/claim using expected rewards without double-paying replay metadata.
-6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
+1. Add idle cycle accumulation and claim using expected rewards without double-paying replay metadata.
+2. Decide and implement cross-wave HP/MP carryover semantics before longer dungeon progression depends on them.
+3. Add reward payout/progression integration for completed dungeon cycles.
+4. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.
