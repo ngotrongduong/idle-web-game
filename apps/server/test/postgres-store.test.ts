@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
+import { Pool } from "pg";
 import { PostgresGameStore } from "../src/db/postgres-store.js";
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -39,6 +40,23 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     });
   });
 
+  it("rejects expired sessions", async () => {
+    const store = createStore();
+    const hash = sessionHash();
+    await store.createGuest(hash);
+    const pool = new Pool({ connectionString: databaseUrl! });
+
+    try {
+      await pool.query(
+        "UPDATE sessions SET expires_at = now() - interval '1 minute' WHERE session_hash = $1",
+        [hash],
+      );
+      expect(await store.findPlayerIdBySessionHash(hash)).toBeUndefined();
+    } finally {
+      await pool.end();
+    }
+  });
+
   it("persists idempotency outcomes", async () => {
     const store = createStore();
     const player = await store.createGuest(sessionHash());
@@ -51,6 +69,54 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     expect(
       await store.getCommandOutcome(player.id, "cmd-postgres-1"),
     ).toEqual(outcome);
+  });
+
+  it("expires and prunes idempotency outcomes after 24 hours", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    const cmdId = `cmd-expired-${randomBytes(8).toString("hex")}`;
+    await store.setCommandOutcome(player.id, cmdId, {
+      statusCode: 200,
+      body: { ok: true },
+    });
+
+    const pool = new Pool({ connectionString: databaseUrl! });
+    try {
+      await pool.query(
+        "UPDATE command_outcomes SET created_at = now() - interval '25 hours' WHERE player_id = $1 AND cmd_id = $2",
+        [player.id, cmdId],
+      );
+
+      expect(
+        await store.getCommandOutcome(player.id, cmdId),
+      ).toBeUndefined();
+
+      const result = await pool.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM command_outcomes WHERE player_id = $1 AND cmd_id = $2",
+        [player.id, cmdId],
+      );
+      expect(result.rows[0]?.count).toBe(0);
+    } finally {
+      await pool.end();
+    }
+  });
+
+  it("rolls back state changes when a locked task fails", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+
+    await expect(
+      store.withPlayerLock(player.id, async () => {
+        await store.setPlayer({
+          ...player,
+          version: 1,
+          gold: 1,
+        });
+        throw new Error("force rollback");
+      }),
+    ).rejects.toThrow("force rollback");
+
+    expect(await store.getPlayer(player.id)).toEqual(player);
   });
 
   it("serializes updates with a real player row lock", async () => {
