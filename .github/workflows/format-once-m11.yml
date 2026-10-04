@@ -1,0 +1,47 @@
+name: Format once M1.1
+
+on:
+  push:
+    branches:
+      - chatgpt/m0-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chatgpt/m0-foundation
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format M1.1 server files
+        run: >
+          pnpm exec prettier --write
+          apps/server/src/app.ts
+          apps/server/src/db/postgres-store.ts
+          apps/server/src/db/schema.ts
+          apps/server/src/store.ts
+          apps/server/test/command.test.ts
+          apps/server/test/postgres-store.test.ts
+          packages/api-contract/src/index.ts
+      - name: Commit formatted files
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/server/src/app.ts apps/server/src/db/postgres-store.ts apps/server/src/db/schema.ts apps/server/src/store.ts apps/server/test/command.test.ts apps/server/test/postgres-store.test.ts packages/api-contract/src/index.ts
+          git commit -m "Format M1.1 tavern server files"
+          git push origin HEAD:chatgpt/m0-foundation
