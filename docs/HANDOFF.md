@@ -4,7 +4,8 @@
 `chatgpt/m0-foundation`
 
 ## Resuming in a new session
-- Start the session on `chatgpt/m0-foundation` (`main` only has a README until PR #2 merges).
+- Start the session on `chatgpt/m0-foundation`. `main` and PR #2's base branch
+  (`claude/web-game-analysis-plan-xumrt0`) do not have the code or the agent tooling yet.
 - In a Claude Code cloud session the SessionStart hook installs dependencies and starts PostgreSQL
   with `guildhall_test`; check its status line. Elsewhere follow the `local-ci` skill.
 - Read this file, then run `scripts/ci-local.sh --quick` to confirm the checkout is green before
