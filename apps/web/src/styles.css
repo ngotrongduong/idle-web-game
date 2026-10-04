@@ -669,7 +669,139 @@ h2 {
   list-style: none;
 }
 
-.hall-card small {
+.builder-card,
+.building-card {
+  display: grid;
+  gap: 10px;
+}
+
+.builder-card p,
+.building-card h2,
+.building-card .hall-stats {
+  margin: 0;
+}
+
+.builder-heading,
+.construction-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.builder-heading .player-gold {
+  margin-top: 0;
+}
+
+.building-card small,
+.builder-card small,
+.construction-note {
+  color: #aa9b87;
+  font-size: 0.76rem;
+}
+
+.building-next {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid #44372a;
+  padding-top: 10px;
+}
+
+.cost-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+}
+
+.cost-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #3a3122;
+  padding: 4px 0;
+}
+
+.cost-list li.unmet strong {
+  color: #ffb4a8;
+}
+
+small.disabled-reason,
+p.disabled-reason {
   display: block;
-  margin-top: 8px;
+  margin: 0;
+  color: #e8b08a;
+}
+
+.construction-panel {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #665331;
+  border-radius: 12px;
+  padding: 12px;
+  background: #282016;
+}
+
+.construction-time strong {
+  color: #f0d48f;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress {
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid #5a4935;
+  border-radius: 999px;
+  background: #1c1611;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8f743b, #d9b56d);
+  transition: width 0.5s linear;
+}
+
+.speed-up {
+  display: grid;
+  gap: 8px;
+}
+
+.speed-up-actions,
+.equipment-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.speed-up-actions button {
+  flex: 1;
+  border: 1px solid #8f743b;
+  border-radius: 9px;
+  padding: 8px 10px;
+  color: #fff0c7;
+  background: #4c3a20;
+}
+
+.construction-note {
+  display: block;
+}
+
+.forge-summary {
+  margin-bottom: 0;
+}
+
+.enhance-actions > span {
+  display: grid;
+  gap: 3px;
+}
+
+.equipment-footer-actions {
+  justify-content: flex-end;
+}
+
+.equipment-footer-actions button {
+  padding: 8px 10px;
 }

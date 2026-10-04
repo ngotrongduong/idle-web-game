@@ -85,7 +85,7 @@ jobs:
           fi
           pnpm --filter @idle/inspect golden:battle
 
-      - name: Dungeon, promotion and equipment UI E2E
+      - name: Dungeon, promotion, equipment, auto-sell and buildings UI E2E
         run: |
           pnpm --filter @idle/server exec tsx src/index.ts > /tmp/e2e-server.log 2>&1 &
           SERVER_PID=$!
@@ -112,6 +112,7 @@ jobs:
           pnpm --filter @idle/inspect e2e:promotion
           pnpm --filter @idle/inspect e2e:equipment
           pnpm --filter @idle/inspect e2e:auto-sell
+          pnpm --filter @idle/inspect e2e:buildings
 
       - name: Build
         run: pnpm build

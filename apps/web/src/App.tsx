@@ -1,12 +1,35 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BattleRules } from "@idle/game-core";
 import { t } from "@idle/i18n";
+import { BuildingsCard, ConstructionNote } from "./BuildingsCard";
+import {
+  applyBuildingState,
+  clockOffsetMs as measureClockOffsetMs,
+  dismantleDustFor,
+  enhanceBlock,
+  enhanceCapLabel,
+  forgeLevelForEnhance,
+  oddsLabel,
+  type BuildingId,
+  type BuildingRules,
+  type BuildingState,
+  type Construction,
+  type ForgeLevel,
+  type HallLevel,
+  type QualityTier,
+} from "./buildings";
 import { verifyDungeonRunReplay } from "./replay";
 
 const tabs = ["guild", "dungeon", "forge", "tavern", "more"] as const;
 const teamSlots = [1, 2, 3, 4] as const;
 /** Used until the catalog loads; the catalog's order and unlock chain are authoritative. */
 const FALLBACK_DUNGEON_IDS = ["bamboo_grove"] as const;
+/** How often the finished level is asked for once a build's countdown has run out. */
+const CONSTRUCTION_POLL_MS = 2_000;
+/** The measured clock offset is off by up to half a round trip; ask just after the deadline. */
+const CONSTRUCTION_POLL_GRACE_MS = 250;
+/** Building levels are re-read this often while the Guild tab is open (e.g. sped up elsewhere). */
+const BUILDINGS_REFRESH_MS = 30_000;
 
 type Tab = (typeof tabs)[number];
 
@@ -15,7 +38,14 @@ type PlayerState = {
   version: number;
   gold: number;
   hallLevel: number;
+  forgeLevel: number;
+  construction: Construction | null;
   clearedDungeonIds: string[];
+};
+
+type BuildingsBody = BuildingState & {
+  ok: true;
+  serverTime: string;
 };
 
 type TavernOffer = {
@@ -157,9 +187,33 @@ type DungeonRewardsClaimedEvent = {
 type CommandSuccess = {
   ok: true;
   version: number;
-  patch: Partial<Pick<PlayerState, "gold" | "hallLevel" | "clearedDungeonIds">>;
+  patch: Partial<
+    Pick<PlayerState, "gold" | "hallLevel" | "forgeLevel" | "construction" | "clearedDungeonIds">
+  >;
   events: Array<{ type: string } | DungeonRewardsClaimedEvent>;
 };
+
+/** Player-facing text for errors whose server message would show internal ids or English. */
+const ERROR_MESSAGE_KEYS = {
+  BUILDER_BUSY: "error.builderBusy",
+  FORGE_LEVEL_TOO_LOW: "error.forgeLevelTooLow",
+  INSUFFICIENT_GOLD: "error.insufficientGold",
+  INSUFFICIENT_MATERIAL: "error.insufficientMaterial",
+  MAX_LEVEL: "error.maxLevel",
+} as const;
+
+/** Errors that mean the client's building levels or timer are out of date. */
+const BUILDING_ERROR_CODES = new Set([
+  "BUILDER_BUSY",
+  "NO_CONSTRUCTION",
+  "FORGE_LEVEL_TOO_LOW",
+  "MAX_LEVEL",
+]);
+
+function commandErrorMessage(body: ApiErrorBody): string {
+  const key = ERROR_MESSAGE_KEYS[body.code as keyof typeof ERROR_MESSAGE_KEYS];
+  return key ? t("vi", key) : body.message;
+}
 
 type CatalogEntry = {
   id: string;
@@ -178,15 +232,11 @@ type ItemCatalogEntry = CatalogEntry & {
 };
 
 type EquipmentRules = {
-  qualityTiers: Array<{
-    id: string;
-    nameVi: string;
-    nameEn: string;
-    weightBps: number;
-    multiplierBps: number;
-  }>;
+  qualityTiers: QualityTier[];
   enhanceBonusBps: number[];
   enhanceGoldCosts: number[];
+  enhanceDustCosts: number[];
+  forgeDustMaterialId: string;
   enhanceSuccessBps: number[];
   enhancePityStepBps: number;
 };
@@ -212,24 +262,21 @@ type DungeonCatalogEntry = CatalogEntry & {
   unlockAfterDungeonId: string | null;
 };
 
-type HallLevel = {
-  level: number;
-  heroCapacity: number;
-  teamLimit: number;
-  upgradeGoldCost: number | null;
-};
-
 type Catalog = {
   classes: CatalogEntry[];
   dungeons: DungeonCatalogEntry[];
   hall: HallLevel[];
+  forge: ForgeLevel[];
+  buildings: BuildingRules;
   materials: CatalogEntry[];
   items: ItemCatalogEntry[];
   equipment: EquipmentRules;
 };
 
 type GameCommand =
-  | { type: "upgrade_hall" }
+  | { type: "upgrade_building"; building: BuildingId }
+  | { type: "speed_up_construction"; items: number }
+  | { type: "dismantle_item"; itemInstanceId: string }
   | { type: "refresh_tavern" }
   | { type: "recruit_hero"; offerId: string }
   | { type: "set_team"; slot: number; heroIds: string[] }
@@ -292,6 +339,30 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  /** Server clock minus device clock; build countdowns run on the server clock. */
+  const [clockOffsetMs, setClockOffsetMs] = useState(0);
+  const clockOffsetRef = useRef(0);
+  const buildingsRequestRef = useRef(0);
+
+  /**
+   * Re-reads the building levels (a finished construction arrives already applied) and re-measures
+   * the clock offset. Only the newest request may write, so a slow answer cannot undo a later one.
+   */
+  const refreshBuildings = useCallback(async () => {
+    buildingsRequestRef.current += 1;
+    const requestId = buildingsRequestRef.current;
+    const sentAt = Date.now();
+    const response = await fetch("/api/v1/buildings", { credentials: "include" });
+    if (!response.ok) throw new Error(t("vi", "app.loadError"));
+    const body = await readJson<BuildingsBody>(response);
+    if (requestId !== buildingsRequestRef.current) return;
+
+    // The server stamped its time somewhere between sending and receiving; take the middle.
+    const offset = measureClockOffsetMs(body.serverTime, (sentAt + Date.now()) / 2);
+    clockOffsetRef.current = offset;
+    setClockOffsetMs(offset);
+    setPlayer((current) => (current ? applyBuildingState(current, body) : current));
+  }, []);
 
   const loadCollections = useCallback(async () => {
     const [
@@ -310,6 +381,8 @@ export function App() {
       fetch("/api/v1/promotion", { credentials: "include" }),
       fetch("/api/v1/inventory", { credentials: "include" }),
       fetch("/api/v1/inventory-settings", { credentials: "include" }),
+      // Commands do not report a build that finished in the meantime; this does.
+      refreshBuildings(),
     ]);
 
     if (
@@ -353,7 +426,7 @@ export function App() {
         ]),
       ),
     );
-  }, []);
+  }, [refreshBuildings]);
 
   const loadDungeonProgress = useCallback(async () => {
     const [heroesResponse, runsResponse] = await Promise.all([
@@ -430,9 +503,66 @@ export function App() {
     return () => window.clearInterval(timer);
   }, [activeTab, loadDungeonProgress, player]);
 
+  const playerId = player?.id ?? null;
+  useEffect(() => {
+    if (activeTab !== "guild" || !playerId) return;
+
+    const refresh = () => {
+      void refreshBuildings().catch((reason) => {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      });
+    };
+
+    refresh();
+    const timer = window.setInterval(refresh, BUILDINGS_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [activeTab, playerId, refreshBuildings]);
+
+  // The server applies a finished build lazily and no command pushes it, so when the countdown
+  // runs out the client asks until the construction is gone. Everything that depends on the
+  // levels (hero capacity, team limit, enhancement cap, craft odds) is derived from the player
+  // state, so the open screen updates without a reload.
+  const constructionCompletesAt = player?.construction?.completesAt ?? null;
+  useEffect(() => {
+    if (!constructionCompletesAt) return;
+
+    let cancelled = false;
+    let timer = 0;
+    const completesAtMs = Date.parse(constructionCompletesAt);
+    const schedule = (minimumDelayMs: number) => {
+      // Re-read the offset every time: the first measurement may arrive after this effect starts.
+      const remainingMs = completesAtMs - (Date.now() + clockOffsetRef.current);
+      timer = window.setTimeout(
+        poll,
+        Math.max(minimumDelayMs, remainingMs + CONSTRUCTION_POLL_GRACE_MS),
+      );
+    };
+    const poll = () => {
+      void refreshBuildings()
+        // A failed poll is simply retried; commands report real connection problems.
+        .catch(() => undefined)
+        .then(() => {
+          if (!cancelled) schedule(CONSTRUCTION_POLL_MS);
+        });
+    };
+
+    schedule(0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [constructionCompletesAt, refreshBuildings]);
+
   const hallInfo = catalog?.hall.find((entry) => entry.level === player?.hallLevel);
   const heroCapacity = hallInfo?.heroCapacity ?? 0;
   const teamLimit = hallInfo?.teamLimit ?? 1;
+  const forgeInfo = catalog?.forge.find((entry) => entry.level === player?.forgeLevel);
+  const forgeEnhanceCap = forgeInfo?.maxEnhanceLevel ?? 0;
+  const ownedMaterial = (materialId: string) =>
+    promotion.materials.find((entry) => entry.materialId === materialId)?.qty ?? 0;
+  const materialName = (materialId: string) => catalogName(catalog, "materials", materialId);
+  const dustMaterialId = catalog?.equipment.forgeDustMaterialId ?? "";
+  const dustBalance = dustMaterialId ? ownedMaterial(dustMaterialId) : 0;
   const activeRunCount = runs.filter((run) => run.status === "active").length;
   const dungeonChoices = catalog?.dungeons ?? [];
   const isDungeonUnlocked = (dungeon: DungeonCatalogEntry) =>
@@ -472,8 +602,13 @@ export function App() {
           const body = await readJson<ApiErrorBody>(response);
           if (body.code === "VERSION_CONFLICT") {
             await bootstrap();
+          } else if (BUILDING_ERROR_CODES.has(body.code)) {
+            // The screen was drawn from stale levels or a stale timer: show what the server has.
+            await refreshBuildings().catch(() => undefined);
+            // A speed-up sent just as the build finished is not a failure the player caused.
+            if (body.code === "NO_CONSTRUCTION") return;
           }
-          throw new Error(body.message);
+          throw new Error(commandErrorMessage(body));
         }
 
         const body = await readJson<CommandSuccess>(response);
@@ -497,7 +632,7 @@ export function App() {
         setBusy(false);
       }
     },
-    [bootstrap, loadCollections, player],
+    [bootstrap, loadCollections, player, refreshBuildings],
   );
 
   const toggleHeroForTeam = useCallback((slot: number, heroId: string) => {
@@ -981,6 +1116,34 @@ export function App() {
             <span className="section-kicker">{t("vi", "equipment.title")}</span>
             <h2>{t("vi", "equipment.subtitle")}</h2>
             <p>{t("vi", "equipment.help")}</p>
+            <ul className="hall-stats forge-summary" data-testid="forge-summary">
+              <li>
+                {t("vi", "building.forge")}:{" "}
+                <strong>
+                  {t("vi", "guild.level")}{" "}
+                  <span data-testid="forge-tab-level">{player?.forgeLevel ?? 1}</span>
+                </strong>
+              </li>
+              <li>
+                {t("vi", "forge.enhanceCap")}:{" "}
+                <strong data-testid="forge-tab-enhance-cap">
+                  {enhanceCapLabel(forgeEnhanceCap)}
+                </strong>
+              </li>
+              {dustMaterialId ? (
+                <li data-material-id={dustMaterialId}>
+                  {materialName(dustMaterialId)}:{" "}
+                  <strong data-testid="forge-dust-balance">×{dustBalance}</strong>
+                </li>
+              ) : null}
+              <li>
+                {t("vi", "dungeon.playerGold")}:{" "}
+                <strong data-testid="forge-gold">{player?.gold ?? 0}</strong>
+              </li>
+            </ul>
+            {player?.construction?.building === "forge" ? (
+              <ConstructionNote construction={player.construction} clockOffsetMs={clockOffsetMs} />
+            ) : null}
           </section>
 
           <section className="card auto-sell-card">
@@ -1067,7 +1230,13 @@ export function App() {
                 );
               })}
             </div>
-            <small>{t("vi", "craft.qualityNote")}</small>
+            {catalog ? (
+              <small data-testid="craft-odds">
+                {t("vi", "forge.craftOdds")} ({t("vi", "building.forge")}{" "}
+                {t("vi", "guild.level").toLowerCase()} {player?.forgeLevel ?? 1}):{" "}
+                {oddsLabel(catalog.equipment.qualityTiers, forgeInfo?.qualityWeightsBps)}
+              </small>
+            ) : null}
           </section>
 
           {inventoryItems.length ? (
@@ -1088,6 +1257,25 @@ export function App() {
                   )
                 : 0;
               const nextEnhanceCost = catalog?.equipment.enhanceGoldCosts[item.enhanceLevel];
+              const nextEnhanceDust = catalog?.equipment.enhanceDustCosts[item.enhanceLevel];
+              const enhanceBlocked = enhanceBlock({
+                enhanceLevel: item.enhanceLevel,
+                maxEnhanceLevel: catalog?.equipment.enhanceGoldCosts.length ?? 0,
+                forgeCap: forgeEnhanceCap,
+                goldCost: nextEnhanceCost,
+                dustCost: nextEnhanceDust,
+                gold: player?.gold ?? 0,
+                dust: dustBalance,
+              });
+              const forgeLevelNeeded = forgeLevelForEnhance(
+                catalog?.forge ?? [],
+                item.enhanceLevel,
+              );
+              const dismantleDust = dismantleDustFor(
+                item.qualityBps,
+                catalog?.equipment.qualityTiers ?? [],
+              );
+              const cannotDestroy = item.locked || Boolean(item.equippedHeroId);
               const baseSuccess = catalog?.equipment.enhanceSuccessBps[item.enhanceLevel];
               const currentSuccess =
                 baseSuccess === undefined
@@ -1187,22 +1375,34 @@ export function App() {
 
                   <div className="enhance-actions">
                     <span>
-                      {item.enhanceLevel < 5 &&
-                      nextEnhanceCost !== undefined &&
-                      currentSuccess !== undefined
-                        ? `${t("vi", "enhance.next")}: ${nextEnhanceCost} gold · ${(
-                            currentSuccess / 100
-                          ).toFixed(0)}%`
-                        : t("vi", "enhance.max")}
+                      <span data-testid="enhance-cost">
+                        {enhanceBlocked !== "max_level" &&
+                        nextEnhanceCost !== undefined &&
+                        currentSuccess !== undefined
+                          ? `${t("vi", "enhance.next")}: ${nextEnhanceCost} ${t(
+                              "vi",
+                              "common.gold",
+                            )} · ${nextEnhanceDust ?? 0} ${materialName(dustMaterialId)} · ${(
+                              currentSuccess / 100
+                            ).toFixed(0)}%`
+                          : t("vi", "enhance.max")}
+                      </span>
+                      {enhanceBlocked && enhanceBlocked !== "max_level" ? (
+                        <small className="disabled-reason" data-testid="enhance-reason">
+                          {enhanceBlocked === "forge"
+                            ? `${t("vi", "enhance.blocked.forge")} ${forgeLevelNeeded ?? ""}`
+                            : enhanceBlocked === "dust"
+                              ? `${t("vi", "enhance.blocked.dust")} ${materialName(
+                                  dustMaterialId,
+                                )} (${dustBalance}/${nextEnhanceDust ?? 0})`
+                              : t("vi", "enhance.blocked.gold")}
+                        </small>
+                      ) : null}
                     </span>
                     <button
                       type="button"
-                      disabled={
-                        busy ||
-                        item.enhanceLevel >= 5 ||
-                        nextEnhanceCost === undefined ||
-                        (player?.gold ?? 0) < nextEnhanceCost
-                      }
+                      data-testid="enhance-item"
+                      disabled={busy || enhanceBlocked !== null}
                       onClick={() =>
                         void sendCommand({
                           type: "enhance_item",
@@ -1216,21 +1416,39 @@ export function App() {
 
                   <div className="equipment-footer">
                     <span>
-                      {t("vi", "equipment.sellValue")}: {sellValue} gold
+                      {t("vi", "equipment.sellValue")}: {sellValue} {t("vi", "common.gold")}
                     </span>
-                    <button
-                      type="button"
-                      className="danger-button"
-                      disabled={busy || item.locked || Boolean(item.equippedHeroId)}
-                      onClick={() =>
-                        void sendCommand({
-                          type: "sell_item",
-                          itemInstanceId: item.id,
-                        })
-                      }
-                    >
-                      {t("vi", "equipment.sell")}
-                    </button>
+                    <div className="equipment-footer-actions">
+                      <button
+                        type="button"
+                        className="danger-button"
+                        data-testid="dismantle-item"
+                        disabled={busy || cannotDestroy}
+                        onClick={() =>
+                          void sendCommand({
+                            type: "dismantle_item",
+                            itemInstanceId: item.id,
+                          })
+                        }
+                      >
+                        {t("vi", "equipment.dismantle")} (+{dismantleDust}{" "}
+                        {materialName(dustMaterialId)})
+                      </button>
+                      <button
+                        type="button"
+                        className="danger-button"
+                        data-testid="sell-item"
+                        disabled={busy || cannotDestroy}
+                        onClick={() =>
+                          void sendCommand({
+                            type: "sell_item",
+                            itemInstanceId: item.id,
+                          })
+                        }
+                      >
+                        {t("vi", "equipment.sell")}
+                      </button>
+                    </div>
                   </div>
                 </article>
               );
@@ -1243,47 +1461,28 @@ export function App() {
           )}
         </section>
       ) : activeTab === "guild" ? (
-        <section className="stack">
-          <section className="card hall-card">
-            <span className="section-kicker">{t("vi", "guild.hall")}</span>
-            <h2>
-              {t("vi", "guild.level")} {player?.hallLevel ?? 1}
-            </h2>
-            <ul className="hall-stats">
-              <li>
-                {t("vi", "guild.heroCapacity")}: <strong>{heroCapacity}</strong>
-              </li>
-              <li>
-                {t("vi", "guild.teamLimit")}: <strong>{teamLimit}</strong>
-              </li>
-              <li>
-                {t("vi", "dungeon.playerGold")}: <strong>{player?.gold ?? 0}</strong>
-              </li>
-            </ul>
-            {hallInfo?.upgradeGoldCost ? (
-              <button
-                className="primary-button"
-                type="button"
-                disabled={busy || !player || player.gold < hallInfo.upgradeGoldCost}
-                onClick={() => void sendCommand({ type: "upgrade_hall" })}
-              >
-                {t("vi", "guild.upgrade")} ({hallInfo.upgradeGoldCost} gold)
-              </button>
-            ) : (
-              <p>{t("vi", "guild.maxLevel")}</p>
-            )}
-            {(() => {
-              const next = catalog?.hall.find(
-                (entry) => entry.level > (player?.hallLevel ?? 1) && entry.teamLimit > teamLimit,
-              );
-              return next ? (
-                <small>
-                  {t("vi", "guild.nextTeamAt")} {next.level}
-                </small>
-              ) : null;
-            })()}
+        player && catalog ? (
+          <BuildingsCard
+            gold={player.gold}
+            hallLevel={player.hallLevel}
+            forgeLevel={player.forgeLevel}
+            construction={player.construction}
+            clockOffsetMs={clockOffsetMs}
+            hall={catalog.hall}
+            forge={catalog.forge}
+            rules={catalog.buildings}
+            qualityTiers={catalog.equipment.qualityTiers}
+            ownedMaterial={ownedMaterial}
+            materialName={materialName}
+            busy={busy}
+            onUpgrade={(building) => void sendCommand({ type: "upgrade_building", building })}
+            onSpeedUp={(items) => void sendCommand({ type: "speed_up_construction", items })}
+          />
+        ) : (
+          <section className="card empty-state">
+            <strong>{t("vi", "common.working")}</strong>
           </section>
-        </section>
+        )
       ) : (
         <section className="card empty-state">
           <strong>{t("vi", `nav.${activeTab}`)}</strong>

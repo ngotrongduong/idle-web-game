@@ -10,9 +10,17 @@ if (!databaseUrl) {
 }
 
 const ITEM_ID = "bamboo_training_sword";
+const FORGE_DUST = "forge_dust";
+// Enhancing needs a level 2 Forge and Forge Dust (M1.7). The buildings E2E earns both through
+// the UI; this flow is about equipment, so it starts with them in place.
+const SEEDED_FORGE_LEVEL = 2;
+const SEEDED_DUST = 3;
+// packages/game-data/src/equipment.ts: the first enhancement costs 100 gold and 1 Forge Dust.
+const ENHANCE_FROM_0 = { gold: 100, dust: 1 };
 const MATERIALS = [
   { materialId: "bamboo_fiber", qty: 10 },
   { materialId: "river_stone", qty: 10 },
+  { materialId: FORGE_DUST, qty: SEEDED_DUST },
 ] as const;
 
 type CommandBody = {
@@ -78,7 +86,7 @@ async function getJson<T>(page: Page, path: string): Promise<T> {
   }, path) as Promise<T>;
 }
 
-async function seedCraftMaterials(playerId: string): Promise<void> {
+async function seedForgeAndMaterials(playerId: string): Promise<void> {
   const pool = new Pool({ connectionString: databaseUrl });
   try {
     for (const material of MATERIALS) {
@@ -90,9 +98,22 @@ async function seedCraftMaterials(playerId: string): Promise<void> {
         [playerId, material.materialId, material.qty],
       );
     }
+    const forge = await pool.query("UPDATE players SET forge_level = $2 WHERE id = $1", [
+      playerId,
+      SEEDED_FORGE_LEVEL,
+    ]);
+    if (forge.rowCount !== 1) throw new Error(`Player ${playerId} was not found for seeding`);
   } finally {
     await pool.end();
   }
+}
+
+async function forgeDust(page: Page): Promise<number> {
+  const { materials } = await getJson<{ materials: Array<{ materialId: string; qty: number }> }>(
+    page,
+    "/api/v1/materials",
+  );
+  return materials.find((entry) => entry.materialId === FORGE_DUST)?.qty ?? 0;
 }
 
 async function openDungeon(page: Page): Promise<Locator> {
@@ -136,9 +157,13 @@ try {
   team = await openDungeon(page);
   await runCommand(page, team.getByRole("button", { name: "Dừng", exact: true }));
 
-  await seedCraftMaterials(playerId);
+  await seedForgeAndMaterials(playerId);
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Rèn", exact: true }).click();
+  const seeded = await getJson<{ id: string; forgeLevel: number }>(page, "/api/v1/state");
+  if (seeded.id !== playerId || seeded.forgeLevel !== SEEDED_FORGE_LEVEL) {
+    throw new Error(`Seeded Forge level did not reach the session: ${JSON.stringify(seeded)}`);
+  }
 
   const craftRow = page.locator(`.craft-row[data-item-id="${ITEM_ID}"]`);
   await craftRow.waitFor({ state: "visible", timeout: 10_000 });
@@ -152,6 +177,7 @@ try {
   const equipmentCard = page.locator(`.equipment-card[data-item-id="${ITEM_ID}"]`).first();
   await equipmentCard.waitFor({ state: "visible", timeout: 10_000 });
 
+  const { gold: goldBeforeEnhance } = await getJson<{ gold: number }>(page, "/api/v1/state");
   const enhanceBody = await runCommand(
     page,
     equipmentCard.getByRole("button", { name: "Cường hóa", exact: true }),
@@ -159,6 +185,22 @@ try {
   const enhancedEvent = enhanceBody.events.find((event) => event.type === "item_enhanced");
   if (!enhancedEvent || enhancedEvent.success !== true) {
     throw new Error(`Expected guaranteed +1 enhancement: ${JSON.stringify(enhanceBody.events)}`);
+  }
+  if (
+    enhancedEvent.goldCost !== ENHANCE_FROM_0.gold ||
+    enhancedEvent.dustCost !== ENHANCE_FROM_0.dust
+  ) {
+    throw new Error(`Unexpected enhancement cost: ${JSON.stringify(enhancedEvent)}`);
+  }
+  const { gold: goldAfterEnhance } = await getJson<{ gold: number }>(page, "/api/v1/state");
+  const dustAfterEnhance = await forgeDust(page);
+  if (
+    goldAfterEnhance !== goldBeforeEnhance - ENHANCE_FROM_0.gold ||
+    dustAfterEnhance !== SEEDED_DUST - ENHANCE_FROM_0.dust
+  ) {
+    throw new Error(
+      `Enhancement charged the wrong amount: gold ${goldBeforeEnhance} → ${goldAfterEnhance}, dust ${SEEDED_DUST} → ${dustAfterEnhance}`,
+    );
   }
 
   await runCommand(
@@ -193,7 +235,7 @@ try {
     .waitFor({ state: "visible", timeout: 10_000 });
 
   console.log(
-    `Equipment E2E passed: ${ITEM_ID} crafted, enhanced to +1, equipped to ${hero.id}; dungeon attack ${baselineAttack} → ${equippedAttack} and replay matched.`,
+    `Equipment E2E passed: ${ITEM_ID} crafted, enhanced to +1 at Forge level ${SEEDED_FORGE_LEVEL} for ${ENHANCE_FROM_0.gold} gold + ${ENHANCE_FROM_0.dust} Forge Dust, equipped to ${hero.id}; dungeon attack ${baselineAttack} → ${equippedAttack} and replay matched.`,
   );
 } finally {
   await browser.close();

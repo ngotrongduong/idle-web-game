@@ -3,7 +3,7 @@
 #
 #   scripts/ci-local.sh            full pipeline (needs PostgreSQL + a Playwright Chromium)
 #   scripts/ci-local.sh --quick    lint, Prettier, typecheck, unit tests (PostgreSQL tests run if reachable)
-#   scripts/ci-local.sh --no-e2e   full pipeline without the four browser E2Es
+#   scripts/ci-local.sh --no-e2e   full pipeline without the five browser E2Es
 #   scripts/ci-local.sh --install  run `pnpm install --frozen-lockfile` first
 #   scripts/ci-local.sh --help     this text
 #
@@ -147,7 +147,7 @@ browser_e2e() {
     return 1
   fi
   local status=0
-  for script in e2e:dungeon e2e:promotion e2e:equipment e2e:auto-sell; do
+  for script in e2e:dungeon e2e:promotion e2e:equipment e2e:auto-sell e2e:buildings; do
     echo "--- $script"
     if ! pnpm --filter @idle/inspect "$script"; then
       status=1
@@ -208,7 +208,7 @@ if [ "$QUICK" -eq 0 ]; then
   step "economy balance report" pnpm --filter @idle/sim sim:economy
   step "chromium golden battle" golden_battle
   if [ "$E2E" -eq 1 ]; then
-    step "browser E2E (dungeon, promotion, equipment, auto-sell)" browser_e2e
+    step "browser E2E (dungeon, promotion, equipment, auto-sell, buildings)" browser_e2e
   else
     skip "browser E2E (--no-e2e)"
   fi
