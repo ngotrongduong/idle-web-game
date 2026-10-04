@@ -9,6 +9,7 @@ import {
   HealthResponseSchema,
   HeroesResponseSchema,
   InventoryResponseSchema,
+  InventorySettingsResponseSchema,
   MaterialsResponseSchema,
   PromotionStateResponseSchema,
   TavernResponseSchema,
@@ -228,6 +229,18 @@ export function buildServer(options?: { store?: GameStore }) {
     return InventoryResponseSchema.parse({
       ok: true,
       items: await store.listItems(playerId),
+    });
+  });
+
+  app.get("/api/v1/inventory-settings", async (request, reply) => {
+    const playerId = await authenticate(request, store);
+    if (!playerId) {
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
+    }
+
+    return InventorySettingsResponseSchema.parse({
+      ok: true,
+      autoSell: await store.getAutoSellSettings(playerId),
     });
   });
 
@@ -1026,6 +1039,42 @@ export function buildServer(options?: { store?: GameStore }) {
         return stored;
       }
 
+      if (envelope.command.type === "set_auto_sell") {
+        const { enabled, maxQualityBps } = envelope.command;
+        const validThreshold = equipmentConfig.qualityTiers.some(
+          (tier) => tier.multiplierBps === maxQualityBps,
+        );
+        if (!validThreshold) {
+          const invalid: StoredCommandOutcome = {
+            statusCode: 409,
+            body: apiError(
+              "INVALID_COMMAND",
+              "Auto-sell quality threshold must match a configured quality tier",
+              state.version,
+            ),
+          };
+          await store.setCommandOutcome(playerId, envelope.cmdId, invalid);
+          return invalid;
+        }
+
+        const autoSell = await store.setAutoSellSettings(playerId, {
+          enabled,
+          maxQualityBps,
+        });
+        const nextState = { ...state, version: state.version + 1 };
+        await store.setPlayer(nextState);
+
+        const success = CommandSuccessSchema.parse({
+          ok: true,
+          version: nextState.version,
+          patch: {},
+          events: [{ type: "auto_sell_settings_updated", autoSell }],
+        });
+        const stored: StoredCommandOutcome = { statusCode: 200, body: success };
+        await store.setCommandOutcome(playerId, envelope.cmdId, stored);
+        return stored;
+      }
+
       if (envelope.command.type === "craft_item") {
         const { itemId } = envelope.command;
         const spec = foundationGameData.items.find((entry) => entry.id === itemId);
@@ -1086,17 +1135,32 @@ export function buildServer(options?: { store?: GameStore }) {
           locked: false,
           equippedHeroId: null,
         });
+        const autoSell = await store.getAutoSellSettings(playerId);
+        const shouldAutoSell = autoSell.enabled && item.qualityBps <= autoSell.maxQualityBps;
+        const autoSellGold = shouldAutoSell
+          ? Math.floor(
+              (itemSellGold(spec) * item.qualityBps) / equipmentConfig.baseQualityBps,
+            )
+          : 0;
+
+        if (shouldAutoSell) {
+          await store.deleteItem(playerId, item.id);
+        }
+
         const nextState = {
           ...state,
           version: state.version + 1,
-          gold: state.gold - equipmentConfig.craftGoldCost,
+          gold: state.gold - equipmentConfig.craftGoldCost + autoSellGold,
         };
         await store.setPlayer(nextState);
 
         const success = CommandSuccessSchema.parse({
           ok: true,
           version: nextState.version,
-          patch: equipmentConfig.craftGoldCost > 0 ? { gold: nextState.gold } : {},
+          patch:
+            equipmentConfig.craftGoldCost > 0 || autoSellGold > 0
+              ? { gold: nextState.gold }
+              : {},
           events: [
             {
               type: "item_crafted",
@@ -1106,6 +1170,15 @@ export function buildServer(options?: { store?: GameStore }) {
                 qty: ingredient.qty,
               })),
             },
+            ...(shouldAutoSell
+              ? [
+                  {
+                    type: "item_auto_sold" as const,
+                    item,
+                    gold: autoSellGold,
+                  },
+                ]
+              : []),
           ],
         });
         const stored: StoredCommandOutcome = { statusCode: 200, body: success };

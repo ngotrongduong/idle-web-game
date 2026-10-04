@@ -168,6 +168,11 @@ type EquipmentRules = {
   enhanceSuccessBps: number[];
 };
 
+type AutoSellSettings = {
+  enabled: boolean;
+  maxQualityBps: number;
+};
+
 type InventoryItem = {
   id: string;
   itemId: string;
@@ -200,7 +205,8 @@ type GameCommand =
   | { type: "set_item_locked"; itemInstanceId: string; locked: boolean }
   | { type: "sell_item"; itemInstanceId: string }
   | { type: "craft_item"; itemId: string }
-  | { type: "enhance_item"; itemInstanceId: string };
+  | { type: "enhance_item"; itemInstanceId: string }
+  | { type: "set_auto_sell"; enabled: boolean; maxQualityBps: number };
 
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
@@ -228,6 +234,10 @@ export function App() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [runs, setRuns] = useState<DungeonRun[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [autoSell, setAutoSell] = useState<AutoSellSettings>({
+    enabled: false,
+    maxQualityBps: 10_000,
+  });
   const [equipTargets, setEquipTargets] = useState<Record<string, string>>({});
   const [promotion, setPromotion] = useState<PromotionState>({
     materials: [],
@@ -254,6 +264,7 @@ export function App() {
       runsResponse,
       promotionResponse,
       inventoryResponse,
+      inventorySettingsResponse,
     ] = await Promise.all([
       fetch("/api/v1/tavern", { credentials: "include" }),
       fetch("/api/v1/heroes", { credentials: "include" }),
@@ -261,6 +272,7 @@ export function App() {
       fetch("/api/v1/dungeon-runs", { credentials: "include" }),
       fetch("/api/v1/promotion", { credentials: "include" }),
       fetch("/api/v1/inventory", { credentials: "include" }),
+      fetch("/api/v1/inventory-settings", { credentials: "include" }),
     ]);
 
     if (
@@ -269,7 +281,8 @@ export function App() {
       !teamsResponse.ok ||
       !runsResponse.ok ||
       !promotionResponse.ok ||
-      !inventoryResponse.ok
+      !inventoryResponse.ok ||
+      !inventorySettingsResponse.ok
     ) {
       throw new Error(t("vi", "app.loadError"));
     }
@@ -280,12 +293,17 @@ export function App() {
     const runsBody = await readJson<{ ok: true; runs: DungeonRun[] }>(runsResponse);
     const promotionBody = await readJson<{ ok: true } & PromotionState>(promotionResponse);
     const inventoryBody = await readJson<{ ok: true; items: InventoryItem[] }>(inventoryResponse);
+    const inventorySettingsBody = await readJson<{
+      ok: true;
+      autoSell: AutoSellSettings;
+    }>(inventorySettingsResponse);
 
     setTavern(tavernBody.tavern);
     setHeroes(heroesBody.heroes);
     setTeams(teamsBody.teams);
     setRuns(runsBody.runs);
     setInventoryItems(inventoryBody.items);
+    setAutoSell(inventorySettingsBody.autoSell);
     setPromotion({
       materials: promotionBody.materials,
       heroes: promotionBody.heroes,
@@ -895,6 +913,52 @@ export function App() {
             <span className="section-kicker">{t("vi", "equipment.title")}</span>
             <h2>{t("vi", "equipment.subtitle")}</h2>
             <p>{t("vi", "equipment.help")}</p>
+          </section>
+
+          <section className="card auto-sell-card">
+            <div className="auto-sell-heading">
+              <div>
+                <span className="section-kicker">{t("vi", "autosell.title")}</span>
+                <strong>{t("vi", "autosell.subtitle")}</strong>
+              </div>
+              <label className="toggle-row">
+                <input
+                  type="checkbox"
+                  checked={autoSell.enabled}
+                  disabled={busy}
+                  onChange={(event) =>
+                    void sendCommand({
+                      type: "set_auto_sell",
+                      enabled: event.target.checked,
+                      maxQualityBps: autoSell.maxQualityBps,
+                    })
+                  }
+                />
+                <span>{autoSell.enabled ? t("vi", "autosell.on") : t("vi", "autosell.off")}</span>
+              </label>
+            </div>
+            <label className="auto-sell-threshold">
+              <span>{t("vi", "autosell.threshold")}</span>
+              <select
+                aria-label={t("vi", "autosell.threshold")}
+                value={autoSell.maxQualityBps}
+                disabled={busy}
+                onChange={(event) =>
+                  void sendCommand({
+                    type: "set_auto_sell",
+                    enabled: autoSell.enabled,
+                    maxQualityBps: Number(event.target.value),
+                  })
+                }
+              >
+                {catalog?.equipment.qualityTiers.map((tier) => (
+                  <option key={tier.id} value={tier.multiplierBps}>
+                    {tier.nameVi} · ≤ {(tier.multiplierBps / 100).toFixed(0)}%
+                  </option>
+                ))}
+              </select>
+            </label>
+            <small>{t("vi", "autosell.help")}</small>
           </section>
 
           <section className="card">

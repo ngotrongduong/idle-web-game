@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type {
+  AutoSellSettings,
   DungeonRun,
   FoundationPlayerState,
   Hero,
@@ -43,6 +44,8 @@ export interface GameStore {
   createItem(playerId: string, input: Omit<InventoryItem, "id">): Promise<InventoryItem>;
   setItem(playerId: string, item: InventoryItem): Promise<InventoryItem>;
   deleteItem(playerId: string, itemId: string): Promise<boolean>;
+  getAutoSellSettings(playerId: string): Promise<AutoSellSettings>;
+  setAutoSellSettings(playerId: string, settings: AutoSellSettings): Promise<AutoSellSettings>;
   listTeams(playerId: string): Promise<Team[]>;
   setTeam(playerId: string, team: Team): Promise<Team>;
   listDungeonRuns(playerId: string): Promise<DungeonRun[]>;
@@ -85,6 +88,7 @@ export class InMemoryGameStore implements GameStore {
   private readonly heroes = new Map<string, Hero[]>();
   private readonly materials = new Map<string, Map<string, number>>();
   private readonly items = new Map<string, InventoryItem[]>();
+  private readonly autoSellSettings = new Map<string, AutoSellSettings>();
   private readonly teams = new Map<string, Map<number, Team>>();
   private readonly dungeonRuns = new Map<string, DungeonRun[]>();
   private readonly lockTails = new Map<string, Promise<void>>();
@@ -240,6 +244,19 @@ export class InMemoryGameStore implements GameStore {
     if (next.length === items.length) return false;
     this.items.set(playerId, next);
     return true;
+  }
+
+  async getAutoSellSettings(playerId: string): Promise<AutoSellSettings> {
+    return { ...(this.autoSellSettings.get(playerId) ?? { enabled: false, maxQualityBps: 10_000 }) };
+  }
+
+  async setAutoSellSettings(
+    playerId: string,
+    settings: AutoSellSettings,
+  ): Promise<AutoSellSettings> {
+    const stored = { ...settings };
+    this.autoSellSettings.set(playerId, stored);
+    return { ...stored };
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

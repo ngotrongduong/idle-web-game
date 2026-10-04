@@ -854,6 +854,70 @@ describe("server-authoritative command pipeline", () => {
     const listed = await store.listItems(guest.state.id);
     expect(listed.find((entry) => entry.id === item.id)?.equippedHeroId).toBe(hero.id);
   });
+  it("persists auto-sell settings and immediately sells matching crafted items", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+    await store.setMaterialQuantity(guest.state.id, "bamboo_fiber", 10);
+    await store.setMaterialQuantity(guest.state.id, "river_stone", 10);
+
+    const settings = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "set_auto_sell", enabled: true, maxQualityBps: 15_000 },
+      },
+    });
+    expect(settings.statusCode).toBe(200);
+    expect(settings.json()).toMatchObject({
+      version: 1,
+      events: [
+        {
+          type: "auto_sell_settings_updated",
+          autoSell: { enabled: true, maxQualityBps: 15_000 },
+        },
+      ],
+    });
+
+    const craft = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: { type: "craft_item", itemId: "bamboo_training_sword" },
+      },
+    });
+    expect(craft.statusCode).toBe(200);
+    expect(craft.json().events.map((event: { type: string }) => event.type)).toEqual([
+      "item_crafted",
+      "item_auto_sold",
+    ]);
+    const autoSold = craft.json().events[1];
+    expect(autoSold.gold).toBeGreaterThan(0);
+    expect(await store.listItems(guest.state.id)).toEqual([]);
+    expect(await store.getPlayer(guest.state.id)).toMatchObject({
+      version: 2,
+      gold: 1_000 + autoSold.gold,
+    });
+
+    const readSettings = await app.inject({
+      method: "GET",
+      url: "/api/v1/inventory-settings",
+      headers: { cookie: guest.cookie },
+    });
+    expect(readSettings.statusCode).toBe(200);
+    expect(readSettings.json()).toEqual({
+      ok: true,
+      autoSell: { enabled: true, maxQualityBps: 15_000 },
+    });
+  });
+
   it("crafts from recipe materials and enhances with persisted pity state", async () => {
     const store = new InMemoryGameStore();
     const app = buildServer({ store });

@@ -106,6 +106,17 @@ export const InventoryResponseSchema = z.object({
   items: z.array(InventoryItemSchema),
 });
 
+export const AutoSellSettingsSchema = z.object({
+  enabled: z.boolean(),
+  maxQualityBps: z.number().int().min(10_000).max(20_000),
+});
+export type AutoSellSettings = z.infer<typeof AutoSellSettingsSchema>;
+
+export const InventorySettingsResponseSchema = z.object({
+  ok: z.literal(true),
+  autoSell: AutoSellSettingsSchema,
+});
+
 export const CatalogEntrySchema = z.object({
   id: z.string().min(1),
   nameVi: z.string().min(1),
@@ -346,6 +357,12 @@ export const EnhanceItemCommandSchema = z.object({
   itemInstanceId: z.string().uuid(),
 });
 
+export const SetAutoSellCommandSchema = z.object({
+  type: z.literal("set_auto_sell"),
+  enabled: z.boolean(),
+  maxQualityBps: z.number().int().min(10_000).max(20_000),
+});
+
 export const CommandSchema = z.discriminatedUnion("type", [
   UpgradeHallCommandSchema,
   RefreshTavernCommandSchema,
@@ -361,6 +378,7 @@ export const CommandSchema = z.discriminatedUnion("type", [
   SellItemCommandSchema,
   CraftItemCommandSchema,
   EnhanceItemCommandSchema,
+  SetAutoSellCommandSchema,
 ]);
 
 export type GameCommand = z.infer<typeof CommandSchema>;
@@ -470,6 +488,17 @@ const ItemEnhancedEventSchema = z.object({
   goldCost: z.number().int().nonnegative(),
 });
 
+const AutoSellSettingsUpdatedEventSchema = z.object({
+  type: z.literal("auto_sell_settings_updated"),
+  autoSell: AutoSellSettingsSchema,
+});
+
+const ItemAutoSoldEventSchema = z.object({
+  type: z.literal("item_auto_sold"),
+  item: InventoryItemSchema,
+  gold: z.number().int().nonnegative(),
+});
+
 export const CommandEventSchema = z.discriminatedUnion("type", [
   HallUpgradedEventSchema,
   TavernRefreshedEventSchema,
@@ -485,6 +514,8 @@ export const CommandEventSchema = z.discriminatedUnion("type", [
   ItemSoldEventSchema,
   ItemCraftedEventSchema,
   ItemEnhancedEventSchema,
+  AutoSellSettingsUpdatedEventSchema,
+  ItemAutoSoldEventSchema,
 ]);
 
 export const CommandSuccessSchema = z.object({

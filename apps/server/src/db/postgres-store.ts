@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
 import type {
+  AutoSellSettings,
   DungeonRun,
   FoundationPlayerState,
   Hero,
@@ -16,6 +17,7 @@ import {
   commandOutcomes,
   dungeonRuns,
   heroes,
+  inventorySettings,
   playerItems,
   playerMaterials,
   players,
@@ -393,6 +395,43 @@ export class PostgresGameStore implements GameStore {
       .where(and(eq(playerItems.playerId, playerId), eq(playerItems.id, itemId)))
       .returning({ id: playerItems.id });
     return rows.length > 0;
+  }
+
+  async getAutoSellSettings(playerId: string): Promise<AutoSellSettings> {
+    const [row] = await this.database()
+      .select({
+        enabled: inventorySettings.autoSellEnabled,
+        maxQualityBps: inventorySettings.maxQualityBps,
+      })
+      .from(inventorySettings)
+      .where(eq(inventorySettings.playerId, playerId))
+      .limit(1);
+
+    return row ?? { enabled: false, maxQualityBps: 10_000 };
+  }
+
+  async setAutoSellSettings(
+    playerId: string,
+    settings: AutoSellSettings,
+  ): Promise<AutoSellSettings> {
+    await this.database()
+      .insert(inventorySettings)
+      .values({
+        playerId,
+        autoSellEnabled: settings.enabled,
+        maxQualityBps: settings.maxQualityBps,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: inventorySettings.playerId,
+        set: {
+          autoSellEnabled: settings.enabled,
+          maxQualityBps: settings.maxQualityBps,
+          updatedAt: new Date(),
+        },
+      });
+
+    return { ...settings };
   }
 
   async listTeams(playerId: string): Promise<Team[]> {

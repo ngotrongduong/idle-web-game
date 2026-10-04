@@ -12,6 +12,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import type {
+  AutoSellSettings,
   BattleRulesSnapshot,
   DungeonRun,
   DungeonWaveReplay,
@@ -137,6 +138,17 @@ export const playerItems = pgTable(
 );
 
 export type PlayerItemRow = InventoryItem;
+
+export const inventorySettings = pgTable("inventory_settings", {
+  playerId: uuid("player_id")
+    .primaryKey()
+    .references(() => players.id, { onDelete: "cascade" }),
+  autoSellEnabled: boolean("auto_sell_enabled").notNull().default(false),
+  maxQualityBps: integer("max_quality_bps").notNull().default(10_000),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type InventorySettingsRow = AutoSellSettings;
 
 export const teams = pgTable(
   "teams",

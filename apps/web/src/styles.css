@@ -612,3 +612,51 @@ h2 {
     flex-direction: column;
   }
 }
+
+.auto-sell-card {
+  display: grid;
+  gap: 12px;
+}
+
+.auto-sell-heading,
+.toggle-row,
+.auto-sell-threshold {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auto-sell-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.toggle-row {
+  justify-content: flex-end;
+}
+
+.auto-sell-threshold select {
+  min-width: 150px;
+  border: 1px solid #6e5a43;
+  border-radius: 10px;
+  padding: 9px 10px;
+  color: #f5ead7;
+  background: #2b2118;
+}
+
+.auto-sell-card small {
+  color: #aa9b87;
+}
+
+@media (max-width: 420px) {
+  .auto-sell-heading,
+  .auto-sell-threshold {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .auto-sell-threshold select {
+    width: 100%;
+  }
+}

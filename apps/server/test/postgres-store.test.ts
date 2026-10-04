@@ -169,6 +169,26 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     });
   });
 
+  it("persists auto-sell inventory settings", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+
+    expect(await store.getAutoSellSettings(player.id)).toEqual({
+      enabled: false,
+      maxQualityBps: 10_000,
+    });
+
+    await store.setAutoSellSettings(player.id, {
+      enabled: true,
+      maxQualityBps: 12_500,
+    });
+
+    expect(await store.getAutoSellSettings(player.id)).toEqual({
+      enabled: true,
+      maxQualityBps: 12_500,
+    });
+  });
+
   it("persists team assignments", async () => {
     const store = createStore();
     const player = await store.createGuest(sessionHash());
