@@ -2,6 +2,16 @@ export { fnv1a32 } from "./hash.js";
 export { SeededRng } from "./rng.js";
 export { calculateIdleAccrual, type IdleAccrualInput, type IdleAccrualResult } from "./idle.js";
 export {
+  deriveCycleLootSeed,
+  mergeMaterialCounts,
+  rollIdleCycleLoot,
+  rollLoot,
+  type LootKill,
+  type LootRank,
+  type LootRuleInput,
+  type MaterialCounts,
+} from "./loot.js";
+export {
   applyHeroExperience,
   levelCapForTier,
   xpToNext,

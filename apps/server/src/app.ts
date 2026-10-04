@@ -5,6 +5,7 @@ import {
   DungeonRunsResponseSchema,
   FoundationPlayerStateSchema,
   GuestAuthResponseSchema,
+  CatalogResponseSchema,
   HealthResponseSchema,
   HeroesResponseSchema,
   MaterialsResponseSchema,
@@ -64,6 +65,24 @@ function sendStored(reply: FastifyReply, outcome: StoredCommandOutcome) {
   return reply.code(outcome.statusCode).send(outcome.body);
 }
 
+async function creditMaterials(
+  store: GameStore,
+  playerId: string,
+  credits: readonly { materialId: string; qty: number }[],
+) {
+  if (credits.length === 0) return;
+  const balances = new Map(
+    (await store.listMaterials(playerId)).map((entry) => [entry.materialId, entry.qty]),
+  );
+  for (const credit of credits) {
+    await store.setMaterialQuantity(
+      playerId,
+      credit.materialId,
+      (balances.get(credit.materialId) ?? 0) + credit.qty,
+    );
+  }
+}
+
 async function accrueActiveDungeonRuns(store: GameStore, playerId: string, now = new Date()) {
   const runs = await store.listDungeonRuns(playerId);
   const accruedRuns = [];
@@ -105,6 +124,18 @@ export function buildServer(options?: { store?: GameStore }) {
       state,
     });
   });
+
+  const catalog = CatalogResponseSchema.parse({
+    ok: true,
+    classes: foundationGameData.classes.map(({ id, nameVi, nameEn }) => ({ id, nameVi, nameEn })),
+    dungeons: foundationGameData.dungeons.map(({ id, nameVi, nameEn }) => ({ id, nameVi, nameEn })),
+    materials: foundationGameData.materials.map(({ id, nameVi, nameEn }) => ({
+      id,
+      nameVi,
+      nameEn,
+    })),
+  });
+  app.get("/api/v1/catalog", async () => catalog);
 
   app.get("/api/v1/state", async (request, reply) => {
     const playerId = await authenticate(request, store);
@@ -614,6 +645,7 @@ export function buildServer(options?: { store?: GameStore }) {
           pendingCycles: 0,
           pendingGold: 0,
           pendingExpPerHero: 0,
+          pendingMaterials: [],
           completedCycles: 0,
           waves,
         });
@@ -725,6 +757,7 @@ export function buildServer(options?: { store?: GameStore }) {
         const claimedCycles = run.pendingCycles;
         const claimedGold = run.pendingGold;
         const claimedExpPerHero = run.pendingExpPerHero;
+        const claimedMaterials = run.pendingMaterials;
 
         const ownedHeroIds = new Set((await store.listHeroes(playerId)).map((hero) => hero.id));
         const missingHeroId = heroIds.find((heroId) => !ownedHeroIds.has(heroId));
@@ -742,11 +775,13 @@ export function buildServer(options?: { store?: GameStore }) {
         }
 
         await grantHeroExperience(store, playerId, heroIds, claimedExpPerHero);
+        await creditMaterials(store, playerId, claimedMaterials);
         await store.updateDungeonRun(playerId, {
           ...run,
           pendingCycles: 0,
           pendingGold: 0,
           pendingExpPerHero: 0,
+          pendingMaterials: [],
         });
 
         const nextState: FoundationPlayerState = {
@@ -768,6 +803,7 @@ export function buildServer(options?: { store?: GameStore }) {
               gold: claimedGold,
               expPerHero: claimedExpPerHero,
               heroIds,
+              materials: claimedMaterials,
             },
           ],
         });

@@ -16,6 +16,7 @@ import type {
   DungeonWaveReplay,
   HeroPotential,
   HeroRarity,
+  MaterialBalance,
   TavernOffer,
 } from "@idle/api-contract";
 
@@ -144,6 +145,7 @@ export const dungeonRuns = pgTable(
     pendingCycles: integer("pending_cycles").notNull().default(0),
     pendingGold: integer("pending_gold").notNull().default(0),
     pendingExpPerHero: integer("pending_exp_per_hero").notNull().default(0),
+    pendingMaterials: jsonb("pending_materials").$type<MaterialBalance[]>().notNull().default([]),
     completedCycles: integer("completed_cycles").notNull().default(0),
   },
   (table) => [index("dungeon_runs_player_id_idx").on(table.playerId)],

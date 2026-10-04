@@ -267,6 +267,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       pendingCycles: 0,
       pendingGold: 0,
       pendingExpPerHero: 0,
+      pendingMaterials: [{ materialId: "bamboo_fiber", qty: 3 }],
       completedCycles: 0,
       waves: [
         {
@@ -301,12 +302,23 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
 
     expect(await store.listDungeonRuns(player.id)).toContainEqual(run);
 
+    const accrued = {
+      ...run,
+      pendingMaterials: [
+        { materialId: "bamboo_fiber", qty: 4 },
+        { materialId: "promotion_seal_t1", qty: 1 },
+      ],
+    };
+    await store.updateDungeonRun(player.id, accrued);
+    expect(await store.listDungeonRuns(player.id)).toContainEqual(accrued);
+
     const stoppedAt = new Date().toISOString();
     const stopped = await store.stopDungeonRun(player.id, run.id, stoppedAt);
     expect(stopped).toMatchObject({
       id: run.id,
       status: "stopped",
       stoppedAt,
+      pendingMaterials: accrued.pendingMaterials,
     });
   });
 });

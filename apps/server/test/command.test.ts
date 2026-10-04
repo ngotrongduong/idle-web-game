@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
-import { foundationGameData } from "@idle/game-data";
-import { applyHeroExperience } from "@idle/game-core";
+import { foundationGameData, lootConfig } from "@idle/game-data";
+import { applyHeroExperience, rollIdleCycleLoot } from "@idle/game-core";
 import { buildServer } from "../src/app.js";
+import { dungeonRunKills, materialCountsToBalances } from "../src/idle.js";
 import { InMemoryGameStore } from "../src/store.js";
 
 const apps: ReturnType<typeof buildServer>[] = [];
@@ -402,6 +403,92 @@ describe("server-authoritative command pipeline", () => {
     });
     expect(duplicate.statusCode).toBe(409);
     expect(duplicate.json().code).toBe("DUNGEON_REWARDS_EMPTY");
+  });
+
+  it("rolls deterministic boss loot into the material inventory on claim", async () => {
+    const store = new InMemoryGameStore();
+    const app = buildServer({ store });
+    apps.push(app);
+    const guest = await createGuest(app);
+
+    const heroes = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        store.createHero(guest.state.id, {
+          classId: "ward_squire",
+          rarity: "common",
+          level: 10,
+          exp: 0,
+        }),
+      ),
+    );
+    await store.setTeam(guest.state.id, { slot: 1, heroIds: heroes.map((hero) => hero.id) });
+    await store.setMaterialQuantity(guest.state.id, "bamboo_fiber", 5);
+
+    const start = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 0,
+        command: { type: "start_dungeon", dungeonId: "bamboo_grove", teamSlot: 1 },
+      },
+    });
+    expect(start.statusCode).toBe(200);
+    const run = start.json().events[0].run;
+    expect(run.pendingMaterials).toEqual([]);
+    expect(run.waves.every((wave: { result: string }) => wave.result === "win")).toBe(true);
+
+    // Pin the seed so the expected drops (and at least one boss seal) are fixed for this test.
+    await store.updateDungeonRun(guest.state.id, {
+      ...run,
+      seed: 123,
+      lastAccruedAt: new Date(Date.now() - 4 * 60 * 60 * 1_000).toISOString(),
+    });
+    const expected = materialCountsToBalances(
+      rollIdleCycleLoot({
+        runSeed: 123,
+        firstCycleIndex: 0,
+        cycles: 225,
+        kills: dungeonRunKills(run),
+        rules: lootConfig.rules,
+      }),
+    );
+    expect(expected.find((entry) => entry.materialId === "promotion_seal_t1")?.qty).toBeGreaterThan(
+      0,
+    );
+
+    const runs = await app.inject({
+      method: "GET",
+      url: "/api/v1/dungeon-runs",
+      headers: { cookie: guest.cookie },
+    });
+    expect(runs.json().runs[0]).toMatchObject({ pendingCycles: 225, pendingMaterials: expected });
+
+    const claim = await app.inject({
+      method: "POST",
+      url: "/api/v1/cmd",
+      headers: { cookie: guest.cookie },
+      payload: {
+        cmdId: randomUUID(),
+        expectVersion: 1,
+        command: { type: "claim_dungeon_rewards", runId: run.id },
+      },
+    });
+    expect(claim.statusCode).toBe(200);
+    expect(claim.json().events[0]).toMatchObject({
+      type: "dungeon_rewards_claimed",
+      cycles: 225,
+      materials: expected,
+    });
+
+    const inventory = await store.listMaterials(guest.state.id);
+    for (const entry of expected) {
+      const bonus = entry.materialId === "bamboo_fiber" ? 5 : 0;
+      expect(inventory).toContainEqual({ materialId: entry.materialId, qty: entry.qty + bonus });
+    }
+    const [claimedRun] = await store.listDungeonRuns(guest.state.id);
+    expect(claimedRun).toMatchObject({ pendingMaterials: [], completedCycles: 225 });
   });
 
   it("promotes a capped hero down a direct branch with seal, gold and retained potential", async () => {

@@ -19,3 +19,19 @@ describe("GET /health", () => {
     });
   });
 });
+
+describe("GET /api/v1/catalog", () => {
+  it("serves localized display names without a session", async () => {
+    const response = await app.inject({ method: "GET", url: "/api/v1/catalog" });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.dungeons).toContainEqual({
+      id: "bamboo_grove",
+      nameVi: "Rừng Gai Thornwood",
+      nameEn: "Thornwood Forest",
+    });
+    expect(body.materials.map((entry: { id: string }) => entry.id)).toContain("promotion_seal_t1");
+    expect(body.classes.length).toBeGreaterThan(0);
+  });
+});

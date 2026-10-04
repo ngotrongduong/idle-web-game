@@ -381,6 +381,7 @@ export class PostgresGameStore implements GameStore {
         pendingCycles: dungeonRuns.pendingCycles,
         pendingGold: dungeonRuns.pendingGold,
         pendingExpPerHero: dungeonRuns.pendingExpPerHero,
+        pendingMaterials: dungeonRuns.pendingMaterials,
         completedCycles: dungeonRuns.completedCycles,
       })
       .from(dungeonRuns)
@@ -400,6 +401,7 @@ export class PostgresGameStore implements GameStore {
       pendingCycles: row.pendingCycles,
       pendingGold: row.pendingGold,
       pendingExpPerHero: row.pendingExpPerHero,
+      pendingMaterials: row.pendingMaterials,
       completedCycles: row.completedCycles,
     }));
   }
@@ -427,6 +429,7 @@ export class PostgresGameStore implements GameStore {
         pendingCycles: run.pendingCycles,
         pendingGold: run.pendingGold,
         pendingExpPerHero: run.pendingExpPerHero,
+        pendingMaterials: run.pendingMaterials,
         completedCycles: run.completedCycles,
       });
 
@@ -443,6 +446,7 @@ export class PostgresGameStore implements GameStore {
         pendingCycles: run.pendingCycles,
         pendingGold: run.pendingGold,
         pendingExpPerHero: run.pendingExpPerHero,
+        pendingMaterials: run.pendingMaterials,
         completedCycles: run.completedCycles,
       })
       .where(and(eq(dungeonRuns.playerId, playerId), eq(dungeonRuns.id, run.id)))
@@ -487,6 +491,7 @@ export class PostgresGameStore implements GameStore {
         pendingCycles: dungeonRuns.pendingCycles,
         pendingGold: dungeonRuns.pendingGold,
         pendingExpPerHero: dungeonRuns.pendingExpPerHero,
+        pendingMaterials: dungeonRuns.pendingMaterials,
         completedCycles: dungeonRuns.completedCycles,
       });
 
@@ -505,6 +510,7 @@ export class PostgresGameStore implements GameStore {
           pendingCycles: row.pendingCycles,
           pendingGold: row.pendingGold,
           pendingExpPerHero: row.pendingExpPerHero,
+          pendingMaterials: row.pendingMaterials,
           completedCycles: row.completedCycles,
         }
       : undefined;

@@ -1,0 +1,420 @@
+{
+  "rules": [
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "normal",
+      "materialId": "bamboo_fiber",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "normal",
+      "materialId": "slime_gel",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "normal",
+      "materialId": "river_stone",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "elite",
+      "materialId": "bamboo_fiber",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "elite",
+      "materialId": "slime_gel",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "elite",
+      "materialId": "river_stone",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "materialId": "bamboo_fiber",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "materialId": "slime_gel",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "materialId": "river_stone",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "bamboo_grove",
+      "rank": "boss",
+      "materialId": "promotion_seal_t1",
+      "chanceBps": 300,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "materialId": "reed_thread",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "materialId": "mist_pearl",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "materialId": "driftwood_core",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "normal",
+      "materialId": "river_stone",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "elite",
+      "materialId": "reed_thread",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "elite",
+      "materialId": "mist_pearl",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "elite",
+      "materialId": "driftwood_core",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "elite",
+      "materialId": "river_stone",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "reed_thread",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "mist_pearl",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "driftwood_core",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "river_stone",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "misty_riverbank",
+      "rank": "boss",
+      "materialId": "promotion_seal_t1",
+      "chanceBps": 300,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "materialId": "sunken_clay",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "materialId": "lotus_silk",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "materialId": "shrine_fragment",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "normal",
+      "materialId": "tide_crystal",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "elite",
+      "materialId": "sunken_clay",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "elite",
+      "materialId": "lotus_silk",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "elite",
+      "materialId": "shrine_fragment",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "elite",
+      "materialId": "tide_crystal",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "sunken_clay",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "lotus_silk",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "shrine_fragment",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "tide_crystal",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "sunken_shrine",
+      "rank": "boss",
+      "materialId": "promotion_seal_t2",
+      "chanceBps": 150,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "materialId": "ember_ore",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "materialId": "ash_hide",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "materialId": "fireglass",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "materialId": "ridge_herb",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "normal",
+      "materialId": "obsidian_shard",
+      "chanceBps": 800,
+      "minQty": 1,
+      "maxQty": 1
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "materialId": "ember_ore",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "materialId": "ash_hide",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "materialId": "fireglass",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "materialId": "ridge_herb",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "elite",
+      "materialId": "obsidian_shard",
+      "chanceBps": 3000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "ember_ore",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "ash_hide",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "fireglass",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "ridge_herb",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "obsidian_shard",
+      "chanceBps": 5000,
+      "minQty": 1,
+      "maxQty": 2
+    },
+    {
+      "dungeonId": "ember_ridge",
+      "rank": "boss",
+      "materialId": "promotion_seal_t2",
+      "chanceBps": 150,
+      "minQty": 1,
+      "maxQty": 1
+    }
+  ]
+}

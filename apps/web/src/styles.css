@@ -458,3 +458,29 @@ h2 {
     min-width: 0;
   }
 }
+
+.pending-loot {
+  color: #d7b96f;
+}
+
+.claim-notice {
+  margin: 8px 0 0;
+  color: #d7b96f;
+  font-size: 0.8rem;
+}
+
+.inventory-list {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inventory-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #3a3122;
+  padding: 4px 0;
+}

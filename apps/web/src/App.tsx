@@ -112,6 +112,7 @@ type DungeonRun = {
   pendingCycles: number;
   pendingGold: number;
   pendingExpPerHero: number;
+  pendingMaterials: MaterialBalance[];
   completedCycles: number;
   waves: DungeonWaveReplay[];
 };
@@ -123,10 +124,31 @@ type ApiErrorBody = {
   currentVersion?: number;
 };
 
+type DungeonRewardsClaimedEvent = {
+  type: "dungeon_rewards_claimed";
+  cycles: number;
+  gold: number;
+  expPerHero: number;
+  materials: MaterialBalance[];
+};
+
 type CommandSuccess = {
   ok: true;
   version: number;
   patch: Partial<Pick<PlayerState, "gold" | "hallLevel">>;
+  events: Array<{ type: string } | DungeonRewardsClaimedEvent>;
+};
+
+type CatalogEntry = {
+  id: string;
+  nameVi: string;
+  nameEn: string;
+};
+
+type Catalog = {
+  classes: CatalogEntry[];
+  dungeons: CatalogEntry[];
+  materials: CatalogEntry[];
 };
 
 type GameCommand =
@@ -150,6 +172,10 @@ function humanizeId(value: string): string {
   return value.replaceAll("_", " ");
 }
 
+function catalogName(catalog: Catalog | null, kind: keyof Catalog, id: string): string {
+  return catalog?.[kind].find((entry) => entry.id === id)?.nameVi ?? humanizeId(id);
+}
+
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>("tavern");
   const [player, setPlayer] = useState<PlayerState | null>(null);
@@ -168,6 +194,8 @@ export function App() {
     3: dungeonOptions[0],
     4: dungeonOptions[0],
   });
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [lastClaim, setLastClaim] = useState<DungeonRewardsClaimedEvent | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -255,6 +283,11 @@ export function App() {
         setPlayer(await readJson<PlayerState>(stateResponse));
       }
 
+      const catalogResponse = await fetch("/api/v1/catalog");
+      if (catalogResponse.ok) {
+        setCatalog(await readJson<{ ok: true } & Catalog>(catalogResponse));
+      }
+
       await loadCollections();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
@@ -326,6 +359,10 @@ export function App() {
         }
 
         const body = await readJson<CommandSuccess>(response);
+        const claimEvent = body.events.find(
+          (event): event is DungeonRewardsClaimedEvent => event.type === "dungeon_rewards_claimed",
+        );
+        if (claimEvent) setLastClaim(claimEvent);
         setPlayer((current) =>
           current
             ? {
@@ -434,7 +471,7 @@ export function App() {
                 <article className={`offer-card rarity-${offer.rarity}`} key={offer.id}>
                   <div>
                     <span className="rarity">{rarityLabel(offer.rarity)}</span>
-                    <strong>{humanizeId(offer.classId)}</strong>
+                    <strong>{catalogName(catalog, "classes", offer.classId)}</strong>
                     <small>{t("vi", "tavern.levelOne")}</small>
                   </div>
                   <button
@@ -491,7 +528,8 @@ export function App() {
                     <li className="hero-roster-item" key={hero.id}>
                       <span>
                         <strong>
-                          {promotionState?.currentClassNameVi ?? humanizeId(hero.classId)}
+                          {promotionState?.currentClassNameVi ??
+                            catalogName(catalog, "classes", hero.classId)}
                         </strong>
                         <small>
                           {rarityLabel(hero.rarity)} · T{promotionState?.currentTier ?? "?"} · Lv.
@@ -500,7 +538,7 @@ export function App() {
                         {promotionState?.targets.length && rule ? (
                           <small>
                             {t("vi", "promotion.requirement")}: {rule.goldCost} gold ·{" "}
-                            {rule.sealQty} {humanizeId(rule.sealMaterialId)}
+                            {rule.sealQty} {catalogName(catalog, "materials", rule.sealMaterialId)}
                           </small>
                         ) : null}
                         {promotionState?.busy ? (
@@ -542,6 +580,24 @@ export function App() {
               <p>{t("vi", "tavern.emptyRoster")}</p>
             )}
           </section>
+
+          <section className="card inventory">
+            <span className="section-kicker">{t("vi", "inventory.title")}</span>
+            {promotion.materials.some((entry) => entry.qty > 0) ? (
+              <ul className="inventory-list">
+                {promotion.materials
+                  .filter((entry) => entry.qty > 0)
+                  .map((entry) => (
+                    <li key={entry.materialId} data-material-id={entry.materialId}>
+                      <span>{catalogName(catalog, "materials", entry.materialId)}</span>
+                      <strong>×{entry.qty}</strong>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <p>{t("vi", "inventory.empty")}</p>
+            )}
+          </section>
         </>
       ) : activeTab === "dungeon" ? (
         <section className="stack dungeon-stack">
@@ -552,6 +608,16 @@ export function App() {
             <strong className="player-gold">
               {t("vi", "dungeon.playerGold")}: {player?.gold ?? 0}
             </strong>
+            {lastClaim ? (
+              <p className="claim-notice" role="status">
+                {t("vi", "dungeon.lastClaim")}: {lastClaim.cycles} {t("vi", "dungeon.cycles")} · +
+                {lastClaim.gold} gold · +{lastClaim.expPerHero} EXP/{t("vi", "dungeon.hero")}
+                {lastClaim.materials.map(
+                  (entry) =>
+                    ` · ${catalogName(catalog, "materials", entry.materialId)} ×${entry.qty}`,
+                )}
+              </p>
+            ) : null}
           </section>
 
           {teamSlots.map((slot) => {
@@ -607,7 +673,7 @@ export function App() {
                             onChange={() => toggleHeroForTeam(slot, hero.id)}
                           />
                           <span>
-                            <strong>{humanizeId(hero.classId)}</strong>
+                            <strong>{catalogName(catalog, "classes", hero.classId)}</strong>
                             <small>
                               {rarityLabel(hero.rarity)} · Lv.{hero.level} · EXP {hero.exp}
                             </small>
@@ -634,7 +700,7 @@ export function App() {
                   >
                     {dungeonOptions.map((dungeonId) => (
                       <option key={dungeonId} value={dungeonId}>
-                        {humanizeId(dungeonId)}
+                        {catalogName(catalog, "dungeons", dungeonId)}
                       </option>
                     ))}
                   </select>
@@ -674,7 +740,7 @@ export function App() {
                 {latestRun ? (
                   <section className="run-panel">
                     <div className="run-summary">
-                      <strong>{humanizeId(latestRun.dungeonId)}</strong>
+                      <strong>{catalogName(catalog, "dungeons", latestRun.dungeonId)}</strong>
                       <span className={`run-status status-${latestRun.status}`}>
                         {latestRun.status}
                       </span>
@@ -704,6 +770,17 @@ export function App() {
                           +{latestRun.pendingGold} gold · +{latestRun.pendingExpPerHero} EXP/
                           {t("vi", "dungeon.hero")}
                         </small>
+                        {latestRun.pendingMaterials.length ? (
+                          <small className="pending-loot">
+                            {t("vi", "dungeon.pendingLoot")}:{" "}
+                            {latestRun.pendingMaterials
+                              .map(
+                                (entry) =>
+                                  `${catalogName(catalog, "materials", entry.materialId)} ×${entry.qty}`,
+                              )
+                              .join(" · ")}
+                          </small>
+                        ) : null}
                         <small>
                           {t("vi", "dungeon.completedCycles")}: {latestRun.completedCycles}
                         </small>

@@ -63,6 +63,7 @@ function copyTavernState(state: StoredTavernState): StoredTavernState {
 function copyDungeonRun(run: DungeonRun): DungeonRun {
   return {
     ...run,
+    pendingMaterials: run.pendingMaterials.map((entry) => ({ ...entry })),
     waves: run.waves.map((wave) => ({
       ...wave,
       allies: wave.allies.map((unit) => ({ ...unit })),

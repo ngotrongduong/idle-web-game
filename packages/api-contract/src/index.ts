@@ -85,6 +85,23 @@ export const MaterialsResponseSchema = z.object({
   materials: z.array(MaterialBalanceSchema),
 });
 
+export const CatalogEntrySchema = z.object({
+  id: z.string().min(1),
+  nameVi: z.string().min(1),
+  nameEn: z.string().min(1),
+});
+
+export type CatalogEntry = z.infer<typeof CatalogEntrySchema>;
+
+export const CatalogResponseSchema = z.object({
+  ok: z.literal(true),
+  classes: z.array(CatalogEntrySchema),
+  dungeons: z.array(CatalogEntrySchema),
+  materials: z.array(CatalogEntrySchema),
+});
+
+export type CatalogResponse = z.infer<typeof CatalogResponseSchema>;
+
 export const PromotionTargetSchema = z.object({
   classId: z.string().min(1),
   nameVi: z.string().min(1),
@@ -193,6 +210,7 @@ export const DungeonRunSchema = z.object({
   pendingCycles: z.number().int().nonnegative(),
   pendingGold: z.number().int().nonnegative(),
   pendingExpPerHero: z.number().int().nonnegative(),
+  pendingMaterials: z.array(MaterialBalanceSchema).default([]),
   completedCycles: z.number().int().nonnegative(),
   waves: z.array(DungeonWaveReplaySchema).min(1).max(20),
 });
@@ -311,6 +329,7 @@ const DungeonRewardsClaimedEventSchema = z.object({
   gold: z.number().int().nonnegative(),
   expPerHero: z.number().int().nonnegative(),
   heroIds: z.array(z.string().uuid()).min(1).max(4),
+  materials: z.array(MaterialBalanceSchema).default([]),
 });
 
 const HeroPromotedEventSchema = z.object({
