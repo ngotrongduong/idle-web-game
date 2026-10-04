@@ -101,7 +101,15 @@ M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tun
   - auto-sell uses the exact same quality-scaled sell formula as manual sell
   - locked/equipped existing items remain protected because auto-sell only acts on newly acquired items
   - Forge UI exposes enable/disable and quality threshold controls
-- M1.6 crafting/enhancement (implementation in progress):
+- M1 economy pass:
+  - combined `sim:economy` report now runs in CI
+  - initial report found gold/hour deviations of +152.8%, +88.1%, +23.3%, -26.3% across D1–D4
+  - enemy gold rewards retuned to ~5.4K / 12.4K / 28.6K / 65.7K online gold/hour targets
+  - non-seal material rates retuned to 2% normal / 15% elite / 30% boss ×1–2, targeting ~3.1 minutes for the first craft
+  - promotion seal rates remain unchanged
+  - +5 currently costs ~1,969 gold expected with pity; after D1 gold retune this is ~21.9 minutes of D1 online gold
+  - craft gold sink remains intentionally disabled until cost can scale by item/tier
+- M1.6 crafting/enhancement (implemented):
   - recipes are read directly from validated `items.csv` and crafting consumes player materials inside the player transaction
   - provisional closed-beta quality tiers live in `game-data/equipment.ts`: Common 70% ×1.00, Fine 25% ×1.10, Rare 4.5% ×1.25, Masterwork 0.5% ×1.50
   - enhancement +1…+5 uses documented success rates 100/95/90/80/70%, pity +5% per failure and documented stat bonuses +6/+12/+19/+27/+36%
@@ -116,8 +124,9 @@ M1 — Core loop (M1.1–M1.6 implemented; M1.5B auto-sell verified; economy tun
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. Run and review the new combined `sim:economy` report: gold/hour, passive cap output, expected loot/seals, recipe acquisition time and +5 expected gold cost.
-2. Tune gold rewards, loot rates, crafting costs and enhancement costs together from that report; keep changes in game-data rather than server logic.
+1. Verify the M1 economy tuning in CI: dungeon gold/hour must remain within ±20% of targets and the first craft must remain ≤3.6 minutes expected online.
+2. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
+3. Then move to the next roadmap slice (M1.7 buildings) unless online-presence semantics are prioritized first.
 5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 
