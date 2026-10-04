@@ -95,7 +95,8 @@ describe("sim tools", () => {
     expect(buildings.teamTwo.minutes).toBeLessThanOrEqual(buildings.teamTwo.targetMinutes);
 
     // +5 takes ≈5.8 attempts; dust costs 1..5 put the journey at roughly 20 dismantled items.
-    expect(enhancement.forgeLevelRequired).toBe(5);
+    // The full +5 needs the level 8 Forge, whose upgrade costs dungeon 4 materials.
+    expect(enhancement.forgeLevelRequired).toBe(8);
     expect(enhancement.expectedDust).toBeGreaterThan(15);
     expect(enhancement.expectedDust).toBeLessThan(25);
   });

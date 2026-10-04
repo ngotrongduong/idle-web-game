@@ -59,7 +59,9 @@ describe("GET /api/v1/catalog", () => {
       buildSeconds: 48,
       upgradeMaterials: [{ materialId: "river_stone", qty: 3 }],
     });
-    expect(body.forge[4].maxEnhanceLevel).toBe(5);
+    expect(body.forge.map((level: { maxEnhanceLevel: number }) => level.maxEnhanceLevel)).toEqual([
+      0, 2, 2, 3, 3, 4, 4, 5, 5, 5,
+    ]);
     expect(body.buildings).toEqual({
       speedUpMaterialId: "builders_hourglass",
       speedUpSecondsPerItem: 300,

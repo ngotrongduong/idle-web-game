@@ -42,11 +42,26 @@ describe("buildings config", () => {
     expect(forgeQualityTiers(10).map((tier) => tier.weightBps)).toEqual([4_300, 4_300, 1_170, 230]);
   });
 
-  it("unlocks enhancement at Forge level 2 and the full +5 at level 5", () => {
-    expect(forgeMaxEnhanceLevel(1)).toBe(0);
-    expect(forgeMaxEnhanceLevel(2)).toBe(2);
-    expect(forgeMaxEnhanceLevel(5)).toBe(equipmentConfig.maxEnhanceLevel);
-    expect(forgeMaxEnhanceLevel(10)).toBe(equipmentConfig.maxEnhanceLevel);
+  it("unlocks enhancement at Forge level 2 and one more level with each dungeon's materials", () => {
+    // +3 needs the level 4 Forge (dungeon 2 materials), +4 level 6 (dungeon 3), +5 level 8
+    // (dungeon 4), so the full +5 arrives with dungeon 4 as docs/03 §4 plans.
+    const caps = Array.from({ length: buildingsConfig.maxLevel }, (_, index) =>
+      forgeMaxEnhanceLevel(index + 1),
+    );
+    expect(caps).toEqual([0, 2, 2, 3, 3, 4, 4, 5, 5, 5]);
+    expect(caps.at(-1)).toBe(equipmentConfig.maxEnhanceLevel);
+
+    const dungeonFourMaterials = [
+      "ember_ore",
+      "ash_hide",
+      "fireglass",
+      "ridge_herb",
+      "obsidian_shard",
+    ];
+    const stepToPlusFive = buildingUpgrade("forge", caps.indexOf(5))!;
+    expect(
+      stepToPlusFive.materials.every((entry) => dungeonFourMaterials.includes(entry.materialId)),
+    ).toBe(true);
   });
 
   it("shifts craft odds towards better quality with every Forge level", () => {

@@ -47,7 +47,7 @@
         { "materialId": "ridge_herb", "qty": 200 }
       ]
     ],
-    "maxEnhanceLevel": [0, 2, 3, 4, 5, 5, 5, 5, 5, 5],
+    "maxEnhanceLevel": [0, 2, 2, 3, 3, 4, 4, 5, 5, 5],
     "qualityWeightsBps": [
       [7000, 2500, 450, 50],
       [6700, 2700, 530, 70],

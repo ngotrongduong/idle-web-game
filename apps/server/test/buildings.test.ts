@@ -387,7 +387,7 @@ describeOnEachStore("the Forge level gates enhancement and improves crafting", (
     expect(await game.materialQty("forge_dust")).toBe(10);
   });
 
-  it("allows +2 at Forge level 2 and one more level per Forge level", async () => {
+  it("allows +2 at Forge level 2 and +3 only from Forge level 4", async () => {
     const game = await setup();
     await game.patchPlayer({ forgeLevel: 2, gold: 10_000 });
     await game.store.setMaterialQuantity(game.playerId, "forge_dust", 50);
@@ -397,10 +397,30 @@ describeOnEachStore("the Forge level gates enhancement and improves crafting", (
     expect(blocked.json().code).toBe("FORGE_LEVEL_TOO_LOW");
 
     await game.patchPlayer({ forgeLevel: 3 });
+    const stillBlocked = await game.send({ type: "enhance_item", itemInstanceId: atCap.id });
+    expect(stillBlocked.json().code).toBe("FORGE_LEVEL_TOO_LOW");
+    expect(await game.materialQty("forge_dust")).toBe(50);
+
+    await game.patchPlayer({ forgeLevel: 4 });
     const allowed = await game.send({ type: "enhance_item", itemInstanceId: atCap.id });
     expect(allowed.statusCode).toBe(200);
     expect(allowed.json().events[0]).toMatchObject({ beforeLevel: 2, targetLevel: 3, dustCost: 3 });
     expect(await game.materialQty("forge_dust")).toBe(47);
+  });
+
+  it("only lets a level 8 Forge take an item to +5", async () => {
+    const game = await setup();
+    await game.patchPlayer({ forgeLevel: 7, gold: 10_000 });
+    await game.store.setMaterialQuantity(game.playerId, "forge_dust", 50);
+    const item = await game.createItem({ enhanceLevel: 4 });
+
+    const blocked = await game.send({ type: "enhance_item", itemInstanceId: item.id });
+    expect(blocked.json().code).toBe("FORGE_LEVEL_TOO_LOW");
+
+    await game.patchPlayer({ forgeLevel: 8 });
+    const allowed = await game.send({ type: "enhance_item", itemInstanceId: item.id });
+    expect(allowed.statusCode).toBe(200);
+    expect(allowed.json().events[0]).toMatchObject({ beforeLevel: 4, targetLevel: 5, dustCost: 5 });
   });
 
   it("needs Forge Dust for every attempt and keeps the gold when dust is missing", async () => {

@@ -14,6 +14,7 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 | 06 | [Monetization và LiveOps](06-monetization-liveops.md) | Bảng giá, kênh thanh toán VN, lịch sự kiện, analytics, KPI | 📝 v0.1 |
 | 07 | [Lộ trình MVP](07-roadmap-mvp.md) | Làm gì, theo thứ tự nào, trong bao lâu, tiêu chí xong | 📝 v0.1 |
 | 08 | [Pháp lý và rủi ro](08-legal-risks.md) | IP, NĐ 147/2024 (G1), xác thực SĐT, dữ liệu cá nhân, thuế, sổ rủi ro | ⚠ cần luật sư xác minh |
+| 09 | [Chơi thử mốc M1](09-playtest-m1.md) | 30 phút đầu của một tài khoản mới chạy thật ra sao so với mục tiêu, vướng ở đâu, nên sửa gì | ✅ đo thật ngày 05/10 |
 
 ## Quyết định đã chốt
 
@@ -35,6 +36,6 @@ Bộ tài liệu nền tảng để bắt đầu xây một web game **idle guil
 
 ## Bước tiếp theo ngay
 
-1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.6 đã xong; tiếp theo là M1.7 (công trình có thời gian xây).
+1. Trạng thái code và việc tiếp theo nằm ở [HANDOFF.md](HANDOFF.md). M0 và M1.1–M1.8 đã xong, đã chơi thử mốc M1 ([09](09-playtest-m1.md)); tiếp theo là sửa các điểm vướng của buổi chơi thử rồi sang M2.
 2. Quy tắc làm việc cho mọi agent (Claude Code, Codex) nằm ở [`AGENTS.md`](../AGENTS.md); đội agent của Claude Code ở [`CLAUDE.md`](../CLAUDE.md).
 3. Đọc 01 → 02 → 07, sửa trực tiếp trên file hoặc comment trong PR.

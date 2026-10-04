@@ -122,7 +122,7 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 
 | Cấp Lò Rèn | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Cường hóa tối đa | khóa | +2 | +3 | +4 | +5 | +5 | +5 | +5 | +5 | +5 |
+| Cường hóa tối đa | khóa | +2 | +2 | +3 | +3 | +4 | +4 | +5 | +5 | +5 |
 | Chế tạo ra Thường | 70% | 67% | 64% | 61% | 58% | 55% | 52% | 49% | 46% | 43% |
 | Tinh xảo | 25% | 27% | 29% | 31% | 33% | 35% | 37% | 39% | 41% | 43% |
 | Hiếm | 4,5% | 5,3% | 6,1% | 6,9% | 7,7% | 8,5% | 9,3% | 10,1% | 10,9% | 11,7% |
@@ -133,7 +133,7 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 - **Tăng tốc** bằng Đồng Hồ Cát Thợ Xây: mỗi cái bớt 5 phút, server không bao giờ dùng nhiều hơn số cần để xây xong. Nguồn tạm thời: boss của cả 4 hầm rơi 2% (≈9 cái sau một đêm 8 giờ với một đội hạ được boss, tức ~45 phút tăng tốc). Quest và sự kiện (M2) sẽ là nguồn chính.
 - Tổng thời gian xây 1→10: Sảnh ~6 giờ, Lò Rèn ~4,8 giờ; lần dài nhất 2,8 giờ. Thứ chặn công trình vẫn là vàng (Sảnh ~1,02 triệu, Lò Rèn ~0,81 triệu), thời gian xây chỉ tạo nhịp quay lại.
 - **Nhịp đội 2**: với 1.000 vàng khởi đầu và vàng thụ động hầm 1, Sảnh Lv3 (mở đội 2) xong sớm nhất ở phút ~4,0 nếu ưu tiên Sảnh (`sim:economy` → `buildings.teamTwo`: vàng về theo từng vòng 64 giây, 72 vàng mỗi vòng), nằm trong mốc 6 phút ở §4. Vì vậy giữ nguyên mốc Lv1 / Lv3 / Lv6 / Lv9; quest chính (M2.1) cần dẫn người chơi nâng Sảnh hai lần trước.
-- Cường hóa +5 cần Lò Rèn Lv5 (cộng dồn 6.704 vàng, ~11 phút xây và nguyên liệu hầm 2). **Chưa khớp mốc "cường hóa +5 ở D4–D5" ở §4**: món +5 đầu tiên (~18 Bụi Rèn, ~1.969 vàng) vẫn đạt được trong ngày đầu, cả đội 16 món +5 khoảng D2–D3. Đây là số tạm; nếu muốn đúng mốc thì tăng giá Bụi Rèn hoặc dời mức +5 lên cấp Lò Rèn cao hơn trong đợt cân bằng sau khi chơi thử.
+- **Mức cường hóa đi theo hầm** (đợt cân bằng 05/10 sau buổi chơi thử M1): +1/+2 ở Lò Rèn Lv2 (nguyên liệu hầm 1), **+3 ở Lv4** (cần nguyên liệu hầm 2, cộng dồn 2.488 vàng), **+4 ở Lv6** (nguyên liệu hầm 3, cộng dồn 17.672 vàng), **+5 ở Lv8** (nguyên liệu hầm 4: 80 Quặng Đá Than + 80 Da Kỳ Nhông, cộng dồn 120.320 vàng và ~79 phút xây). Nhờ vậy +5 chỉ đạt được khi đã farm được hầm 4, khớp mốc "hầm 4 + cường hóa +5 ở D4–D5" ở §4. Trước đó +5 mở ở Lv5 và đạt được ngay ngày đầu. Giá Bụi Rèn giữ nguyên (1–5 mỗi lần thử).
 
 ## 7. Tuyển mộ và gacha
 

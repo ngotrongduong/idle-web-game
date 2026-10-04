@@ -81,15 +81,18 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     await store.createItem(veteran.id, { ...item, enhanceLevel: 2 });
     await store.createItem(veteran.id, { ...item, enhanceLevel: 5 });
 
-    // Runs the backfill block of the real migration file as a first deploy would (marker removed),
-    // then again as every later deploy does. Everything happens in a transaction that is rolled
-    // back, so other tests keep their rows and the marker.
-    const migration = readFileSync(
-      new URL("../drizzle/0014_m1_buildings.sql", import.meta.url),
-      "utf8",
-    );
-    const backfill = /DO \$\$[\s\S]*?\$\$;/.exec(migration)?.[0];
-    expect(backfill).toContain("0014_backfill_forge_level");
+    // Runs the backfill blocks of the real migration files as a first deploy would (markers
+    // removed), then again as every later deploy does. Everything happens in a transaction that
+    // is rolled back, so other tests keep their rows and the markers.
+    const backfillBlock = (file: string, marker: string) => {
+      const sql = readFileSync(new URL(`../drizzle/${file}`, import.meta.url), "utf8");
+      const block = /DO \$\$[\s\S]*?\$\$;/.exec(sql)?.[0];
+      expect(block).toContain(marker);
+      return block!;
+    };
+    const backfill = backfillBlock("0014_m1_buildings.sql", "0014_backfill_forge_level");
+    // 0015 re-maps the Forge level to the caps of the 2026-10-05 balance pass (+5 needs level 8).
+    const capsBackfill = backfillBlock("0015_m1_forge_caps.sql", "0015_forge_caps_backfill");
 
     const pool = new Pool({ connectionString: databaseUrl! });
     const client = await pool.connect();
@@ -103,16 +106,21 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     };
     try {
       await client.query("BEGIN");
-      await client.query("DELETE FROM data_migrations WHERE id = '0014_backfill_forge_level'");
-      await client.query(backfill!);
+      await client.query(
+        "DELETE FROM data_migrations WHERE id IN ('0014_backfill_forge_level', '0015_forge_caps_backfill')",
+      );
+      await client.query(backfill);
       expect(await forgeLevels()).toEqual([1, 2, 5]);
+      await client.query(capsBackfill);
+      expect(await forgeLevels()).toEqual([1, 2, 8]);
 
       // A later deploy must not touch players again, even ones who enhanced since.
       await client.query("UPDATE player_items SET enhance_level = 5 WHERE player_id = $1", [
         enhanced.id,
       ]);
-      await client.query(backfill!);
-      expect(await forgeLevels()).toEqual([1, 2, 5]);
+      await client.query(backfill);
+      await client.query(capsBackfill);
+      expect(await forgeLevels()).toEqual([1, 2, 8]);
     } finally {
       await client.query("ROLLBACK");
       client.release();

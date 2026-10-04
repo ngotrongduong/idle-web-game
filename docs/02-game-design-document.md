@@ -97,7 +97,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Bấm nâng cấp thì trả vàng (Lò Rèn thêm nguyên liệu hầm) ngay, cấp mới có hiệu lực khi hết thời gian xây. Đồng hồ chạy theo server, kể cả khi đóng tab.
 - Chỉ có một thợ xây: mỗi lúc chỉ xây một công trình.
 - Tăng tốc bằng **Đồng Hồ Cát Thợ Xây** (rơi từ boss hầm, sau này từ quest): mỗi cái bớt 5 phút.
-- **Lò Rèn** Lv1 chỉ chế tạo; Lv2 mở cường hóa tới +2, mỗi cấp sau thêm một mức cho tới +5 ở Lv5. Mỗi cấp Lò Rèn giảm 3% tỉ lệ ra đồ Thường và chia cho Tinh xảo / Hiếm / Kiệt tác.
+- **Lò Rèn** Lv1 chỉ chế tạo; Lv2 mở cường hóa tới +2, Lv4 tới +3, Lv6 tới +4, Lv8 tới +5 (mỗi mức mới cần nguyên liệu của hầm kế tiếp). Mỗi cấp Lò Rèn giảm 3% tỉ lệ ra đồ Thường và chia cho Tinh xảo / Hiếm / Kiệt tác.
 
 ### 5.2 Hero
 
