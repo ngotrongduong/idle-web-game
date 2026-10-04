@@ -907,7 +907,7 @@ export function App() {
                       ?.qty ?? 0) >= ingredient.qty,
                 );
                 return (
-                  <div className="craft-row" key={spec.id}>
+                  <div className="craft-row" data-item-id={spec.id} key={spec.id}>
                     <span>
                       <strong>{spec.nameVi}</strong>
                       <small>
@@ -963,7 +963,12 @@ export function App() {
                   : Math.min(10_000, baseSuccess + item.enhancePityFailures * 500);
 
               return (
-                <article className="card equipment-card" key={item.id}>
+                <article
+                  className="card equipment-card"
+                  data-item-id={item.itemId}
+                  data-instance-id={item.id}
+                  key={item.id}
+                >
                   <div className="equipment-heading">
                     <div>
                       <span className="equipment-slot">{item.slot}</span>

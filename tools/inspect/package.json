@@ -17,7 +17,8 @@
     "test": "tsx test/selftest.ts",
     "golden:battle": "tsx src/golden-battle.ts",
     "e2e:dungeon": "tsx src/e2e-dungeon.ts",
-    "e2e:promotion": "tsx src/e2e-promotion.ts"
+    "e2e:promotion": "tsx src/e2e-promotion.ts",
+    "e2e:equipment": "tsx src/e2e-equipment.ts"
   },
   "dependencies": {
     "playwright": "1.56.1",

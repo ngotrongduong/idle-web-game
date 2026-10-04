@@ -7,6 +7,7 @@
 M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 
 ## Verified status
+- M1.6 crafting/quality/enhancement core passed GitHub Actions CI #280 on commit `7d66a812a5f45adba113bd1b4cefc1d474a754ad`.
 - M1.5A inventory/equipment + Forge UI passed GitHub Actions CI #269 on commit `a4da8e92437ec54cbaea85bd321a7cdc5ea0fbdb`.
 - M1.4B (promotion + dungeon loot) is verified locally with the full CI-equivalent run: frozen install, migrations through `0007`, lint, Prettier, typecheck, unit/integration tests (InMemory + PostgreSQL), Chromium golden battle (`c080875a`, unchanged by the content re-theme), dungeon E2E, the new promotion E2E, build and Docker Compose validation.
 - New browser/PostgreSQL flow (`pnpm --filter @idle/inspect e2e:promotion`): guest → recruit 3 heroes → Team 1 → start → backdate past the 8h cap → claim 450 cycles (all heroes reach Lv.10) → stop/restart so the run snapshots the capped heroes → backdate + claim 450 cycles → inventory equals the sum of both claims and holds T1 seals → stop → promote through the Tavern UI → hero is T2 Lv.1 with retained potential, 1 seal and 500 gold spent.
@@ -105,9 +106,8 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. Verify M1.6 crafting + quality + enhancement through full CI and PostgreSQL.
-2. Add an equipment browser E2E that crafts, equips and enhances through the real Forge UI.
-3. Add M1.5B auto-sell now that quality tiers exist, so rules can target quality safely.
+1. Verify the new Forge equipment browser E2E: baseline run → craft → +1 → equip → stronger new-run snapshot + replay match.
+2. Add M1.5B auto-sell now that quality tiers exist, so rules can target quality safely.
 4. Economy pass with `tools/sim`: idle gold, sell values, material/seal rates, crafting costs and enhancement costs must be tuned together.
 5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
