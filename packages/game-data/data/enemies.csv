@@ -1,17 +1,17 @@
 id,name_vi,name_en,dungeon_id,rank,hp,attack,defense,speed,reward_gold,reward_exp
-bamboo_mite,Yêu Tinh Móc Túi,Goblin Cutpurse,bamboo_grove,normal,85,22,7,11,8,5
-reed_tusk,Lợn Rừng Lưng Gai,Thornback Boar,bamboo_grove,normal,125,27,12,8,11,6
-mossback_guard,Đại Yêu Tinh Hung Bạo,Hobgoblin Brute,bamboo_grove,elite,210,35,24,7,28,14
-hollow_cane_tyrant,Vua Bụi Gai,Briar King,bamboo_grove,boss,420,45,32,9,70,35
-mistfin_eel,Đỉa Đầm Lầy,Bog Leech,misty_riverbank,normal,165,39,16,14,17,9
-reedclaw_crab,Người Thằn Lằn Đầm Lầy,Marsh Lizardfolk,misty_riverbank,normal,205,35,24,8,19,10
-fogwing_heron,Phù Thủy Đầm Lầy,Fen Witch,misty_riverbank,elite,270,52,22,16,45,22
-riverglass_serpent,Mãng Xà Nhiều Đầu,Mire Hydra,misty_riverbank,boss,560,61,38,13,105,48
-clay_maskling,Bộ Xương Tập Sự,Skeleton Acolyte,sunken_shrine,normal,245,53,29,9,28,14
-lotus_wisp,Hồn Ma Chết Đuối,Drowned Ghost,sunken_shrine,normal,205,62,20,15,30,15
-tidebound_sentinel,Hiệp Sĩ Dòng Bị Nguyền,Cursed Templar,sunken_shrine,elite,355,67,42,10,65,30
-drowned_bell_colossus,Pháp Sư Bất Tử Tháp Chuông,Belltower Lich,sunken_shrine,boss,760,78,55,8,145,64
-cinder_gecko,Kỳ Nhông Lửa,Fire Salamander,ember_ridge,normal,305,70,31,16,39,19
-ash_horn_ram,Quỷ Đá Tro,Ashen Gargoyle,ember_ridge,normal,390,65,46,11,42,21
-fireglass_moth,Kobold Phóng Hỏa,Kobold Pyromancer,ember_ridge,elite,420,86,38,18,88,39
-obsidian_peak_golem,Rồng Hắc Diện,Obsidian Wyrm,ember_ridge,boss,980,96,72,9,195,82
+bamboo_mite,Yêu Tinh Móc Túi,Goblin Cutpurse,bamboo_grove,normal,85,22,7,11,3,5
+reed_tusk,Lợn Rừng Lưng Gai,Thornback Boar,bamboo_grove,normal,125,27,12,8,4,6
+mossback_guard,Đại Yêu Tinh Hung Bạo,Hobgoblin Brute,bamboo_grove,elite,210,35,24,7,11,14
+hollow_cane_tyrant,Vua Bụi Gai,Briar King,bamboo_grove,boss,420,45,32,9,30,35
+mistfin_eel,Đỉa Đầm Lầy,Bog Leech,misty_riverbank,normal,165,39,16,14,9,9
+reedclaw_crab,Người Thằn Lằn Đầm Lầy,Marsh Lizardfolk,misty_riverbank,normal,205,35,24,8,10,10
+fogwing_heron,Phù Thủy Đầm Lầy,Fen Witch,misty_riverbank,elite,270,52,22,16,24,22
+riverglass_serpent,Mãng Xà Nhiều Đầu,Mire Hydra,misty_riverbank,boss,560,61,38,13,56,48
+clay_maskling,Bộ Xương Tập Sự,Skeleton Acolyte,sunken_shrine,normal,245,53,29,9,23,14
+lotus_wisp,Hồn Ma Chết Đuối,Drowned Ghost,sunken_shrine,normal,205,62,20,15,24,15
+tidebound_sentinel,Hiệp Sĩ Dòng Bị Nguyền,Cursed Templar,sunken_shrine,elite,355,67,42,10,53,30
+drowned_bell_colossus,Pháp Sư Bất Tử Tháp Chuông,Belltower Lich,sunken_shrine,boss,760,78,55,8,117,64
+cinder_gecko,Kỳ Nhông Lửa,Fire Salamander,ember_ridge,normal,305,70,31,16,53,19
+ash_horn_ram,Quỷ Đá Tro,Ashen Gargoyle,ember_ridge,normal,390,65,46,11,57,21
+fireglass_moth,Kobold Phóng Hỏa,Kobold Pyromancer,ember_ridge,elite,420,86,38,18,119,39
+obsidian_peak_golem,Rồng Hắc Diện,Obsidian Wyrm,ember_ridge,boss,980,96,72,9,264,82

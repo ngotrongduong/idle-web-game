@@ -134,14 +134,14 @@ Công thức: `cost = 300 · 2.6^(L−1)`, `time = 60s · 1.9^(L−1)`. Quán/Kh
 
 | Bậc quái | Mỗi nguyên liệu của hầm | Ấn Thăng Cấp I (hầm 1–2) | Ấn Thăng Cấp II (hầm 3–4) |
 |---|---|---|---|
-| Thường (9 con mỗi vòng) | 0,5% × 1 | – | – |
-| Tinh anh (1 con) | 5% × 1 | – | – |
-| Boss (1 con) | 10% × 1–2 | 3% | 1,5% |
+| Thường (9 con mỗi vòng) | 2% × 1 | – | – |
+| Tinh anh (1 con) | 15% × 1 | – | – |
+| Boss (1 con) | 30% × 1–2 | 3% | 1,5% |
 
-- Lý do lệch so với bảng thiết kế: bảng gốc cho ra ~5–6 nguyên liệu mỗi vòng (~1.700 mỗi loại sau một đêm 8 giờ), trong khi công thức hiện có chỉ cần 3–6 nguyên liệu. Bảng đang cài cho ~110 mỗi loại sau một đêm.
+- Lý do lệch so với bảng thiết kế: bảng gốc cho ra quá nhiều nguyên liệu cho recipe hiện tại. Economy pass M1 cho thấy mức 0,5% / 5% / 10% khiến món craft đầu tiên mất ~9,8 phút thay vì mục tiêu 3 phút. Bảng đang cài dùng 2% / 15% / 30%, tương đương ~0,78 nguyên liệu mỗi loại mỗi vòng, ~351 mỗi loại sau cap offline 8 giờ và ~3,1 phút kỳ vọng để đủ nguyên liệu cho món craft đầu tiên.
 - Ấn I hào phóng có chủ ý (~13 mỗi đêm khi đội đã hạ được boss), để level cap chứ không phải ấn là thứ chặn lần thăng T2 đầu tiên. Nút thắt ấn bắt đầu từ T2→T3.
 - Chỉ quái ở wave **thắng** mới rơi đồ, giống vàng và EXP. Mỗi vòng có seed riêng (`deriveCycleLootSeed`), nên chia nhỏ số lần nhận không làm đổi tổng.
-- Cần một lượt cân bằng bằng `tools/sim` cho vàng, nguyên liệu và ấn cùng lúc trước khi mở chế tạo (M1.5).
+- `tools/sim sim:economy` chạy trong CI để kiểm tra đồng thời gold/hour, nguyên liệu, ấn, thời gian craft và chi phí cường hóa. Economy pass M1 đã đưa gold/hour của 4 hầm về sát các target ở §4 và material rate về nhịp craft đầu ~3 phút.
 
 Không giảm tỉ lệ rơi theo tier hầm như fworldgm (30% → 5%). Thay vào đó cân bằng bằng **giá trị nguyên liệu** và độ khó.
 

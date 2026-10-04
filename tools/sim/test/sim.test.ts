@@ -70,7 +70,15 @@ describe("sim tools", () => {
     expect(summary.recipes.every((recipe) => recipe.baseSellGold > 0)).toBe(true);
     expect(summary.enhancement.targetLevel).toBe(5);
     expect(summary.enhancement.expectedGold).toBeGreaterThan(0);
-    expect(summary.warnings.length).toBeGreaterThan(0);
+    expect(
+      summary.dungeons.every(
+        (dungeon) =>
+          dungeon.targetDeviationRatio === null ||
+          Math.abs(dungeon.targetDeviationRatio) <= 0.2,
+      ),
+    ).toBe(true);
+    expect(summary.recipes[0]?.expectedOnlineMinutes).toBeLessThanOrEqual(3.6);
+    expect(summary.warnings).toEqual(["craft_gold_sink_disabled: craftGoldCost=0"]);
   });
 
   it("summarizes upgrade percentiles", () => {

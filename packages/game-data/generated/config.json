@@ -1168,7 +1168,7 @@
       "attack": 22,
       "defense": 7,
       "speed": 11,
-      "rewardGold": 8,
+      "rewardGold": 3,
       "rewardExp": 5,
       "nameVi": "Yêu Tinh Móc Túi",
       "nameEn": "Goblin Cutpurse"
@@ -1181,7 +1181,7 @@
       "attack": 27,
       "defense": 12,
       "speed": 8,
-      "rewardGold": 11,
+      "rewardGold": 4,
       "rewardExp": 6,
       "nameVi": "Lợn Rừng Lưng Gai",
       "nameEn": "Thornback Boar"
@@ -1194,7 +1194,7 @@
       "attack": 35,
       "defense": 24,
       "speed": 7,
-      "rewardGold": 28,
+      "rewardGold": 11,
       "rewardExp": 14,
       "nameVi": "Đại Yêu Tinh Hung Bạo",
       "nameEn": "Hobgoblin Brute"
@@ -1207,7 +1207,7 @@
       "attack": 45,
       "defense": 32,
       "speed": 9,
-      "rewardGold": 70,
+      "rewardGold": 30,
       "rewardExp": 35,
       "nameVi": "Vua Bụi Gai",
       "nameEn": "Briar King"
@@ -1220,7 +1220,7 @@
       "attack": 39,
       "defense": 16,
       "speed": 14,
-      "rewardGold": 17,
+      "rewardGold": 9,
       "rewardExp": 9,
       "nameVi": "Đỉa Đầm Lầy",
       "nameEn": "Bog Leech"
@@ -1233,7 +1233,7 @@
       "attack": 35,
       "defense": 24,
       "speed": 8,
-      "rewardGold": 19,
+      "rewardGold": 10,
       "rewardExp": 10,
       "nameVi": "Người Thằn Lằn Đầm Lầy",
       "nameEn": "Marsh Lizardfolk"
@@ -1246,7 +1246,7 @@
       "attack": 52,
       "defense": 22,
       "speed": 16,
-      "rewardGold": 45,
+      "rewardGold": 24,
       "rewardExp": 22,
       "nameVi": "Phù Thủy Đầm Lầy",
       "nameEn": "Fen Witch"
@@ -1259,7 +1259,7 @@
       "attack": 61,
       "defense": 38,
       "speed": 13,
-      "rewardGold": 105,
+      "rewardGold": 56,
       "rewardExp": 48,
       "nameVi": "Mãng Xà Nhiều Đầu",
       "nameEn": "Mire Hydra"
@@ -1272,7 +1272,7 @@
       "attack": 53,
       "defense": 29,
       "speed": 9,
-      "rewardGold": 28,
+      "rewardGold": 23,
       "rewardExp": 14,
       "nameVi": "Bộ Xương Tập Sự",
       "nameEn": "Skeleton Acolyte"
@@ -1285,7 +1285,7 @@
       "attack": 62,
       "defense": 20,
       "speed": 15,
-      "rewardGold": 30,
+      "rewardGold": 24,
       "rewardExp": 15,
       "nameVi": "Hồn Ma Chết Đuối",
       "nameEn": "Drowned Ghost"
@@ -1298,7 +1298,7 @@
       "attack": 67,
       "defense": 42,
       "speed": 10,
-      "rewardGold": 65,
+      "rewardGold": 53,
       "rewardExp": 30,
       "nameVi": "Hiệp Sĩ Dòng Bị Nguyền",
       "nameEn": "Cursed Templar"
@@ -1311,7 +1311,7 @@
       "attack": 78,
       "defense": 55,
       "speed": 8,
-      "rewardGold": 145,
+      "rewardGold": 117,
       "rewardExp": 64,
       "nameVi": "Pháp Sư Bất Tử Tháp Chuông",
       "nameEn": "Belltower Lich"
@@ -1324,7 +1324,7 @@
       "attack": 70,
       "defense": 31,
       "speed": 16,
-      "rewardGold": 39,
+      "rewardGold": 53,
       "rewardExp": 19,
       "nameVi": "Kỳ Nhông Lửa",
       "nameEn": "Fire Salamander"
@@ -1337,7 +1337,7 @@
       "attack": 65,
       "defense": 46,
       "speed": 11,
-      "rewardGold": 42,
+      "rewardGold": 57,
       "rewardExp": 21,
       "nameVi": "Quỷ Đá Tro",
       "nameEn": "Ashen Gargoyle"
@@ -1350,7 +1350,7 @@
       "attack": 86,
       "defense": 38,
       "speed": 18,
-      "rewardGold": 88,
+      "rewardGold": 119,
       "rewardExp": 39,
       "nameVi": "Kobold Phóng Hỏa",
       "nameEn": "Kobold Pyromancer"
@@ -1363,7 +1363,7 @@
       "attack": 96,
       "defense": 72,
       "speed": 9,
-      "rewardGold": 195,
+      "rewardGold": 264,
       "rewardExp": 82,
       "nameVi": "Rồng Hắc Diện",
       "nameEn": "Obsidian Wyrm"
