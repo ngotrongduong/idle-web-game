@@ -267,6 +267,19 @@ export const BattleRulesSnapshotSchema = z.object({
 
 export type BattleRulesSnapshot = z.infer<typeof BattleRulesSnapshotSchema>;
 
+/** One sampled idle cycle (docs/04 §6): rewards and kills up to the first lost wave. */
+export const DungeonCycleSampleSchema = z.object({
+  gold: z.number().int().nonnegative(),
+  exp: z.number().int().nonnegative(),
+  kills: z.object({
+    normal: z.number().int().nonnegative(),
+    elite: z.number().int().nonnegative(),
+    boss: z.number().int().nonnegative(),
+  }),
+});
+
+export type DungeonCycleSample = z.infer<typeof DungeonCycleSampleSchema>;
+
 export const DungeonRunSchema = z.object({
   id: z.string().uuid(),
   dungeonId: z.string().min(1),
@@ -283,6 +296,8 @@ export const DungeonRunSchema = z.object({
   pendingMaterials: z.array(MaterialBalanceSchema).default([]),
   completedCycles: z.number().int().nonnegative(),
   waves: z.array(DungeonWaveReplaySchema).min(1).max(20),
+  /** Idle cycle c pays cycleSamples[c % length]; null on runs started before sampling existed. */
+  cycleSamples: z.array(DungeonCycleSampleSchema).min(1).max(100).nullable().default(null),
 });
 
 export type DungeonRun = z.infer<typeof DungeonRunSchema>;

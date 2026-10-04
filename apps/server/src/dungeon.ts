@@ -1,6 +1,7 @@
-import { randomBytes } from "node:crypto";
 import type {
+  BattleRulesSnapshot,
   BattleUnitSnapshot,
+  DungeonCycleSample,
   DungeonWaveReplay,
   Hero,
   InventoryItem,
@@ -13,6 +14,7 @@ import {
   foundationGameData,
 } from "@idle/game-data";
 import {
+  fnv1a32,
   buildEnemyCombatant,
   buildHeroCombatant,
   selectWaveEnemies,
@@ -27,12 +29,30 @@ export const CURRENT_DUNGEON_BATTLE_RULES: BattleRules = currentBattleRules;
 
 export const COMBATANT_SETUP: CombatantSetup = combatantSetup;
 
-export function createDungeonSeed(): number {
-  return randomBytes(4).readUInt32BE(0);
-}
-
 export function deriveWaveSeed(rootSeed: number, wave: number): number {
   return (rootSeed + Math.imul(wave, 0x9e3779b9)) >>> 0;
+}
+
+/**
+ * The run seed depends only on who fights where under which rules, so stopping and restarting
+ * with the same team reproduces the same samples (no rerolling until the boss happens to die).
+ */
+export function deriveRunSeed(input: {
+  playerId: string;
+  dungeonId: string;
+  allies: readonly BattleUnitSnapshot[];
+  rules: BattleRulesSnapshot;
+}): number {
+  const allies = [...input.allies].sort((left, right) => (left.id < right.id ? -1 : 1));
+  return Number.parseInt(
+    fnv1a32(JSON.stringify([input.playerId, input.dungeonId, allies, input.rules])),
+    16,
+  );
+}
+
+/** Sample 0 uses the run seed itself, so the persisted replay is exactly sample 0. */
+export function deriveSampleSeed(runSeed: number, sample: number): number {
+  return sample === 0 ? runSeed : (runSeed ^ Math.imul(sample, 0x85ebca6b)) >>> 0;
 }
 
 export function heroToCombatant(
@@ -102,31 +122,92 @@ export function simulateDungeonCycle(input: {
   }
 
   const allies = input.heroes.map((hero) => heroToCombatant(hero, input.equipment ?? []));
+  return simulateCycleWaves(input.dungeonId, allies, input.seed);
+}
 
-  return Array.from({ length: dungeon.waveCount }, (_, index) => {
-    const wave = index + 1;
-    const waveSeed = deriveWaveSeed(input.seed, wave);
-    const selectedEnemies = enemiesForWave(input.dungeonId, wave);
-    const enemies = enemyCombatantsForWave(input.dungeonId, wave);
+/** Plays one cycle and stops at the first wave that is not won: later waves are never reached. */
+function simulateCycleWaves(
+  dungeonId: string,
+  allies: readonly BattleUnitSnapshot[],
+  seed: number,
+): DungeonWaveReplay[] {
+  const dungeon = foundationGameData.dungeons.find((entry) => entry.id === dungeonId)!;
+  const waves: DungeonWaveReplay[] = [];
+  for (let wave = 1; wave <= dungeon.waveCount; wave += 1) {
+    const replay = simulateDungeonWave(dungeonId, allies, seed, wave);
+    waves.push(replay);
+    if (replay.result !== "win") break;
+  }
+  return waves;
+}
 
-    const result = simulateWave({
-      allies: allies as Combatant[],
-      enemies: enemies as Combatant[],
-      seed: waveSeed,
-      rules: CURRENT_DUNGEON_BATTLE_RULES,
-    });
+function simulateDungeonWave(
+  dungeonId: string,
+  allies: readonly BattleUnitSnapshot[],
+  rootSeed: number,
+  wave: number,
+): DungeonWaveReplay {
+  const waveSeed = deriveWaveSeed(rootSeed, wave);
+  const selectedEnemies = enemiesForWave(dungeonId, wave);
+  const enemies = enemyCombatantsForWave(dungeonId, wave);
 
-    const won = result.result === "win";
-    return {
-      wave,
-      seed: waveSeed,
-      result: result.result,
-      turns: result.turns,
-      hash: result.hash,
-      allies: allies.map((unit) => ({ ...unit })),
-      enemies: enemies.map((unit) => ({ ...unit })),
-      rewardGold: won ? selectedEnemies.reduce((sum, enemy) => sum + enemy.rewardGold, 0) : 0,
-      rewardExp: won ? selectedEnemies.reduce((sum, enemy) => sum + enemy.rewardExp, 0) : 0,
-    };
+  const result = simulateWave({
+    allies: allies as Combatant[],
+    enemies: enemies as Combatant[],
+    seed: waveSeed,
+    rules: CURRENT_DUNGEON_BATTLE_RULES,
   });
+
+  const won = result.result === "win";
+  return {
+    wave,
+    seed: waveSeed,
+    result: result.result,
+    turns: result.turns,
+    hash: result.hash,
+    allies: allies.map((unit) => ({ ...unit })),
+    enemies: enemies.map((unit) => ({ ...unit })),
+    rewardGold: won ? selectedEnemies.reduce((sum, enemy) => sum + enemy.rewardGold, 0) : 0,
+    rewardExp: won ? selectedEnemies.reduce((sum, enemy) => sum + enemy.rewardExp, 0) : 0,
+  };
+}
+
+const enemyRankById = new Map(foundationGameData.enemies.map((enemy) => [enemy.id, enemy.rank]));
+
+export function cycleSampleFromWaves(waves: readonly DungeonWaveReplay[]): DungeonCycleSample {
+  const kills = { normal: 0, elite: 0, boss: 0 };
+  for (const wave of waves) {
+    if (wave.result !== "win") continue;
+    for (const enemy of wave.enemies) {
+      const rank = enemyRankById.get(enemy.id);
+      if (!rank) throw new Error(`Unknown enemy in dungeon replay: ${enemy.id}`);
+      kills[rank] += 1;
+    }
+  }
+  return {
+    gold: waves.reduce((sum, wave) => sum + wave.rewardGold, 0),
+    exp: waves.reduce((sum, wave) => sum + wave.rewardExp, 0),
+    kills,
+  };
+}
+
+/** docs/04 §6: idle rewards are the expected value of sampled cycles, not one lucky replay. */
+export function sampleDungeonCycles(input: {
+  heroes: Hero[];
+  dungeonId: string;
+  seed: number;
+  samples: number;
+  equipment?: readonly InventoryItem[];
+}): { waves: DungeonWaveReplay[]; cycleSamples: DungeonCycleSample[] } {
+  if (input.heroes.length === 0 || input.heroes.length > 4) {
+    throw new Error("Dungeon cycle requires between one and four heroes");
+  }
+  const allies = input.heroes.map((hero) => heroToCombatant(hero, input.equipment ?? []));
+  let displayed: DungeonWaveReplay[] = [];
+  const cycleSamples = Array.from({ length: input.samples }, (_, sample) => {
+    const waves = simulateCycleWaves(input.dungeonId, allies, deriveSampleSeed(input.seed, sample));
+    if (sample === 0) displayed = waves;
+    return cycleSampleFromWaves(waves);
+  });
+  return { waves: displayed, cycleSamples };
 }

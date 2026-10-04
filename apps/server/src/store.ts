@@ -72,6 +72,9 @@ function copyDungeonRun(run: DungeonRun): DungeonRun {
   return {
     ...run,
     pendingMaterials: run.pendingMaterials.map((entry) => ({ ...entry })),
+    cycleSamples: run.cycleSamples
+      ? run.cycleSamples.map((sample) => ({ ...sample, kills: { ...sample.kills } }))
+      : null,
     waves: run.waves.map((wave) => ({
       ...wave,
       allies: wave.allies.map((unit) => ({ ...unit })),

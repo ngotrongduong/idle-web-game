@@ -7,6 +7,7 @@ describe("idle config", () => {
       cycleDurationSeconds: 48,
       offlineCapHours: 8,
       offlineEfficiencyBps: 7_500,
+      rewardSampleCycles: 30,
     });
   });
 });

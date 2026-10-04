@@ -1,9 +1,10 @@
-import type { DungeonRun, MaterialBalance } from "@idle/api-contract";
+import type { DungeonCycleSample, DungeonRun, MaterialBalance } from "@idle/api-contract";
 import { foundationGameData, idleConfig, lootConfig } from "@idle/game-data";
 import {
   calculateIdleAccrual,
+  deriveCycleLootSeed,
   mergeMaterialCounts,
-  rollIdleCycleLoot,
+  rollLoot,
   type LootKill,
   type MaterialCounts,
 } from "@idle/game-core";
@@ -26,17 +27,71 @@ export function materialCountsToBalances(counts: MaterialCounts): MaterialBalanc
     .sort((left, right) => left.materialId.localeCompare(right.materialId));
 }
 
-/** Enemies defeated in one cycle: only won waves count, mirroring gold and EXP rewards. */
-export function dungeonRunKills(run: Pick<DungeonRun, "dungeonId" | "waves">): LootKill[] {
-  return run.waves
-    .filter((wave) => wave.result === "win")
-    .flatMap((wave) =>
-      wave.enemies.map((enemy) => {
-        const rank = enemyRankById.get(enemy.id);
-        if (!rank) throw new Error(`Unknown enemy in dungeon replay: ${enemy.id}`);
-        return { dungeonId: run.dungeonId, rank };
-      }),
+/**
+ * Samples that idle cycles pay out. Runs started before sampling existed fall back to their single
+ * replay, cut at the first lost wave (waves after a loss are never reached, so they never pay).
+ */
+export function runCycleSamples(
+  run: Pick<DungeonRun, "waves" | "cycleSamples">,
+): DungeonCycleSample[] {
+  if (run.cycleSamples && run.cycleSamples.length > 0) return run.cycleSamples;
+
+  const reached = [];
+  for (const wave of run.waves) {
+    reached.push(wave);
+    if (wave.result !== "win") break;
+  }
+  const kills = { normal: 0, elite: 0, boss: 0 };
+  for (const wave of reached) {
+    if (wave.result !== "win") continue;
+    for (const enemy of wave.enemies) {
+      const rank = enemyRankById.get(enemy.id);
+      if (!rank) throw new Error(`Unknown enemy in dungeon replay: ${enemy.id}`);
+      kills[rank] += 1;
+    }
+  }
+  return [
+    {
+      gold: reached.reduce((sum, wave) => sum + (wave.result === "win" ? wave.rewardGold : 0), 0),
+      exp: reached.reduce((sum, wave) => sum + (wave.result === "win" ? wave.rewardExp : 0), 0),
+      kills,
+    },
+  ];
+}
+
+/** Kill list in a fixed order (normals, elites, boss) because loot rolls follow kill order. */
+export function sampleKills(dungeonId: string, sample: DungeonCycleSample): LootKill[] {
+  return (["normal", "elite", "boss"] as const).flatMap((rank) =>
+    Array.from({ length: sample.kills[rank] }, () => ({ dungeonId, rank })),
+  );
+}
+
+/** Rewards for cycles [firstCycleIndex, firstCycleIndex + cycles): cycle c pays sample c % N. */
+export function cycleRewards(
+  run: Pick<DungeonRun, "dungeonId" | "seed" | "waves" | "cycleSamples">,
+  firstCycleIndex: number,
+  cycles: number,
+): { gold: number; exp: number; loot: MaterialCounts; bossKills: number } {
+  const samples = runCycleSamples(run);
+  let gold = 0;
+  let exp = 0;
+  let bossKills = 0;
+  let loot: MaterialCounts = {};
+  for (let cycle = firstCycleIndex; cycle < firstCycleIndex + cycles; cycle += 1) {
+    const sample = samples[cycle % samples.length]!;
+    gold += sample.gold;
+    exp += sample.exp;
+    bossKills += sample.kills.boss;
+    loot = mergeMaterialCounts(
+      loot,
+      rollLoot(
+        sampleKills(run.dungeonId, sample),
+        lootConfig.rules,
+        deriveCycleLootSeed(run.seed, cycle),
+      ),
     );
+  }
+  return { gold, exp, loot, bossKills };
 }
 
 export function accrueDungeonRunRewards(run: DungeonRun, now = new Date()): DungeonRun {
@@ -55,24 +110,16 @@ export function accrueDungeonRunRewards(run: DungeonRun, now = new Date()): Dung
     return run;
   }
 
-  const goldPerCycle = run.waves.reduce((sum, wave) => sum + wave.rewardGold, 0);
-  const expPerHeroPerCycle = run.waves.reduce((sum, wave) => sum + wave.rewardExp, 0);
-  const cycleLoot = rollIdleCycleLoot({
-    runSeed: run.seed,
-    firstCycleIndex: run.completedCycles,
-    cycles: accrual.cycles,
-    kills: dungeonRunKills(run),
-    rules: lootConfig.rules,
-  });
+  const rewards = cycleRewards(run, run.completedCycles, accrual.cycles);
 
   return {
     ...run,
     lastAccruedAt: new Date(accrual.nextAccruedAtMs).toISOString(),
     pendingCycles: run.pendingCycles + accrual.cycles,
-    pendingGold: run.pendingGold + accrual.cycles * goldPerCycle,
-    pendingExpPerHero: run.pendingExpPerHero + accrual.cycles * expPerHeroPerCycle,
+    pendingGold: run.pendingGold + rewards.gold,
+    pendingExpPerHero: run.pendingExpPerHero + rewards.exp,
     pendingMaterials: materialCountsToBalances(
-      mergeMaterialCounts(materialBalancesToCounts(run.pendingMaterials), cycleLoot),
+      mergeMaterialCounts(materialBalancesToCounts(run.pendingMaterials), rewards.loot),
     ),
     completedCycles: run.completedCycles + accrual.cycles,
   };

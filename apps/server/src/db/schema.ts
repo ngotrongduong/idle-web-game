@@ -14,6 +14,7 @@ import {
 import type {
   AutoSellSettings,
   BattleRulesSnapshot,
+  DungeonCycleSample,
   DungeonRun,
   DungeonWaveReplay,
   EquipmentSlot,
@@ -186,6 +187,7 @@ export const dungeonRuns = pgTable(
     pendingGold: integer("pending_gold").notNull().default(0),
     pendingExpPerHero: integer("pending_exp_per_hero").notNull().default(0),
     pendingMaterials: jsonb("pending_materials").$type<MaterialBalance[]>().notNull().default([]),
+    cycleSamples: jsonb("cycle_samples").$type<DungeonCycleSample[]>(),
     completedCycles: integer("completed_cycles").notNull().default(0),
   },
   (table) => [index("dungeon_runs_player_id_idx").on(table.playerId)],

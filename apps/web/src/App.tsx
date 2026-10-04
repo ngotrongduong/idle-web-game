@@ -115,7 +115,27 @@ type DungeonRun = {
   pendingMaterials: MaterialBalance[];
   completedCycles: number;
   waves: DungeonWaveReplay[];
+  cycleSamples: CycleSample[] | null;
 };
+
+type CycleSample = {
+  gold: number;
+  exp: number;
+  kills: { normal: number; elite: number; boss: number };
+};
+
+/** Expected rewards per idle cycle from the run's sampled cycles (docs/04 §6). */
+function expectedPerCycle(run: DungeonRun) {
+  const samples = run.cycleSamples;
+  if (!samples || samples.length === 0) return null;
+  const average = (pick: (sample: CycleSample) => number) =>
+    samples.reduce((sum, sample) => sum + pick(sample), 0) / samples.length;
+  return {
+    gold: Math.round(average((sample) => sample.gold)),
+    exp: Math.round(average((sample) => sample.exp)),
+    bossWinPercent: Math.round(average((sample) => (sample.kills.boss > 0 ? 100 : 0))),
+  };
+}
 
 type ApiErrorBody = {
   ok: false;
@@ -856,6 +876,16 @@ export function App() {
                               .join(" · ")}
                           </small>
                         ) : null}
+                        {(() => {
+                          const expected = expectedPerCycle(latestRun);
+                          return expected ? (
+                            <small className="expected-rewards">
+                              {t("vi", "dungeon.expectedPerCycle")}: +{expected.gold} gold · +
+                              {expected.exp} EXP · {t("vi", "dungeon.bossWinRate")}{" "}
+                              {expected.bossWinPercent}%
+                            </small>
+                          ) : null;
+                        })()}
                         <small>
                           {t("vi", "dungeon.completedCycles")}: {latestRun.completedCycles}
                         </small>

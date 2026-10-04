@@ -288,6 +288,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
       pendingGold: 0,
       pendingExpPerHero: 0,
       pendingMaterials: [{ materialId: "bamboo_fiber", qty: 3 }],
+      cycleSamples: [{ gold: 8, exp: 5, kills: { normal: 1, elite: 0, boss: 0 } }],
       completedCycles: 0,
       waves: [
         {

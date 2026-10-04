@@ -31,6 +31,7 @@ type DungeonRun = {
   pendingCycles: number;
   pendingMaterials: MaterialBalance[];
   waves: Array<{ result: string }>;
+  cycleSamples: Array<{ kills: { boss: number } }> | null;
 };
 
 type ClaimEvent = {
@@ -206,8 +207,8 @@ try {
   await runCommand(page, team.getByRole("button", { name: "Dừng", exact: true }));
   await runCommand(page, team.getByRole("button", { name: "Bắt đầu", exact: true }));
   const sealRun = await activeRun(page);
-  if (sealRun.waves.at(-1)?.result !== "win") {
-    throw new Error("Capped team failed to defeat the boss wave");
+  if (!sealRun.cycleSamples?.some((sample) => sample.kills.boss > 0)) {
+    throw new Error("Capped team did not defeat the boss in any sampled cycle");
   }
 
   const sealClaim = await farmCappedCycles(page);

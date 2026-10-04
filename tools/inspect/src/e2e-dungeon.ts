@@ -117,10 +117,11 @@ try {
   );
   await replayBadge.waitFor({ state: "visible", timeout: 15_000 });
 
+  // A cycle stops at its first lost wave, so the persisted replay has 1–6 waves.
   const waves = refreshedFirstTeam.locator(".wave-card");
   const waveCount = await waves.count();
-  if (waveCount !== 6) {
-    throw new Error(`Expected 6 persisted waves, got ${waveCount}`);
+  if (waveCount < 1 || waveCount > 6) {
+    throw new Error(`Expected 1–6 persisted waves, got ${waveCount}`);
   }
 
   const matchingHashes = refreshedFirstTeam.getByText("Hash client ✓", {
@@ -152,6 +153,7 @@ try {
         id: string;
         status: string;
         waves: Array<{ rewardGold: number; rewardExp: number }>;
+        cycleSamples: Array<{ gold: number; exp: number }>;
       }>;
     }
   ).runs;
@@ -160,15 +162,22 @@ try {
     throw new Error("Expected one active dungeon run before idle catch-up");
   }
 
+  // Idle cycle c pays sample c % N (docs/04 §6); sample 0 is the persisted replay.
   const expectedCycles = 168;
-  const goldPerCycle = activeRun.waves.reduce(
-    (sum, wave) => sum + wave.rewardGold,
-    0,
-  );
-  const expPerHeroPerCycle = activeRun.waves.reduce(
-    (sum, wave) => sum + wave.rewardExp,
-    0,
-  );
+  const samples = activeRun.cycleSamples;
+  if (!samples || samples.length !== 30) {
+    throw new Error(`Expected 30 sampled cycles, got ${samples?.length}`);
+  }
+  const replayGold = activeRun.waves.reduce((sum, wave) => sum + wave.rewardGold, 0);
+  if (samples[0]!.gold !== replayGold) {
+    throw new Error(`Sample 0 gold ${samples[0]!.gold} does not match its replay ${replayGold}`);
+  }
+  let expectedPendingGold = 0;
+  let expectedExp = 0;
+  for (let cycle = 0; cycle < expectedCycles; cycle += 1) {
+    expectedPendingGold += samples[cycle % samples.length]!.gold;
+    expectedExp += samples[cycle % samples.length]!.exp;
+  }
 
   const pool = new Pool({ connectionString: databaseUrl });
   try {
@@ -209,15 +218,11 @@ try {
       `Expected ${expectedCycles} cycles after 3h catch-up, got ${accruedRun.pendingCycles}`,
     );
   }
-  if (accruedRun.pendingGold !== goldPerCycle * expectedCycles) {
-    throw new Error(
-      `Expected pending gold ${goldPerCycle * expectedCycles}, got ${accruedRun.pendingGold}`,
-    );
+  if (accruedRun.pendingGold !== expectedPendingGold) {
+    throw new Error(`Expected pending gold ${expectedPendingGold}, got ${accruedRun.pendingGold}`);
   }
-  if (accruedRun.pendingExpPerHero !== expPerHeroPerCycle * expectedCycles) {
-    throw new Error(
-      `Expected pending EXP/hero ${expPerHeroPerCycle * expectedCycles}, got ${accruedRun.pendingExpPerHero}`,
-    );
+  if (accruedRun.pendingExpPerHero !== expectedExp) {
+    throw new Error(`Expected pending EXP/hero ${expectedExp}, got ${accruedRun.pendingExpPerHero}`);
   }
 
   await page.reload({ waitUntil: "domcontentloaded" });
@@ -289,7 +294,7 @@ try {
   });
 
   console.log(
-    `Dungeon E2E passed: 6/6 replay hashes matched; +3h catch-up produced exactly ${expectedCycles} cycles, ${accruedRun.pendingGold} gold and ${accruedRun.pendingExpPerHero} EXP/hero; claim reset pending rewards.`,
+    `Dungeon E2E passed: ${waveCount}/${waveCount} replay hashes matched; +3h catch-up produced exactly ${expectedCycles} cycles, ${accruedRun.pendingGold} gold and ${accruedRun.pendingExpPerHero} EXP/hero; claim reset pending rewards.`,
   );
 } finally {
   await browser.close();

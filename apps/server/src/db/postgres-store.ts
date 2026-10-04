@@ -487,6 +487,7 @@ export class PostgresGameStore implements GameStore {
         pendingGold: dungeonRuns.pendingGold,
         pendingExpPerHero: dungeonRuns.pendingExpPerHero,
         pendingMaterials: dungeonRuns.pendingMaterials,
+        cycleSamples: dungeonRuns.cycleSamples,
         completedCycles: dungeonRuns.completedCycles,
       })
       .from(dungeonRuns)
@@ -508,6 +509,7 @@ export class PostgresGameStore implements GameStore {
       pendingGold: row.pendingGold,
       pendingExpPerHero: row.pendingExpPerHero,
       pendingMaterials: row.pendingMaterials,
+      cycleSamples: row.cycleSamples ?? null,
       completedCycles: row.completedCycles,
     }));
   }
@@ -536,6 +538,7 @@ export class PostgresGameStore implements GameStore {
         pendingGold: run.pendingGold,
         pendingExpPerHero: run.pendingExpPerHero,
         pendingMaterials: run.pendingMaterials,
+        cycleSamples: run.cycleSamples,
         completedCycles: run.completedCycles,
       });
 
@@ -598,6 +601,7 @@ export class PostgresGameStore implements GameStore {
         pendingGold: dungeonRuns.pendingGold,
         pendingExpPerHero: dungeonRuns.pendingExpPerHero,
         pendingMaterials: dungeonRuns.pendingMaterials,
+        cycleSamples: dungeonRuns.cycleSamples,
         completedCycles: dungeonRuns.completedCycles,
       });
 
@@ -617,6 +621,7 @@ export class PostgresGameStore implements GameStore {
           pendingGold: row.pendingGold,
           pendingExpPerHero: row.pendingExpPerHero,
           pendingMaterials: row.pendingMaterials,
+          cycleSamples: row.cycleSamples ?? null,
           completedCycles: row.completedCycles,
         }
       : undefined;

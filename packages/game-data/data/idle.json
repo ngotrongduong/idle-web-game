@@ -1,5 +1,6 @@
 {
   "cycleDurationSeconds": 48,
   "offlineCapHours": 8,
-  "offlineEfficiencyBps": 7500
+  "offlineEfficiencyBps": 7500,
+  "rewardSampleCycles": 30
 }

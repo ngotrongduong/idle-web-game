@@ -33,6 +33,7 @@ import {
   enhancementGoldCost,
   equipmentConfig,
   foundationGameData,
+  idleConfig,
   itemSellGold,
   promotionConfig,
   promotionRuleForTier,
@@ -48,8 +49,9 @@ import {
 } from "./session.js";
 import {
   CURRENT_DUNGEON_BATTLE_RULES,
-  createDungeonSeed,
-  simulateDungeonCycle,
+  deriveRunSeed,
+  heroToCombatant,
+  sampleDungeonCycles,
 } from "./dungeon.js";
 import { accrueDungeonRunRewards } from "./idle.js";
 import { grantHeroExperience } from "./progression.js";
@@ -732,13 +734,20 @@ export function buildServer(options?: { store?: GameStore }) {
           return staleTeam;
         }
 
-        const seed = createDungeonSeed();
         const startedAt = new Date().toISOString();
         const equipment = await store.listItems(playerId);
-        const waves = simulateDungeonCycle({
-          heroes: teamHeroes.filter((hero) => hero !== undefined),
+        const runHeroes = teamHeroes.filter((hero) => hero !== undefined);
+        const seed = deriveRunSeed({
+          playerId,
+          dungeonId,
+          allies: runHeroes.map((hero) => heroToCombatant(hero, equipment)),
+          rules: CURRENT_DUNGEON_BATTLE_RULES,
+        });
+        const { waves, cycleSamples } = sampleDungeonCycles({
+          heroes: runHeroes,
           dungeonId,
           seed,
+          samples: idleConfig.rewardSampleCycles,
           equipment,
         });
         const run = await store.createDungeonRun(playerId, {
@@ -756,6 +765,7 @@ export function buildServer(options?: { store?: GameStore }) {
           pendingMaterials: [],
           completedCycles: 0,
           waves,
+          cycleSamples,
         });
 
         const nextState: FoundationPlayerState = {

@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
-import { foundationGameData, lootConfig } from "@idle/game-data";
-import { applyHeroExperience, rollIdleCycleLoot } from "@idle/game-core";
+import { foundationGameData } from "@idle/game-data";
+import { applyHeroExperience } from "@idle/game-core";
 import { buildServer } from "../src/app.js";
-import { dungeonRunKills, materialCountsToBalances } from "../src/idle.js";
+import { cycleRewards, materialCountsToBalances } from "../src/idle.js";
 import { InMemoryGameStore } from "../src/store.js";
 
 const apps: ReturnType<typeof buildServer>[] = [];
@@ -325,14 +325,11 @@ describe("server-authoritative command pipeline", () => {
       lastAccruedAt: tenMinutesAgo,
     });
 
-    const goldPerCycle = run.waves.reduce(
-      (sum: number, wave: { rewardGold: number }) => sum + wave.rewardGold,
-      0,
-    );
-    const expPerCycle = run.waves.reduce(
-      (sum: number, wave: { rewardExp: number }) => sum + wave.rewardExp,
-      0,
-    );
+    // Idle cycle c pays sample c % N (docs/04 §6), so 9 cycles pay samples 0..8.
+    const samples = run.cycleSamples as Array<{ gold: number; exp: number }>;
+    expect(samples).toHaveLength(30);
+    const nineGold = samples.slice(0, 9).reduce((sum, sample) => sum + sample.gold, 0);
+    const nineExp = samples.slice(0, 9).reduce((sum, sample) => sum + sample.exp, 0);
 
     const claim = await app.inject({
       method: "POST",
@@ -352,14 +349,14 @@ describe("server-authoritative command pipeline", () => {
     expect(claim.json()).toMatchObject({
       ok: true,
       version: 2,
-      patch: { gold: 1_000 + goldPerCycle * 9 },
+      patch: { gold: 1_000 + nineGold },
       events: [
         {
           type: "dungeon_rewards_claimed",
           runId: run.id,
           cycles: 9,
-          gold: goldPerCycle * 9,
-          expPerHero: expPerCycle * 9,
+          gold: nineGold,
+          expPerHero: nineExp,
           heroIds: [hero.id],
         },
       ],
@@ -372,7 +369,7 @@ describe("server-authoritative command pipeline", () => {
         exp: hero.exp,
         tier: heroClass.tier,
       },
-      expPerCycle * 9,
+      nineExp,
     );
     expect(await store.listHeroes(guest.state.id)).toContainEqual({
       ...hero,
@@ -437,7 +434,9 @@ describe("server-authoritative command pipeline", () => {
     expect(start.statusCode).toBe(200);
     const run = start.json().events[0].run;
     expect(run.pendingMaterials).toEqual([]);
-    expect(run.waves.every((wave: { result: string }) => wave.result === "win")).toBe(true);
+    expect(
+      run.cycleSamples.every((sample: { kills: { boss: number } }) => sample.kills.boss === 1),
+    ).toBe(true);
 
     // Pin the seed so the expected drops (and at least one boss seal) are fixed for this test.
     await store.updateDungeonRun(guest.state.id, {
@@ -445,15 +444,7 @@ describe("server-authoritative command pipeline", () => {
       seed: 123,
       lastAccruedAt: new Date(Date.now() - 4 * 60 * 60 * 1_000).toISOString(),
     });
-    const expected = materialCountsToBalances(
-      rollIdleCycleLoot({
-        runSeed: 123,
-        firstCycleIndex: 0,
-        cycles: 225,
-        kills: dungeonRunKills(run),
-        rules: lootConfig.rules,
-      }),
-    );
+    const expected = materialCountsToBalances(cycleRewards({ ...run, seed: 123 }, 0, 225).loot);
     expect(expected.find((entry) => entry.materialId === "promotion_seal_t1")?.qty).toBeGreaterThan(
       0,
     );
@@ -650,7 +641,7 @@ describe("server-authoritative command pipeline", () => {
     const hero = await store.createHero(guest.state.id, {
       classId: "ward_squire",
       rarity: "common",
-      level: 1,
+      level: 10,
       exp: 0,
     });
     await store.setTeam(guest.state.id, {
