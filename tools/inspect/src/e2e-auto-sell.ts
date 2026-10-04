@@ -148,7 +148,7 @@ try {
         candidate.url().endsWith("/api/v1/cmd") &&
         candidate.request().method() === "POST",
     ),
-    toggle.check(),
+    toggle.click(),
   ]);
   if (!toggleResponse.ok()) {
     throw new Error(
