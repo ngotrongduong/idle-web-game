@@ -24,6 +24,7 @@ export interface GameStore {
     playerId: string,
     task: () => Promise<T>,
   ): Promise<T>;
+  close?(): Promise<void>;
 }
 
 export class InMemoryGameStore implements GameStore {

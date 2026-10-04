@@ -19,14 +19,15 @@ M0 — Nền móng.
 - M0.3: CSV → JSON pipeline, Zod validation and cross-reference checks; original MVP slice includes 4 class families, 24 T1–T3 classes with explicit targeting/ULT metadata, 4 dungeons, 16 enemies, 15 materials and 30 craftable items.
 - M0.4: seeded RNG, integer/BPS combat math, deterministic `simulateWave`, replay hash and golden test; MP/ULT supports deterministic damage or healing, role-aware targeting and class-family counters while preserving the legacy golden hash when optional features are unused.
 - M0.5: enhancement model with +5 safety floor and pity; battle/enhancement Monte Carlo tools. Battle scenarios now derive progression teams, dungeon waves and gold/EXP rewards from validated game-data instead of hard-coded encounters.
-- M0.6a: guest session + HttpOnly cookie, intent-only `/api/v1/cmd`, expected-version checks, per-player async lock, idempotent `cmdId`, and first `upgrade_hall` command. Server routes now depend on an async `GameStore` interface, so PostgreSQL can replace the in-memory store without rewriting command logic.
+- M0.6a: guest session + HttpOnly cookie, intent-only `/api/v1/cmd`, expected-version checks, per-player async lock, idempotent `cmdId`, and first `upgrade_hall` command.
+- M0.6b implementation: Drizzle schema + PostgreSQL migration + `PostgresGameStore`; hashed sessions persist with expiry, command outcomes have a 24h retention window, and `withPlayerLock` uses a real transaction with `SELECT ... FOR UPDATE`. Server selects PostgreSQL via `DATABASE_URL` and falls back to in-memory locally.
 
 ## Next implementation work
 1. Finish M0.2 with ESLint + Prettier once their dependencies can be added together with a regenerated frozen lockfile.
 2. Expand M0.3 schema with class families/classes and enemy definitions, keeping content original.
-3. M0.6b: implement PostgreSQL + Drizzle behind the existing async `GameStore` interface; persist hashed sessions and 24h idempotency outcomes; use a real transaction with player row locking.
-4. Expand battle engine with MP/ULT, targeting roles, counters and rewards; version rules when golden hashes change.
-5. M0.7: Docker Compose + Caddy + staging deployment after DB persistence exists.
+3. Verify M0.6b in CI against the PostgreSQL service and fix any migration/type/transaction issues.
+4. Add named skill IDs/effects beyond the generic damage/heal ULT model.
+5. M0.7: Docker Compose + Caddy + staging deployment now that DB persistence exists.
 
 ## Important constraints
 - Keep `main` deployable; use small PRs.

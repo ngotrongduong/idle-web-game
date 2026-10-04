@@ -20,8 +20,8 @@ import {
   SESSION_COOKIE,
   sessionCookieHeader,
 } from "./session.js";
+import { createConfiguredGameStore } from "./store-factory.js";
 import {
-  InMemoryGameStore,
   type GameStore,
   type StoredCommandOutcome,
 } from "./store.js";
@@ -54,13 +54,17 @@ function sendStored(reply: FastifyReply, outcome: StoredCommandOutcome) {
 
 export function buildServer(options?: { store?: GameStore }) {
   const app = Fastify({ logger: false });
-  const store = options?.store ?? new InMemoryGameStore();
+  const store = options?.store ?? createConfiguredGameStore();
+
+  app.addHook("onClose", async () => {
+    await store.close?.();
+  });
 
   app.get("/health", async () =>
     HealthResponseSchema.parse({
       ok: true,
       service: "server",
-      version: "m0.6a",
+      version: "m0.6b",
     }),
   );
 
