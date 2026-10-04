@@ -26,7 +26,8 @@ Thư mục này chứa **bằng chứng thu thập được** khi inspect game h
 | [05-api-architecture.md](05-api-architecture.md) | Danh mục ~80 API action, schema saveData, auth, socket, nhận xét bảo mật | viết tay từ bundle đã giải mã + log API |
 | [06-mechanics.md](06-mechanics.md) | Công thức chiến đấu, EXP, loot, offline, cường hóa, chi phí | viết tay từ code đã giải mã |
 | [07-gameplay-walkthrough.md](07-gameplay-walkthrough.md) | Chơi thử bằng tài khoản test: onboarding, 9 tab, UI, LiveOps, monetization | viết tay + screenshot |
-| [data/](data/) | JSON máy đọc được: `har-analysis.json`, `config-tables.json`, `fworldgm-mechanics.json` | sinh tự động |
+| [08-midgame-playtest.md](08-midgame-playtest.md) | Chơi thử giữa game (tài khoản ~32 giờ, 2026-10-05): số đo thật về wave, EXP, rơi đồ, vàng/giờ, chế tạo, world boss, đấu trường, Tháp Vô Tận; các điểm tài liệu cũ sai hoặc lỗi thời | viết tay từ UI + dữ liệu client lưu trong trình duyệt |
+| [data/](data/) | JSON máy đọc được: `har-analysis.json`, `config-tables.json`, `fworldgm-mechanics.json`; `monsters-ingame.csv` (128 quái với chỉ số, vàng, EXP đúng như game hiển thị) | sinh tự động; CSV chép từ bảng "Monsters" trong game |
 | [screenshots/](screenshots/) | Ảnh màn hình (username người chơi khác đã được làm mờ) | `capture.ts`, `explore.ts` |
 
 ## Phương pháp

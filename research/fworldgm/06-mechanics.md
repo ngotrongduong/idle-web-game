@@ -2,6 +2,8 @@
 
 Nguồn: `raw/static/bundle.pretty.js` (đã giải mã chuỗi), kiểm chứng chéo bằng cách gọi trực tiếp hàm công thức (`formulas.json`) và đối chiếu số liệu thật trên tài khoản test. Ví dụ: Kiếm Sĩ Lv1 có HP 120 × 1.1 = 132, đúng với UI.
 
+> **Cập nhật 2026-10-05**: phiên chơi thử giữa game ([08](08-midgame-playtest.md)) cho thấy vài điểm dưới đây đã lỗi thời hoặc thiếu: số quái mỗi wave (1–5 theo Lv đội, không cố định 2), chỉ số quái nhân theo cấp, EXP giảm khi hero vượt cấp hầm, nhịp offline theo nhịp thật của đội, tỉ lệ phẩm chất hai bậc cao nhất, cơ chế world boss tự mạnh dần. Xem bảng đối chiếu ở 08 §9.
+>
 > Đây là tài liệu tham khảo để hiểu **cách một idle guild RPG cân bằng số**. Game của mình sẽ tự thiết kế công thức (xem `docs/03-economy-balancing.md`).
 
 ## 1. Pipeline tính chỉ số một nhà thám hiểm (`effectiveStats`)
