@@ -11,29 +11,16 @@ export interface GameStore {
   findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined>;
   getPlayer(playerId: string): Promise<FoundationPlayerState | undefined>;
   setPlayer(player: FoundationPlayerState): Promise<void>;
-  getCommandOutcome(
-    playerId: string,
-    cmdId: string,
-  ): Promise<StoredCommandOutcome | undefined>;
-  setCommandOutcome(
-    playerId: string,
-    cmdId: string,
-    outcome: StoredCommandOutcome,
-  ): Promise<void>;
-  withPlayerLock<T>(
-    playerId: string,
-    task: () => Promise<T>,
-  ): Promise<T>;
+  getCommandOutcome(playerId: string, cmdId: string): Promise<StoredCommandOutcome | undefined>;
+  setCommandOutcome(playerId: string, cmdId: string, outcome: StoredCommandOutcome): Promise<void>;
+  withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T>;
   close?(): Promise<void>;
 }
 
 export class InMemoryGameStore implements GameStore {
   private readonly players = new Map<string, FoundationPlayerState>();
   private readonly sessions = new Map<string, string>();
-  private readonly commandOutcomes = new Map<
-    string,
-    Map<string, StoredCommandOutcome>
-  >();
+  private readonly commandOutcomes = new Map<string, Map<string, StoredCommandOutcome>>();
   private readonly lockTails = new Map<string, Promise<void>>();
 
   async createGuest(sessionHash: string): Promise<FoundationPlayerState> {
@@ -49,15 +36,11 @@ export class InMemoryGameStore implements GameStore {
     return { ...player };
   }
 
-  async findPlayerIdBySessionHash(
-    sessionHash: string,
-  ): Promise<string | undefined> {
+  async findPlayerIdBySessionHash(sessionHash: string): Promise<string | undefined> {
     return this.sessions.get(sessionHash);
   }
 
-  async getPlayer(
-    playerId: string,
-  ): Promise<FoundationPlayerState | undefined> {
+  async getPlayer(playerId: string): Promise<FoundationPlayerState | undefined> {
     const player = this.players.get(playerId);
     return player ? { ...player } : undefined;
   }
@@ -86,10 +69,7 @@ export class InMemoryGameStore implements GameStore {
     outcomes.set(cmdId, outcome);
   }
 
-  async withPlayerLock<T>(
-    playerId: string,
-    task: () => Promise<T>,
-  ): Promise<T> {
+  async withPlayerLock<T>(playerId: string, task: () => Promise<T>): Promise<T> {
     const previous = this.lockTails.get(playerId) ?? Promise.resolve();
 
     let release!: () => void;

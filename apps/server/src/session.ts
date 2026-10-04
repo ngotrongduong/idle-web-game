@@ -11,10 +11,7 @@ export function hashSessionToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export function readCookie(
-  request: FastifyRequest,
-  name: string,
-): string | undefined {
+export function readCookie(request: FastifyRequest, name: string): string | undefined {
   const raw = request.headers.cookie;
   if (!raw) return undefined;
 

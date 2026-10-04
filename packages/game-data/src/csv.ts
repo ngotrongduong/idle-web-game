@@ -72,17 +72,11 @@ export function parseCsv(input: string): Record<string, string>[] {
       );
     }
 
-    return Object.fromEntries(
-      headers.map((header, index) => [header, values[index]!.trim()]),
-    );
+    return Object.fromEntries(headers.map((header, index) => [header, values[index]!.trim()]));
   });
 }
 
-function requireValue(
-  row: Record<string, string>,
-  key: string,
-  context: string,
-): string {
+function requireValue(row: Record<string, string>, key: string, context: string): string {
   const value = row[key];
   if (!value) throw new Error(`${context}: missing ${key}`);
   return value;
@@ -93,11 +87,7 @@ function optionalValue(row: Record<string, string>, key: string): string | null 
   return value ? value : null;
 }
 
-function parseIntField(
-  row: Record<string, string>,
-  key: string,
-  context: string,
-): number {
+function parseIntField(row: Record<string, string>, key: string, context: string): number {
   const raw = requireValue(row, key, context);
   const value = Number(raw);
   if (!Number.isInteger(value)) {
@@ -127,10 +117,7 @@ function parseRecipe(raw: string, context: string) {
   });
 }
 
-export function loadGameDataFromCsv(
-  sources: CsvSources,
-  version = "m0.3",
-): GameData {
+export function loadGameDataFromCsv(sources: CsvSources, version = "m0.3"): GameData {
   const materials = parseCsv(sources.materials).map((row, index) => ({
     id: requireValue(row, "id", `materials row ${index + 2}`),
     nameVi: requireValue(row, "name_vi", `materials row ${index + 2}`),

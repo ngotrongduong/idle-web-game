@@ -1,15 +1,7 @@
 export const HALL_MAX_LEVEL = 10;
 
 export const HALL_UPGRADE_GOLD_COST = [
-  300,
-  780,
-  2_030,
-  5_270,
-  13_710,
-  35_640,
-  92_670,
-  240_950,
-  626_480,
+  300, 780, 2_030, 5_270, 13_710, 35_640, 92_670, 240_950, 626_480,
 ] as const;
 
 export function hallUpgradeGoldCost(currentLevel: number): number {

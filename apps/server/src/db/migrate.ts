@@ -9,10 +9,7 @@ if (!databaseUrl) {
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
-const migrationPath = resolve(
-  here,
-  "../../drizzle/0000_m0_persistence.sql",
-);
+const migrationPath = resolve(here, "../../drizzle/0000_m0_persistence.sql");
 const sql = await readFile(migrationPath, "utf8");
 const pool = new Pool({ connectionString: databaseUrl });
 

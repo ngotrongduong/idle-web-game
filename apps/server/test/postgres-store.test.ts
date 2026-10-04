@@ -66,9 +66,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     };
 
     await store.setCommandOutcome(player.id, "cmd-postgres-1", outcome);
-    expect(
-      await store.getCommandOutcome(player.id, "cmd-postgres-1"),
-    ).toEqual(outcome);
+    expect(await store.getCommandOutcome(player.id, "cmd-postgres-1")).toEqual(outcome);
   });
 
   it("expires and prunes idempotency outcomes after 24 hours", async () => {
@@ -87,9 +85,7 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
         [player.id, cmdId],
       );
 
-      expect(
-        await store.getCommandOutcome(player.id, cmdId),
-      ).toBeUndefined();
+      expect(await store.getCommandOutcome(player.id, cmdId)).toBeUndefined();
 
       const result = await pool.query<{ count: number }>(
         "SELECT count(*)::int AS count FROM command_outcomes WHERE player_id = $1 AND cmd_id = $2",

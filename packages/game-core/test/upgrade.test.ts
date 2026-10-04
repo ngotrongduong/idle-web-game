@@ -15,10 +15,7 @@ describe("upgrade model", () => {
 
   it("never falls below the +5 safe level", () => {
     const failAtSix = new SeededRng(4);
-    const result = resolveUpgradeAttempt(
-      { level: 5, pityFailures: 0 },
-      failAtSix,
-    );
+    const result = resolveUpgradeAttempt({ level: 5, pityFailures: 0 }, failAtSix);
 
     expect(result.success).toBe(false);
     expect(result.targetLevel).toBe(6);
@@ -27,9 +24,7 @@ describe("upgrade model", () => {
   });
 
   it("has a stable seeded +10 journey", () => {
-    expect(
-      simulateUpgradeJourney({ seed: 42, targetLevel: 10 }),
-    ).toMatchObject({
+    expect(simulateUpgradeJourney({ seed: 42, targetLevel: 10 })).toMatchObject({
       completed: true,
       attempts: 73,
       failures: 37,

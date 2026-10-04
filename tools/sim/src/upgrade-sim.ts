@@ -1,7 +1,4 @@
-import {
-  simulateUpgradeJourney,
-  UPGRADE_MAX_LEVEL,
-} from "@idle/game-core";
+import { simulateUpgradeJourney, UPGRADE_MAX_LEVEL } from "@idle/game-core";
 import { mean, percentile } from "./stats";
 
 export type UpgradeSimulationSummary = {

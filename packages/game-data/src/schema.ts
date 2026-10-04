@@ -96,12 +96,30 @@ function assertUniqueIds(label: string, ids: string[]): void {
 export function validateGameData(input: unknown): GameData {
   const data = GameDataSchema.parse(input);
 
-  assertUniqueIds("material", data.materials.map((entry) => entry.id));
-  assertUniqueIds("item", data.items.map((entry) => entry.id));
-  assertUniqueIds("dungeon", data.dungeons.map((entry) => entry.id));
-  assertUniqueIds("class family", data.classFamilies.map((entry) => entry.id));
-  assertUniqueIds("class", data.classes.map((entry) => entry.id));
-  assertUniqueIds("enemy", data.enemies.map((entry) => entry.id));
+  assertUniqueIds(
+    "material",
+    data.materials.map((entry) => entry.id),
+  );
+  assertUniqueIds(
+    "item",
+    data.items.map((entry) => entry.id),
+  );
+  assertUniqueIds(
+    "dungeon",
+    data.dungeons.map((entry) => entry.id),
+  );
+  assertUniqueIds(
+    "class family",
+    data.classFamilies.map((entry) => entry.id),
+  );
+  assertUniqueIds(
+    "class",
+    data.classes.map((entry) => entry.id),
+  );
+  assertUniqueIds(
+    "enemy",
+    data.enemies.map((entry) => entry.id),
+  );
 
   const materialIds = new Set(data.materials.map((entry) => entry.id));
   const dungeonIds = new Set(data.dungeons.map((entry) => entry.id));
@@ -126,7 +144,9 @@ export function validateGameData(input: unknown): GameData {
 
   for (const family of data.classFamilies) {
     if (!familyIds.has(family.advantageFamilyId)) {
-      throw new Error(`Class family ${family.id} references missing advantage family ${family.advantageFamilyId}`);
+      throw new Error(
+        `Class family ${family.id} references missing advantage family ${family.advantageFamilyId}`,
+      );
     }
     if (family.advantageFamilyId === family.id) {
       throw new Error(`Class family ${family.id} cannot counter itself`);

@@ -2,13 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import {
-  clampInt,
-  GAME_CORE_VERSION,
-  scaleStat,
-  SeededRng,
-  simulateWave,
-} from "../src/index";
+import { clampInt, GAME_CORE_VERSION, scaleStat, SeededRng, simulateWave } from "../src/index";
 
 describe("game-core foundation", () => {
   it("exports the command-ready milestone version", () => {
@@ -29,11 +23,7 @@ describe("game-core foundation", () => {
   it("has stable seeded RNG output", () => {
     const rng = new SeededRng(1);
     expect(Array.from({ length: 5 }, () => rng.nextUint32())).toEqual([
-      2693262067,
-      11749833,
-      2265367787,
-      4213581821,
-      4159151403,
+      2693262067, 11749833, 2265367787, 4213581821, 4159151403,
     ]);
   });
 
@@ -101,16 +91,18 @@ describe("game-core foundation", () => {
   it("uses an ultimate when MP is full", () => {
     const battle = simulateWave({
       seed: 1,
-      allies: [{
-        id: "caster",
-        hp: 100,
-        attack: 40,
-        defense: 10,
-        speed: 20,
-        critBps: 0,
-        ultimatePowerBps: 20_000,
-        startingMp: 100,
-      }],
+      allies: [
+        {
+          id: "caster",
+          hp: 100,
+          attack: 40,
+          defense: 10,
+          speed: 20,
+          critBps: 0,
+          ultimatePowerBps: 20_000,
+          startingMp: 100,
+        },
+      ],
       enemies: [{ id: "dummy", hp: 500, attack: 1, defense: 0, speed: 1, critBps: 0 }],
       rules: {
         maxTurns: 1,
@@ -177,15 +169,17 @@ describe("game-core foundation", () => {
   it("supports deterministic role-aware targeting", () => {
     const battle = simulateWave({
       seed: 99,
-      allies: [{
-        id: "hunter",
-        hp: 100,
-        attack: 30,
-        defense: 10,
-        speed: 20,
-        critBps: 0,
-        targeting: "lowest_hp",
-      }],
+      allies: [
+        {
+          id: "hunter",
+          hp: 100,
+          attack: 30,
+          defense: 10,
+          speed: 20,
+          critBps: 0,
+          targeting: "lowest_hp",
+        },
+      ],
       enemies: [
         { id: "healthy", hp: 100, attack: 1, defense: 0, speed: 1, critBps: 0 },
         { id: "wounded", hp: 20, attack: 1, defense: 0, speed: 1, critBps: 0 },
@@ -204,24 +198,28 @@ describe("game-core foundation", () => {
   it("applies family advantage without ambient randomness", () => {
     const baseInput = {
       seed: 7,
-      allies: [{
-        id: "a",
-        hp: 100,
-        attack: 50,
-        defense: 10,
-        speed: 20,
-        critBps: 0,
-        familyId: "alpha",
-      }],
-      enemies: [{
-        id: "b",
-        hp: 500,
-        attack: 1,
-        defense: 0,
-        speed: 1,
-        critBps: 0,
-        familyId: "beta",
-      }],
+      allies: [
+        {
+          id: "a",
+          hp: 100,
+          attack: 50,
+          defense: 10,
+          speed: 20,
+          critBps: 0,
+          familyId: "alpha",
+        },
+      ],
+      enemies: [
+        {
+          id: "b",
+          hp: 500,
+          attack: 1,
+          defense: 0,
+          speed: 1,
+          critBps: 0,
+          familyId: "beta",
+        },
+      ],
       rules: {
         maxTurns: 1,
         varianceMinBps: 10_000,
@@ -245,12 +243,8 @@ describe("game-core foundation", () => {
   it("replays identically for the same seed", () => {
     const input = {
       seed: 77,
-      allies: [
-        { id: "a", hp: 100, attack: 30, defense: 10, speed: 10 },
-      ],
-      enemies: [
-        { id: "b", hp: 100, attack: 30, defense: 10, speed: 9 },
-      ],
+      allies: [{ id: "a", hp: 100, attack: 30, defense: 10, speed: 10 }],
+      enemies: [{ id: "b", hp: 100, attack: 30, defense: 10, speed: 9 }],
     };
 
     expect(simulateWave(input)).toEqual(simulateWave(input));

@@ -15,9 +15,7 @@ export const FoundationPlayerStateSchema = z.object({
   hallLevel: z.number().int().min(1).max(10),
 });
 
-export type FoundationPlayerState = z.infer<
-  typeof FoundationPlayerStateSchema
->;
+export type FoundationPlayerState = z.infer<typeof FoundationPlayerStateSchema>;
 
 export const GuestAuthResponseSchema = z.object({
   ok: z.literal(true),

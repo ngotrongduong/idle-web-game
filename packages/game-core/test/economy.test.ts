@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  HALL_MAX_LEVEL,
-  hallUpgradeGoldCost,
-} from "../src/index";
+import { HALL_MAX_LEVEL, hallUpgradeGoldCost } from "../src/index";
 
 describe("foundation economy", () => {
   it("uses the documented hall upgrade costs", () => {
@@ -12,8 +9,6 @@ describe("foundation economy", () => {
   });
 
   it("rejects upgrades beyond the max hall level", () => {
-    expect(() => hallUpgradeGoldCost(HALL_MAX_LEVEL)).toThrow(
-      "maximum level",
-    );
+    expect(() => hallUpgradeGoldCost(HALL_MAX_LEVEL)).toThrow("maximum level");
   });
 });

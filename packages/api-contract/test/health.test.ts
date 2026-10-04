@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  CommandEnvelopeSchema,
-  HealthResponseSchema,
-} from "../src/index";
+import { CommandEnvelopeSchema, HealthResponseSchema } from "../src/index";
 
 describe("API contracts", () => {
   it("rejects malformed health payloads", () => {

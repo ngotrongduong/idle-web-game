@@ -8,10 +8,7 @@ import {
   type ApiError,
   type FoundationPlayerState,
 } from "@idle/api-contract";
-import {
-  HALL_MAX_LEVEL,
-  hallUpgradeGoldCost,
-} from "@idle/game-core";
+import { HALL_MAX_LEVEL, hallUpgradeGoldCost } from "@idle/game-core";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import {
   createSessionToken,
@@ -21,16 +18,9 @@ import {
   sessionCookieHeader,
 } from "./session.js";
 import { createConfiguredGameStore } from "./store-factory.js";
-import {
-  type GameStore,
-  type StoredCommandOutcome,
-} from "./store.js";
+import { type GameStore, type StoredCommandOutcome } from "./store.js";
 
-function apiError(
-  code: ApiError["code"],
-  message: string,
-  currentVersion?: number,
-): ApiError {
+function apiError(code: ApiError["code"], message: string, currentVersion?: number): ApiError {
   return ApiErrorSchema.parse({
     ok: false,
     code,
@@ -82,16 +72,12 @@ export function buildServer(options?: { store?: GameStore }) {
   app.get("/api/v1/state", async (request, reply) => {
     const playerId = await authenticate(request, store);
     if (!playerId) {
-      return reply
-        .code(401)
-        .send(apiError("UNAUTHORIZED", "A valid session is required"));
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
     }
 
     const state = await store.getPlayer(playerId);
     if (!state) {
-      return reply
-        .code(404)
-        .send(apiError("NOT_FOUND", "Player state was not found"));
+      return reply.code(404).send(apiError("NOT_FOUND", "Player state was not found"));
     }
 
     return FoundationPlayerStateSchema.parse(state);
@@ -100,16 +86,12 @@ export function buildServer(options?: { store?: GameStore }) {
   app.post("/api/v1/cmd", async (request, reply) => {
     const playerId = await authenticate(request, store);
     if (!playerId) {
-      return reply
-        .code(401)
-        .send(apiError("UNAUTHORIZED", "A valid session is required"));
+      return reply.code(401).send(apiError("UNAUTHORIZED", "A valid session is required"));
     }
 
     const parsed = CommandEnvelopeSchema.safeParse(request.body);
     if (!parsed.success) {
-      return reply
-        .code(400)
-        .send(apiError("INVALID_COMMAND", "Command payload is invalid"));
+      return reply.code(400).send(apiError("INVALID_COMMAND", "Command payload is invalid"));
     }
 
     const envelope = parsed.data;
@@ -130,11 +112,7 @@ export function buildServer(options?: { store?: GameStore }) {
       if (state.version !== envelope.expectVersion) {
         const conflict: StoredCommandOutcome = {
           statusCode: 409,
-          body: apiError(
-            "VERSION_CONFLICT",
-            "Player state version does not match",
-            state.version,
-          ),
+          body: apiError("VERSION_CONFLICT", "Player state version does not match", state.version),
         };
         await store.setCommandOutcome(playerId, envelope.cmdId, conflict);
         return conflict;
@@ -154,16 +132,9 @@ export function buildServer(options?: { store?: GameStore }) {
         if (state.gold < goldCost) {
           const insufficient: StoredCommandOutcome = {
             statusCode: 409,
-            body: apiError(
-              "INSUFFICIENT_GOLD",
-              "Not enough gold to upgrade the hall",
-            ),
+            body: apiError("INSUFFICIENT_GOLD", "Not enough gold to upgrade the hall"),
           };
-          await store.setCommandOutcome(
-            playerId,
-            envelope.cmdId,
-            insufficient,
-          );
+          await store.setCommandOutcome(playerId, envelope.cmdId, insufficient);
           return insufficient;
         }
 

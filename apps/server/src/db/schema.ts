@@ -15,12 +15,8 @@ export const players = pgTable("players", {
   version: integer("version").notNull().default(0),
   gold: integer("gold").notNull().default(1_000),
   hallLevel: integer("hall_level").notNull().default(1),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const sessions = pgTable(
@@ -30,9 +26,7 @@ export const sessions = pgTable(
     playerId: uuid("player_id")
       .notNull()
       .references(() => players.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   },
   (table) => [index("sessions_player_id_idx").on(table.playerId)],
@@ -47,9 +41,7 @@ export const commandOutcomes = pgTable(
     cmdId: text("cmd_id").notNull(),
     statusCode: integer("status_code").notNull(),
     body: jsonb("body").$type<unknown>().notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     primaryKey({ columns: [table.playerId, table.cmdId] }),

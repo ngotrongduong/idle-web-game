@@ -10,9 +10,6 @@ export function percentile(values: number[], quantile: number): number {
   }
 
   const sorted = [...values].sort((left, right) => left - right);
-  const index = Math.max(
-    0,
-    Math.min(sorted.length - 1, Math.ceil(quantile * sorted.length) - 1),
-  );
+  const index = Math.max(0, Math.min(sorted.length - 1, Math.ceil(quantile * sorted.length) - 1));
   return sorted[index]!;
 }

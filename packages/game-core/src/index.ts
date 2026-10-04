@@ -11,11 +11,7 @@ export {
   type Combatant,
   type TargetingMode,
 } from "./battle.js";
-export {
-  HALL_MAX_LEVEL,
-  HALL_UPGRADE_GOLD_COST,
-  hallUpgradeGoldCost,
-} from "./economy.js";
+export { HALL_MAX_LEVEL, HALL_UPGRADE_GOLD_COST, hallUpgradeGoldCost } from "./economy.js";
 export {
   getUpgradeSuccessBps,
   resolveUpgradeAttempt,

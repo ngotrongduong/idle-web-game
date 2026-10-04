@@ -6,15 +6,14 @@ import { loadGameDataFromCsv } from "./csv";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 
-const [materials, items, dungeons, classFamilies, classes, enemies] =
-  await Promise.all([
-    readFile(resolve(root, "data/materials.csv"), "utf8"),
-    readFile(resolve(root, "data/items.csv"), "utf8"),
-    readFile(resolve(root, "data/dungeons.csv"), "utf8"),
-    readFile(resolve(root, "data/class-families.csv"), "utf8"),
-    readFile(resolve(root, "data/classes.csv"), "utf8"),
-    readFile(resolve(root, "data/enemies.csv"), "utf8"),
-  ]);
+const [materials, items, dungeons, classFamilies, classes, enemies] = await Promise.all([
+  readFile(resolve(root, "data/materials.csv"), "utf8"),
+  readFile(resolve(root, "data/items.csv"), "utf8"),
+  readFile(resolve(root, "data/dungeons.csv"), "utf8"),
+  readFile(resolve(root, "data/class-families.csv"), "utf8"),
+  readFile(resolve(root, "data/classes.csv"), "utf8"),
+  readFile(resolve(root, "data/enemies.csv"), "utf8"),
+]);
 
 const gameData = loadGameDataFromCsv(
   { materials, items, dungeons, classFamilies, classes, enemies },

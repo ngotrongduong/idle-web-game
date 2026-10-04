@@ -1,11 +1,5 @@
-import {
-  foundationGameData,
-  type GameData,
-} from "@idle/game-data";
-import {
-  scaleStat,
-  type Combatant,
-} from "@idle/game-core";
+import { foundationGameData, type GameData } from "@idle/game-data";
+import { scaleStat, type Combatant } from "@idle/game-core";
 
 const STAT_GROWTH_BPS_PER_LEVEL = 400;
 
@@ -47,18 +41,10 @@ export function buildProgressionTeam(
     return {
       id: heroClass.id,
       hp: scaleStat(heroClass.baseHp, level, STAT_GROWTH_BPS_PER_LEVEL),
-      attack: scaleStat(
-        heroClass.baseAttack,
-        level,
-        STAT_GROWTH_BPS_PER_LEVEL,
-      ),
+      attack: scaleStat(heroClass.baseAttack, level, STAT_GROWTH_BPS_PER_LEVEL),
       defense: Math.max(
         0,
-        scaleStat(
-          Math.max(1, heroClass.baseDefense),
-          level,
-          STAT_GROWTH_BPS_PER_LEVEL,
-        ),
+        scaleStat(Math.max(1, heroClass.baseDefense), level, STAT_GROWTH_BPS_PER_LEVEL),
       ),
       speed: heroClass.baseSpeed,
       critBps: family.archetype === "ranged" ? 1_500 : 1_000,
@@ -89,14 +75,10 @@ export function buildDungeonWave(
   const dungeon = data.dungeons.find((entry) => entry.id === dungeonId);
   if (!dungeon) throw new Error(`Unknown dungeon: ${dungeonId}`);
   if (!Number.isInteger(wave) || wave < 1 || wave > dungeon.waveCount) {
-    throw new Error(
-      `Wave must be between 1 and ${dungeon.waveCount} for ${dungeonId}`,
-    );
+    throw new Error(`Wave must be between 1 and ${dungeon.waveCount} for ${dungeonId}`);
   }
 
-  const dungeonEnemies = data.enemies.filter(
-    (entry) => entry.dungeonId === dungeonId,
-  );
+  const dungeonEnemies = data.enemies.filter((entry) => entry.dungeonId === dungeonId);
   const normals = dungeonEnemies.filter((entry) => entry.rank === "normal");
   const elite = dungeonEnemies.find((entry) => entry.rank === "elite");
   const boss = dungeonEnemies.find((entry) => entry.rank === "boss");
@@ -111,10 +93,7 @@ export function buildDungeonWave(
   } else if (wave === dungeon.waveCount - 1) {
     selected = [normals[(wave - 1) % normals.length]!, elite];
   } else {
-    selected = [
-      normals[(wave - 1) % normals.length]!,
-      normals[wave % normals.length]!,
-    ];
+    selected = [normals[(wave - 1) % normals.length]!, normals[wave % normals.length]!];
   }
 
   return {
@@ -129,7 +108,6 @@ export function buildDungeonWave(
   };
 }
 
-export const SAMPLE_ENCOUNTERS: GeneratedEncounter[] =
-  foundationGameData.dungeons.map((dungeon) =>
-    buildDungeonWave(dungeon.id, dungeon.waveCount - 1),
-  );
+export const SAMPLE_ENCOUNTERS: GeneratedEncounter[] = foundationGameData.dungeons.map((dungeon) =>
+  buildDungeonWave(dungeon.id, dungeon.waveCount - 1),
+);

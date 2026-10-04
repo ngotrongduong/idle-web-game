@@ -1,16 +1,7 @@
 import { SeededRng } from "./rng.js";
 
 export const UPGRADE_SUCCESS_BPS = [
-  10_000,
-  9_500,
-  9_000,
-  8_000,
-  7_000,
-  6_000,
-  5_000,
-  4_500,
-  4_000,
-  3_500,
+  10_000, 9_500, 9_000, 8_000, 7_000, 6_000, 5_000, 4_500, 4_000, 3_500,
 ] as const;
 
 export const UPGRADE_PITY_STEP_BPS = 500;
@@ -33,9 +24,7 @@ export type UpgradeAttemptResult = {
 
 function assertLevel(level: number): void {
   if (!Number.isInteger(level) || level < 0 || level > UPGRADE_MAX_LEVEL) {
-    throw new Error(
-      `upgrade level must be an integer from 0 to ${UPGRADE_MAX_LEVEL}`,
-    );
+    throw new Error(`upgrade level must be an integer from 0 to ${UPGRADE_MAX_LEVEL}`);
   }
 }
 
@@ -45,18 +34,9 @@ function assertPityFailures(value: number): void {
   }
 }
 
-export function getUpgradeSuccessBps(
-  targetLevel: number,
-  pityFailures = 0,
-): number {
-  if (
-    !Number.isInteger(targetLevel) ||
-    targetLevel < 1 ||
-    targetLevel > UPGRADE_MAX_LEVEL
-  ) {
-    throw new Error(
-      `targetLevel must be an integer from 1 to ${UPGRADE_MAX_LEVEL}`,
-    );
+export function getUpgradeSuccessBps(targetLevel: number, pityFailures = 0): number {
+  if (!Number.isInteger(targetLevel) || targetLevel < 1 || targetLevel > UPGRADE_MAX_LEVEL) {
+    throw new Error(`targetLevel must be an integer from 1 to ${UPGRADE_MAX_LEVEL}`);
   }
   assertPityFailures(pityFailures);
 
@@ -64,10 +44,7 @@ export function getUpgradeSuccessBps(
   return Math.min(10_000, base + pityFailures * UPGRADE_PITY_STEP_BPS);
 }
 
-export function resolveUpgradeAttempt(
-  state: UpgradeState,
-  rng: SeededRng,
-): UpgradeAttemptResult {
+export function resolveUpgradeAttempt(state: UpgradeState, rng: SeededRng): UpgradeAttemptResult {
   assertLevel(state.level);
   assertPityFailures(state.pityFailures);
 
@@ -77,10 +54,7 @@ export function resolveUpgradeAttempt(
 
   const beforeLevel = state.level;
   const targetLevel = beforeLevel + 1;
-  const successBps = getUpgradeSuccessBps(
-    targetLevel,
-    state.pityFailures,
-  );
+  const successBps = getUpgradeSuccessBps(targetLevel, state.pityFailures);
   const success = rng.nextInt(10_000) < successBps;
 
   if (success) {
@@ -123,14 +97,8 @@ export function simulateUpgradeJourney(input: {
   const targetLevel = input.targetLevel ?? UPGRADE_MAX_LEVEL;
   const maxAttempts = input.maxAttempts ?? 10_000;
 
-  if (
-    !Number.isInteger(targetLevel) ||
-    targetLevel < 1 ||
-    targetLevel > UPGRADE_MAX_LEVEL
-  ) {
-    throw new Error(
-      `targetLevel must be an integer from 1 to ${UPGRADE_MAX_LEVEL}`,
-    );
+  if (!Number.isInteger(targetLevel) || targetLevel < 1 || targetLevel > UPGRADE_MAX_LEVEL) {
+    throw new Error(`targetLevel must be an integer from 1 to ${UPGRADE_MAX_LEVEL}`);
   }
   if (!Number.isInteger(maxAttempts) || maxAttempts <= 0) {
     throw new Error("maxAttempts must be a positive integer");

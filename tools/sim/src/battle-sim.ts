@@ -3,10 +3,7 @@ import { simulateWave } from "@idle/game-core";
 import { SAMPLE_ENCOUNTERS } from "./scenarios";
 
 const FAMILY_ADVANTAGE = Object.fromEntries(
-  foundationGameData.classFamilies.map((family) => [
-    family.id,
-    family.advantageFamilyId,
-  ]),
+  foundationGameData.classFamilies.map((family) => [family.id, family.advantageFamilyId]),
 );
 import { mean, percentile } from "./stats";
 
@@ -36,9 +33,7 @@ export function runBattleSimulation(input: {
 
   const seedBase = input.seedBase ?? 1;
   const encounters = input.encounterId
-    ? SAMPLE_ENCOUNTERS.filter(
-        (encounter) => encounter.id === input.encounterId,
-      )
+    ? SAMPLE_ENCOUNTERS.filter((encounter) => encounter.id === input.encounterId)
     : SAMPLE_ENCOUNTERS;
 
   if (encounters.length === 0) {

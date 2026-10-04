@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  InMemoryGameStore,
-  type GameStore,
-} from "../src/store.js";
+import { InMemoryGameStore, type GameStore } from "../src/store.js";
 
 describe("GameStore contract", () => {
   it("can be used through the async persistence interface", async () => {
@@ -32,11 +29,6 @@ describe("GameStore contract", () => {
       }),
     ]);
 
-    expect(order).toEqual([
-      "first:start",
-      "first:end",
-      "second:start",
-      "second:end",
-    ]);
+    expect(order).toEqual(["first:start", "first:end", "second:start", "second:end"]);
   });
 });

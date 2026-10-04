@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  foundationGameData,
-  loadGameDataFromCsv,
-  parseCsv,
-  validateGameData,
-} from "../src/index";
+import { foundationGameData, loadGameDataFromCsv, parseCsv, validateGameData } from "../src/index";
 
 describe("game-data pipeline", () => {
   it("parses quoted CSV fields", () => {
@@ -35,15 +30,11 @@ describe("game-data pipeline", () => {
   it("defines explicit deterministic ultimate behavior for every class", () => {
     expect(
       foundationGameData.classes.every(
-        (entry) =>
-          entry.ultimatePowerBps > 0 &&
-          ["damage", "heal"].includes(entry.ultimateKind),
+        (entry) => entry.ultimatePowerBps > 0 && ["damage", "heal"].includes(entry.ultimateKind),
       ),
     ).toBe(true);
 
-    const supports = foundationGameData.classes.filter(
-      (entry) => entry.role === "support",
-    );
+    const supports = foundationGameData.classes.filter((entry) => entry.role === "support");
     expect(supports.length).toBeGreaterThan(0);
     expect(supports.every((entry) => entry.ultimateKind === "heal")).toBe(true);
   });
@@ -53,7 +44,9 @@ describe("game-data pipeline", () => {
       const dungeonEnemies = foundationGameData.enemies.filter(
         (entry) => entry.dungeonId === dungeon.id,
       );
-      expect(dungeonEnemies.filter((entry) => entry.rank === "normal").length).toBeGreaterThanOrEqual(2);
+      expect(
+        dungeonEnemies.filter((entry) => entry.rank === "normal").length,
+      ).toBeGreaterThanOrEqual(2);
       expect(dungeonEnemies.filter((entry) => entry.rank === "elite")).toHaveLength(1);
       expect(dungeonEnemies.filter((entry) => entry.rank === "boss")).toHaveLength(1);
     }
@@ -69,9 +62,7 @@ describe("game-data pipeline", () => {
     const invalid = {
       ...foundationGameData,
       classes: foundationGameData.classes.map((entry) =>
-        entry.id === tierTwo.id
-          ? { ...entry, parentClassId: "missing_parent" }
-          : entry,
+        entry.id === tierTwo.id ? { ...entry, parentClassId: "missing_parent" } : entry,
       ),
     };
     expect(() => validateGameData(invalid)).toThrow("references missing parent missing_parent");
@@ -85,9 +76,7 @@ describe("game-data pipeline", () => {
         ...foundationGameData.enemies.slice(1),
       ],
     };
-    expect(() => validateGameData(invalid)).toThrow(
-      "references missing dungeon missing_dungeon",
-    );
+    expect(() => validateGameData(invalid)).toThrow("references missing dungeon missing_dungeon");
   });
 
   it("rejects a missing recipe material reference", () => {
@@ -101,19 +90,15 @@ describe("game-data pipeline", () => {
       ],
     };
 
-    expect(() => validateGameData(invalid)).toThrow(
-      "references missing material missing_material",
-    );
+    expect(() => validateGameData(invalid)).toThrow("references missing material missing_material");
   });
 
   it("rejects broken CSV references before generation", () => {
     expect(() =>
       loadGameDataFromCsv({
         materials: "id,name_vi,name_en\na,A,A",
-        items:
-          "id,name_vi,name_en,slot,attack,defense,recipe\ni,I,I,weapon,1,0,a:1",
-        dungeons:
-          "id,name_vi,name_en,recommended_level,wave_count,loot_material_ids\nd,D,D,1,6,a",
+        items: "id,name_vi,name_en,slot,attack,defense,recipe\ni,I,I,weapon,1,0,a:1",
+        dungeons: "id,name_vi,name_en,recommended_level,wave_count,loot_material_ids\nd,D,D,1,6,a",
         classFamilies:
           "id,name_vi,name_en,archetype,damage_type,advantage_family_id\nf,F,F,frontline,physical,missing",
         classes:

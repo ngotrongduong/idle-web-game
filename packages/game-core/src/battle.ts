@@ -128,14 +128,8 @@ function validateRules(rules: BattleRules): void {
   assertPositiveInt(rules.mpMax, "rules.mpMax");
   assertNonNegativeInt(rules.mpPerAction, "rules.mpPerAction");
   assertNonNegativeInt(rules.mpOnHit, "rules.mpOnHit");
-  assertPositiveInt(
-    rules.advantageMultiplierBps,
-    "rules.advantageMultiplierBps",
-  );
-  assertPositiveInt(
-    rules.disadvantageMultiplierBps,
-    "rules.disadvantageMultiplierBps",
-  );
+  assertPositiveInt(rules.advantageMultiplierBps, "rules.advantageMultiplierBps");
+  assertPositiveInt(rules.disadvantageMultiplierBps, "rules.disadvantageMultiplierBps");
 }
 
 function compareIds(left: RuntimeUnit, right: RuntimeUnit): number {
@@ -156,15 +150,13 @@ function selectTarget(
 ): RuntimeUnit {
   if (targeting === "lowest_hp") {
     return [...targets].sort(
-      (left, right) =>
-        left.currentHp - right.currentHp || compareIds(left, right),
+      (left, right) => left.currentHp - right.currentHp || compareIds(left, right),
     )[0]!;
   }
 
   if (targeting === "highest_attack") {
     return [...targets].sort(
-      (left, right) =>
-        right.attack - left.attack || compareIds(left, right),
+      (left, right) => right.attack - left.attack || compareIds(left, right),
     )[0]!;
   }
 
@@ -172,11 +164,7 @@ function selectTarget(
   return stableTargets[rng.nextInt(stableTargets.length)]!;
 }
 
-function calculateHealing(
-  healer: RuntimeUnit,
-  target: RuntimeUnit,
-  powerBps: number,
-): number {
+function calculateHealing(healer: RuntimeUnit, target: RuntimeUnit, powerBps: number): number {
   const raw = Math.max(1, Math.floor((healer.attack * powerBps) / BPS));
   return Math.min(raw, Math.max(0, target.hp - target.currentHp));
 }
@@ -208,10 +196,7 @@ function calculateDamage(
 ): { damage: number; critical: boolean } {
   const base = Math.max(
     1,
-    Math.floor(
-      (attacker.attack * rules.defenseK) /
-        (rules.defenseK + defender.defense),
-    ),
+    Math.floor((attacker.attack * rules.defenseK) / (rules.defenseK + defender.defense)),
   );
 
   const varianceRange = rules.varianceMaxBps - rules.varianceMinBps + 1;
@@ -220,31 +205,18 @@ function calculateDamage(
   let damage = Math.max(1, Math.floor((base * varianceBps) / BPS));
   damage = Math.max(1, Math.floor((damage * powerBps) / BPS));
 
-  const critical =
-    rng.nextInt(BPS) < (attacker.critBps ?? rules.defaultCritBps);
+  const critical = rng.nextInt(BPS) < (attacker.critBps ?? rules.defaultCritBps);
 
   if (critical) {
-    damage = Math.max(
-      1,
-      Math.floor((damage * rules.critMultiplierBps) / BPS),
-    );
+    damage = Math.max(1, Math.floor((damage * rules.critMultiplierBps) / BPS));
   }
 
-  damage = Math.max(
-    1,
-    Math.floor(
-      (damage * familyMultiplierBps(attacker, defender, rules)) / BPS,
-    ),
-  );
+  damage = Math.max(1, Math.floor((damage * familyMultiplierBps(attacker, defender, rules)) / BPS));
 
   return { damage, critical };
 }
 
-function hashBattle(
-  result: BattleResult["result"],
-  turns: number,
-  events: BattleEvent[],
-): string {
+function hashBattle(result: BattleResult["result"], turns: number, events: BattleEvent[]): string {
   const serializedEvents = events
     .map(
       (event) =>
@@ -255,11 +227,7 @@ function hashBattle(
   return fnv1a32(`${result}|${turns}|${serializedEvents}`);
 }
 
-export function scaleStat(
-  base: number,
-  level: number,
-  growthBpsPerLevel: number,
-): number {
+export function scaleStat(base: number, level: number, growthBpsPerLevel: number): number {
   assertPositiveInt(base, "base");
   assertPositiveInt(level, "level");
   assertNonNegativeInt(growthBpsPerLevel, "growthBpsPerLevel");
@@ -315,11 +283,7 @@ export function simulateWave(input: {
   const events: BattleEvent[] = [];
   let turns = 0;
 
-  while (
-    living(allies).length > 0 &&
-    living(enemies).length > 0 &&
-    turns < rules.maxTurns
-  ) {
+  while (living(allies).length > 0 && living(enemies).length > 0 && turns < rules.maxTurns) {
     const order = [...living(allies), ...living(enemies)].sort(
       (left, right) => right.speed - left.speed || compareIds(left, right),
     );
@@ -332,8 +296,7 @@ export function simulateWave(input: {
       const opponentTargets = living(opponents);
       if (opponentTargets.length === 0) break;
 
-      const canUseUltimate =
-        actor.ultimatePowerBps !== undefined && actor.currentMp >= rules.mpMax;
+      const canUseUltimate = actor.ultimatePowerBps !== undefined && actor.currentMp >= rules.mpMax;
       const action: BattleAction = canUseUltimate ? "ultimate" : "basic";
       const ultimateKind = actor.ultimateKind ?? "damage";
       const powerBps = canUseUltimate ? actor.ultimatePowerBps! : BPS;
@@ -358,17 +321,9 @@ export function simulateWave(input: {
           actor,
           opponentTargets,
           rng,
-          canUseUltimate
-            ? (actor.ultimateTargeting ?? actor.targeting)
-            : actor.targeting,
+          canUseUltimate ? (actor.ultimateTargeting ?? actor.targeting) : actor.targeting,
         );
-        const damageResult = calculateDamage(
-          actor,
-          target,
-          rng,
-          rules,
-          powerBps,
-        );
+        const damageResult = calculateDamage(actor, target, rng, rules, powerBps);
         damage = damageResult.damage;
         critical = damageResult.critical;
         target.currentHp = Math.max(0, target.currentHp - damage);
@@ -381,10 +336,7 @@ export function simulateWave(input: {
       }
 
       if (damage > 0 && target.ultimatePowerBps !== undefined) {
-        target.currentMp = Math.min(
-          rules.mpMax,
-          target.currentMp + rules.mpOnHit,
-        );
+        target.currentMp = Math.min(rules.mpMax, target.currentMp + rules.mpOnHit);
       }
 
       turns += 1;
@@ -408,11 +360,7 @@ export function simulateWave(input: {
   const alliesAlive = living(allies).length > 0;
   const enemiesAlive = living(enemies).length > 0;
   const result: BattleResult["result"] =
-    alliesAlive && !enemiesAlive
-      ? "win"
-      : enemiesAlive && !alliesAlive
-        ? "lose"
-        : "draw";
+    alliesAlive && !enemiesAlive ? "win" : enemiesAlive && !alliesAlive ? "lose" : "draw";
 
   return {
     result,
