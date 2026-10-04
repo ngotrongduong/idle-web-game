@@ -5,7 +5,7 @@ describe("hero stat progression", () => {
   it("matches the documented quadratic level multiplier", () => {
     expect(levelMultiplierBps(1)).toBe(10_000);
     expect(levelMultiplierBps(10)).toBe(24_040);
-    expect(levelMultiplierBps(20)).toBe(47_640);
+    expect(levelMultiplierBps(20)).toBe(47_240);
   });
 
   it("applies rarity and retained potential with integer math", () => {
