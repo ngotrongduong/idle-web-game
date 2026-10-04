@@ -1,7 +1,11 @@
-import { getUpgradeSuccessBps } from "@idle/game-core";
+import { getUpgradeSuccessBps, teamLimitForHall } from "@idle/game-core";
 import {
+  buildingUpgrade,
+  buildingsConfig,
   equipmentConfig,
+  enhancementDustCost,
   enhancementGoldCost,
+  forgeMaxEnhanceLevel,
   foundationGameData,
   idleConfig,
   itemSellGold,
@@ -18,6 +22,12 @@ const TARGET_ONLINE_GOLD_PER_HOUR: Record<string, number> = {
 };
 
 const GOLD_DEVIATION_WARNING_RATIO = 0.2;
+
+/** Gold a new guest starts with (`createGuest` in the server stores). */
+const STARTING_GOLD = 1_000;
+/** docs/03 §4 pacing targets, in minutes after the first dungeon run starts. */
+const TEAM_TWO_TARGET_MINUTES = 6;
+const PACING_WARNING_RATIO = 0.2;
 
 export type EconomyDungeonSummary = {
   dungeonId: string;
@@ -53,13 +63,73 @@ export type EconomySummary = {
     targetLevel: number;
     expectedAttempts: number;
     expectedGold: number;
+    /** Forge Dust for the same journey; common items dismantle into 1 dust each. */
+    expectedDust: number;
     d1OnlineGoldMinutes: number;
+    /** Gold, materials aside, and build time to raise the Forge until it allows targetLevel. */
+    forgeLevelRequired: number;
+  };
+  buildings: {
+    hall: BuildingPathSummary;
+    forge: BuildingPathSummary;
+    /** Earliest second parallel team when the starting dungeon's passive gold goes to the Hall. */
+    teamTwo: {
+      hallLevel: number;
+      minutes: number;
+      targetMinutes: number;
+    };
   };
   promotion: {
     rules: typeof promotionConfig.rules;
   };
   warnings: string[];
 };
+
+export type BuildingPathSummary = {
+  /** Totals for level 1 → max. */
+  totalGold: number;
+  totalBuildHours: number;
+  /** Longest single build, which is the wait a speed-up item is weighed against. */
+  longestBuildMinutes: number;
+};
+
+function buildingPath(building: "hall" | "forge"): BuildingPathSummary {
+  let totalGold = 0;
+  let totalSeconds = 0;
+  let longestSeconds = 0;
+  for (let level = 1; level < buildingsConfig.maxLevel; level += 1) {
+    const upgrade = buildingUpgrade(building, level)!;
+    totalGold += upgrade.goldCost;
+    totalSeconds += upgrade.buildSeconds;
+    longestSeconds = Math.max(longestSeconds, upgrade.buildSeconds);
+  }
+  return {
+    totalGold,
+    totalBuildHours: round(totalSeconds / 3_600),
+    longestBuildMinutes: round(longestSeconds / 60),
+  };
+}
+
+/**
+ * Seconds until the Hall reaches `targetLevel` when every upgrade starts as soon as the builder
+ * is free and the gold is there. Gold is the starting purse plus a steady income.
+ */
+function secondsToHallLevel(targetLevel: number, goldPerSecond: number): number {
+  let gold = STARTING_GOLD;
+  let seconds = 0;
+  for (let level = 1; level < targetLevel; level += 1) {
+    const upgrade = buildingUpgrade("hall", level)!;
+    if (gold < upgrade.goldCost) {
+      if (goldPerSecond <= 0) return Number.POSITIVE_INFINITY;
+      const wait = (upgrade.goldCost - gold) / goldPerSecond;
+      seconds += wait;
+      gold += wait * goldPerSecond;
+    }
+    gold += upgrade.buildSeconds * goldPerSecond - upgrade.goldCost;
+    seconds += upgrade.buildSeconds;
+  }
+  return seconds;
+}
 
 function round(value: number, digits = 2): number {
   const factor = 10 ** digits;
@@ -222,14 +292,30 @@ export function runEconomySimulation(): EconomySummary {
 
   let expectedEnhanceAttempts = 0;
   let expectedEnhanceGold = 0;
+  let expectedEnhanceDust = 0;
   for (let level = 0; level < equipmentConfig.maxEnhanceLevel; level += 1) {
     const attempts = expectedAttemptsForLevel(level);
     expectedEnhanceAttempts += attempts;
     expectedEnhanceGold += attempts * enhancementGoldCost(level);
+    expectedEnhanceDust += attempts * enhancementDustCost(level);
   }
+  let forgeLevelRequired = 1;
+  while (forgeMaxEnhanceLevel(forgeLevelRequired) < equipmentConfig.maxEnhanceLevel) {
+    forgeLevelRequired += 1;
+  }
+
+  let teamTwoHallLevel = 1;
+  while (teamLimitForHall(teamTwoHallLevel) < 2) teamTwoHallLevel += 1;
+  const teamTwoMinutes =
+    secondsToHallLevel(teamTwoHallLevel, (dungeons[0]?.passiveGoldPerHour ?? 0) / 3_600) / 60;
 
   const d1Gold = dungeons[0]?.onlineGoldPerHour ?? 0;
   const warnings: string[] = [];
+  if (teamTwoMinutes > TEAM_TWO_TARGET_MINUTES * (1 + PACING_WARNING_RATIO)) {
+    warnings.push(
+      `team_two_slower_than_target: earliest=${round(teamTwoMinutes)}m target=${TEAM_TWO_TARGET_MINUTES}m`,
+    );
+  }
   for (const dungeon of dungeons) {
     if (
       dungeon.targetDeviationRatio !== null &&
@@ -264,7 +350,18 @@ export function runEconomySimulation(): EconomySummary {
       targetLevel: equipmentConfig.maxEnhanceLevel,
       expectedAttempts: round(expectedEnhanceAttempts, 3),
       expectedGold: round(expectedEnhanceGold, 2),
+      expectedDust: round(expectedEnhanceDust, 2),
       d1OnlineGoldMinutes: d1Gold > 0 ? round((expectedEnhanceGold / d1Gold) * 60, 2) : 0,
+      forgeLevelRequired,
+    },
+    buildings: {
+      hall: buildingPath("hall"),
+      forge: buildingPath("forge"),
+      teamTwo: {
+        hallLevel: teamTwoHallLevel,
+        minutes: round(teamTwoMinutes),
+        targetMinutes: TEAM_TWO_TARGET_MINUTES,
+      },
     },
     promotion: {
       rules: promotionConfig.rules,

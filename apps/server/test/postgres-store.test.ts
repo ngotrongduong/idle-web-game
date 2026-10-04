@@ -40,6 +40,75 @@ describe.skipIf(!databaseUrl)("PostgresGameStore", () => {
     });
   });
 
+  it("persists the Forge level and the running construction", async () => {
+    const store = createStore();
+    const player = await store.createGuest(sessionHash());
+    expect(player).toMatchObject({ forgeLevel: 1, construction: null });
+
+    const construction = {
+      building: "forge" as const,
+      targetLevel: 3,
+      startedAt: "2026-10-05T00:00:00.000Z",
+      completesAt: "2026-10-05T00:01:31.000Z",
+    };
+    await store.setPlayer({ ...player, version: 1, forgeLevel: 2, construction });
+    expect(await store.getPlayer(player.id)).toEqual({
+      ...player,
+      version: 1,
+      forgeLevel: 2,
+      construction,
+    });
+
+    await store.setPlayer({ ...player, version: 2, forgeLevel: 3, construction: null });
+    expect(await store.getPlayer(player.id)).toMatchObject({ forgeLevel: 3, construction: null });
+  });
+
+  it("backfills the Forge level from already enhanced items exactly once", async () => {
+    const store = createStore();
+    const fresh = await store.createGuest(sessionHash());
+    const enhanced = await store.createGuest(sessionHash());
+    const veteran = await store.createGuest(sessionHash());
+    const item = {
+      itemId: "bamboo_training_sword",
+      slot: "weapon" as const,
+      qualityBps: 10_000,
+      enhancePityFailures: 0,
+      locked: false,
+      equippedHeroId: null,
+    };
+    await store.createItem(enhanced.id, { ...item, enhanceLevel: 1 });
+    await store.createItem(veteran.id, { ...item, enhanceLevel: 2 });
+    await store.createItem(veteran.id, { ...item, enhanceLevel: 5 });
+
+    // The statement of migration 0014, run for these players only (the marker row already
+    // exists in a migrated database, which is what keeps a redeploy from running it again).
+    const pool = new Pool({ connectionString: databaseUrl! });
+    try {
+      const marker = await pool.query(
+        "SELECT 1 FROM data_migrations WHERE id = '0014_backfill_forge_level'",
+      );
+      expect(marker.rowCount).toBe(1);
+      await pool.query(
+        `UPDATE players p
+         SET forge_level = GREATEST(p.forge_level, GREATEST(2, m.max_level))
+         FROM (
+           SELECT player_id, max(enhance_level) AS max_level
+           FROM player_items
+           GROUP BY player_id
+           HAVING max(enhance_level) > 0
+         ) m
+         WHERE p.id = m.player_id AND p.id = ANY($1::uuid[])`,
+        [[fresh.id, enhanced.id, veteran.id]],
+      );
+    } finally {
+      await pool.end();
+    }
+
+    expect((await store.getPlayer(fresh.id))!.forgeLevel).toBe(1);
+    expect((await store.getPlayer(enhanced.id))!.forgeLevel).toBe(2);
+    expect((await store.getPlayer(veteran.id))!.forgeLevel).toBe(5);
+  });
+
   it("rejects expired sessions", async () => {
     const store = createStore();
     const hash = sessionHash();

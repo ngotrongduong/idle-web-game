@@ -80,6 +80,24 @@ describe("sim tools", () => {
     expect(summary.warnings).toEqual(["craft_gold_sink_disabled: craftGoldCost=0"]);
   });
 
+  it("keeps building and Forge Dust pacing inside the docs/03 targets", () => {
+    const { buildings, enhancement } = runEconomySimulation();
+
+    // docs/03 §6: 300 × 2.6^(L-1) gold summed over nine Hall upgrades, Forge at 0.8×.
+    expect(buildings.hall.totalGold).toBe(1_017_830);
+    expect(buildings.forge.totalGold).toBe(814_264);
+    expect(buildings.hall.longestBuildMinutes).toBeCloseTo(169.83, 1);
+
+    // docs/03 §4: a second team by minute 6, with the Hall as the first gold priority.
+    expect(buildings.teamTwo.hallLevel).toBe(3);
+    expect(buildings.teamTwo.minutes).toBeLessThanOrEqual(buildings.teamTwo.targetMinutes);
+
+    // +5 takes ≈5.8 attempts; dust costs 1..5 put the journey at roughly 20 dismantled items.
+    expect(enhancement.forgeLevelRequired).toBe(5);
+    expect(enhancement.expectedDust).toBeGreaterThan(15);
+    expect(enhancement.expectedDust).toBeLessThan(25);
+  });
+
   it("summarizes upgrade percentiles", () => {
     const summary = runUpgradeSimulation({
       runs: 100,
