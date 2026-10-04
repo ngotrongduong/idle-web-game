@@ -7,6 +7,7 @@
 M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 
 ## Verified status
+- M1.5B persisted quality-threshold auto-sell passed full GitHub Actions CI #291 on commit `7b901ffb9a8534bfe24970d1348645029990fa61`; browser E2E is now being added.
 - Forge equipment browser E2E passed GitHub Actions CI #282 on commit `ccf6a5a15bf4e9339576d69cbd1ffcb56516ebc6`: baseline dungeon → craft → guaranteed +1 → equip → stronger fresh dungeon snapshot → replay match.
 - M1.6 crafting/quality/enhancement core passed GitHub Actions CI #280 on commit `7d66a812a5f45adba113bd1b4cefc1d474a754ad`.
 - M1.5A inventory/equipment + Forge UI passed GitHub Actions CI #269 on commit `a4da8e92437ec54cbaea85bd321a7cdc5ea0fbdb`.
@@ -92,6 +93,13 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
   - only enemies from won waves drop loot (same rule as gold/EXP); accrual adds to `dungeon_runs.pending_materials` (migration `0007`), claim credits `player_materials` and reports `materials` in `dungeon_rewards_claimed`
   - public GET `/api/v1/catalog` serves localized class/dungeon/material names; the web client no longer shows legacy ids
   - web shows pending loot, a last-claim notice and a materials inventory card
+- M1.5B auto-sell:
+  - persisted per-player setting with default OFF
+  - quality threshold uses configured craft quality multipliers
+  - newly crafted equipment at or below the threshold is sold atomically inside the command transaction
+  - auto-sell uses the exact same quality-scaled sell formula as manual sell
+  - locked/equipped existing items remain protected because auto-sell only acts on newly acquired items
+  - Forge UI exposes enable/disable and quality threshold controls
 - M1.6 crafting/enhancement (implementation in progress):
   - recipes are read directly from validated `items.csv` and crafting consumes player materials inside the player transaction
   - provisional closed-beta quality tiers live in `game-data/equipment.ts`: Common 70% ×1.00, Fine 25% ×1.10, Rare 4.5% ×1.25, Masterwork 0.5% ×1.50
@@ -107,9 +115,8 @@ M1 — Core loop (M1.1–M1.5A verified; M1.6 crafting/enhancement in progress).
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. Verify M1.5B persisted quality-threshold auto-sell through full CI/PostgreSQL and Forge UI.
-2. Add a browser E2E proving enabled auto-sell removes a matching new craft and credits the exact normal sell value.
-4. Economy pass with `tools/sim`: idle gold, sell values, material/seal rates, crafting costs and enhancement costs must be tuned together.
+1. Verify the new auto-sell browser E2E: settings persist, matching craft disappears, exact manual-sell-equivalent gold is credited.
+2. Economy pass with `tools/sim`: idle gold, sell values, material/seal rates, crafting costs and enhancement costs must be tuned together.
 5. Add online-presence semantics if M1 must distinguish 100% online farming from the current passive/offline 75% rate.
 6. Actual staging VPS/domain deployment remains pending even though deploy infrastructure is scaffolded.
 

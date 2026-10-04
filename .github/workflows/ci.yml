@@ -105,6 +105,7 @@ jobs:
           pnpm --filter @idle/inspect e2e:dungeon
           pnpm --filter @idle/inspect e2e:promotion
           pnpm --filter @idle/inspect e2e:equipment
+          pnpm --filter @idle/inspect e2e:auto-sell
 
       - name: Build
         run: pnpm build
