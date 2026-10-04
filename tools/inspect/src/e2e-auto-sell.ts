@@ -115,10 +115,19 @@ const browser = await launchBrowser();
 try {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "domcontentloaded" });
+  // Let the app finish its own guest bootstrap first; creating a second guest in parallel can
+  // leave the cookie on a different player than the one whose materials get seeded.
+  await page
+    .getByRole("button", { name: "Làm mới", exact: true })
+    .waitFor({ state: "visible", timeout: 15_000 });
 
   const state = await ensureGuest(page);
   await seedCraftMaterials(state.id);
   await page.reload({ waitUntil: "domcontentloaded" });
+  const reloaded = await ensureGuest(page);
+  if (reloaded.id !== state.id) {
+    throw new Error(`Session switched players after reload: ${state.id} -> ${reloaded.id}`);
+  }
 
   await page.getByRole("button", { name: "Rèn", exact: true }).click();
 
