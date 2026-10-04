@@ -1,4 +1,5 @@
 import { runBattleSimulation } from "./battle-sim";
+import { runEconomySimulation } from "./economy-sim";
 import { runGachaSimulation } from "./gacha-sim";
 import { runUpgradeSimulation } from "./upgrade-sim";
 
@@ -37,6 +38,8 @@ if (command === "battle") {
     seedBase: readNumberArg("seed", 1),
   });
   console.log(JSON.stringify(summary, null, 2));
+} else if (command === "economy") {
+  console.log(JSON.stringify(runEconomySimulation(), null, 2));
 } else if (command === "upgrade") {
   const summary = runUpgradeSimulation({
     runs: readNumberArg("runs", 20_000),
@@ -51,6 +54,7 @@ if (command === "battle") {
       "  pnpm sim:battle -- --runs 10000 [--encounter dungeon_1] [--seed 1]",
       "  pnpm sim:upgrade -- --runs 20000 [--target 10] [--seed 1]",
       "  pnpm sim:gacha -- --runs 20000 [--seed 1]",
+      "  pnpm --filter @idle/sim sim:economy",
     ].join("\n"),
   );
 }

@@ -60,6 +60,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Economy balance report
+        run: pnpm --filter @idle/sim sim:economy
+
       - name: Chromium golden battle
         run: |
           pnpm --filter @idle/web exec vite ../../packages/game-core --host 127.0.0.1 --port 5174 --strictPort > /tmp/golden-vite.log 2>&1 &

@@ -9,7 +9,8 @@
     "sim:upgrade": "tsx src/index.ts upgrade",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
-    "sim:gacha": "tsx src/index.ts gacha"
+    "sim:gacha": "tsx src/index.ts gacha",
+    "sim:economy": "tsx src/index.ts economy"
   },
   "dependencies": {
     "@idle/game-core": "workspace:*",
