@@ -11,9 +11,10 @@
   changing anything.
 
 ## Current milestone
-M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle rewards, dungeon progression and buildings landed; next M1.8 vi/en language switch).
+M1 — Core loop: M1.1–M1.8 are implemented. What is left before M1 can be closed is the milestone check itself (docs/07: a tester plays 30 minutes without getting stuck) and the balance pass that playtest feeds.
 
 ## Verified status
+- M1.8 language switch: the CI steps pass locally on Windows with PostgreSQL 18 — migrations twice, lint, Prettier, typecheck, unit/integration tests, `sim:economy`, Chromium goldens unchanged, six browser E2Es (the five earlier flows untouched, plus `e2e:language`) and the build. Both languages were also looked at by hand at 375 px. No `plan-reviewer` pass was run on this client-only change.
 - M1.7 buildings: GitHub Actions CI #335 passed on `131a175` (branch `claude/m1-7-buildings`), and the same steps pass locally on Windows with PostgreSQL 18 — migrations twice, lint, Prettier, typecheck, unit/integration tests (the building commands run on both the in-memory and the PostgreSQL store), `sim:economy`, Chromium goldens unchanged (v1 `c080875a`, v2 `fce81aeb`), the five browser E2Es (dungeon, promotion, equipment, auto-sell and the new buildings flow) and the build. `scripts/ci-local.sh` itself was not run (bash/Linux script).
 - M1.7 review (`plan-reviewer`, 2026-10-05): no duplication, settlement, store-parity or migration finding; follow-ups applied were test coverage (real migration block run twice, racing commands, both stores), whole-cycle income in the second-team estimate and a stale HANDOFF line. Left as is: `upgrade_building` carries no expected level, so a scripted client retrying with a new `cmdId` across the end of a build buys the next level.
 - Review follow-up (commits `50696c0`…`0fa1927`) is green on GitHub Actions and locally: lint, Prettier, typecheck, 165 unit/integration tests with PostgreSQL, migrations run twice, Chromium goldens v1 `c080875a` + v2 `fce81aeb`, and the dungeon, promotion, equipment and auto-sell E2Es.
@@ -135,6 +136,13 @@ M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle
   - `buildServer({ now })` takes a clock, so tests move build timers without waiting.
   - Web: buildings card with countdown, hourglass speed-up, Forge odds and enhancement lock, dismantle button; `e2e:buildings` drives the whole flow in the browser.
   - `sim:economy` reports `buildings` (total gold and build hours, earliest second team) and `enhancement.expectedDust`, with a warning when the second team is slower than the docs/03 §4 target.
+- M1.8 language switch (web and `packages/i18n` only; server and contract unchanged):
+  - `LocaleProvider` / `useLocale()` (`apps/web/src/locale.tsx`) give every component `t`, `format` (typed `{placeholders}`; a missing parameter throws), `plural`, `number`, `time` and `name` (catalog `nameVi` / `nameEn`). No component names a locale; `packages/i18n/src/messages.ts` holds both dictionaries.
+  - The header switch ("Tiếng Việt" / "English") re-renders in place: no reload, no request, and tab, unsaved team draft, countdown and notices survive. `html[lang]` follows it.
+  - Every `ApiErrorCode` has an `error.<CODE>` message in both languages (a web test fails when one is missing in either direction); errors are held as keys, so a notice already on screen changes language too.
+  - Hardcoded text is gone from the JSX (the bare "gold", "Lv", ATK/DEF, run and wave status values, an item id in an `aria-label`); missing catalog names show "Unknown" / "Không rõ" instead of a humanized id.
+  - Found on the way: the Dungeon tab overflowed by 34 px at 360 px wide (fixed with `minmax(0, 1fr)` grid columns), and `text-transform: capitalize` on name blocks was removed because it title-cased English sentences.
+  - `e2e:language` checks all of this in an en-US browser at 360 px: no reload and no API call on switch, no Vietnamese letters or raw ids on any tab in English, no leftover English in Vietnamese, a real server error in both languages, persistence across a reload, and the fallback for an unknown stored value.
 - Agent tooling: `AGENTS.md` (rules shared by Claude Code, ChatGPT/Codex and humans), `CLAUDE.md` (Claude Code agent team), seven specialists in `.claude/agents/` (game-core, server, web, balance, QA, plan review, docs), skills in `.claude/skills/` (`ship-feature`, `local-ci`, `new-migration`, `balance-pass`, `steward`), a Prettier PostToolUse hook, and `scripts/ci-local.sh` (`pnpm ci:local`), which runs the whole GitHub Actions pipeline locally in about a minute (`--quick` for lint/format/typecheck/test).
 - Content re-theme to western high fantasy: display names in `dungeons/enemies/materials/items/classes.csv` changed (Thornwood Forest, Mistmoor Marsh, Sunken Abbey, Dragonfire Crags, goblins, lizardfolk, liches, wyrms…). All ids and stats are unchanged.
 
@@ -147,6 +155,7 @@ M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle
 - Building levels are settled lazily from the server clock instead of by a job: a finished construction is applied (without a version bump) whenever the player state is read for a command or returned by the API. Costs are never refunded and a construction cannot be cancelled.
 - Enhancement is gated by the Forge level and costs Forge Dust on every attempt, win or lose. Dismantling does not refund enhancement levels. Migration `0014` raised the Forge of players who had already enhanced items so they keep that level.
 - Builder's Hourglass and Forge Dust numbers (drop rate, seconds per item, dust yields and costs, Forge material costs and quality odds) are provisional closed-beta values.
+- Language: everyone starts in Vietnamese (GDD §8: `vi` is the default) and the browser language is never read — Vietnam is the launch market and many players there use English browsers. The choice is stored per device in `localStorage` (`guildhall.locale`), not on the account. Numbers are grouped from five digits (`10.000` / `10,000`); four-digit numbers stay plain (`1000`).
 - Tavern: only offer 1 can be rare+ (with pity); offers 2–3 roll common/elite. Craft quality tops out at ×1.30.
 - Setting is western high fantasy. Ids such as `bamboo_grove`, `sunken_shrine`, `storm_scribe` are legacy internal identifiers kept for replay/test stability and must never be shown to players; the UI reads names from `/api/v1/catalog`.
 - A promoted hero keeps its old snapshot inside any run that already started; promotion is blocked while the hero is in an active run **or a stopped run still owes it rewards**, so the player stops, claims, promotes and restarts. Otherwise EXP earned at the old tier cap would be paid into the new tier.
@@ -154,7 +163,7 @@ M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle
 - Loot and seal rates are provisional closed-beta values. T1 seals are deliberately generous (≈13 per capped 8h night once the team beats the boss) so the level cap, not the seal, gates the first promotion.
 
 ## Next implementation work
-1. M1.8 i18n: the web still calls `t("vi", …)` everywhere; add a locale switch that changes language without a reload (strings already exist in vi + en).
+1. Close M1: a 30-minute playtest from a fresh guest (docs/02 §7 FTUE) and a balance pass on what it shows — first on the provisional Forge Dust numbers (+5 is reachable on day 1, earlier than the docs/03 §4 milestone). Then take PR #2 out of draft.
 2. Buildings follow-ups: Tavern and Storage levels (docs/03 §6 ×0.6 / ×0.5), an auto-dismantle option next to auto-sell, and quest/mail sources for Builder's Hourglasses (M2).
 3. Economy sim: weight gold/EXP/loot by the sampled win rate of a reference team per dungeon instead of assuming every wave is won.
 4. Replace the single global `craftGoldCost` with tier/item-aware crafting gold costs before enabling a crafting gold sink; a single flat cost is not suitable across D1–D4.
@@ -166,6 +175,7 @@ M1 — Core loop (M1.1–M1.7 implemented; review fixes, combat v2, sampled idle
 - Material ids are still the legacy snake_case names; only display names were re-themed.
 - A finished construction is not pushed to the client: the web polls `GET /api/v1/buildings` when its countdown ends. Commands never include a level that settled during them in their patch (except `speed_up_construction`, which finishes the build itself).
 - Tavern and Storage have no building level yet; the Hall costs gold only.
+- i18n uses `{name}` placeholders and `.one` / `.other` plural keys, a subset of the ICU format that docs/04–05 name. Error texts are static per code: `TAVERN_COOLDOWN` cannot say when the next refresh is (the Tavern card shows it), because the time only exists inside the server's English message. `/api/v1/promotion` still returns `currentClassNameVi`, which the client no longer reads.
 - Browser scripts default to the Chrome channel (as on CI); set `GUILDHALL_BROWSER=chromium` to use Playwright's bundled Chromium locally.
 
 ## Review findings (2026-10-04)

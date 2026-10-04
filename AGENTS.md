@@ -35,7 +35,7 @@ pnpm install                       # Node 22+, pnpm 10
 pnpm dev                           # server :3001 + web :5173 (in-memory store unless DATABASE_URL is set)
 pnpm test                          # all unit/integration tests (PostgreSQL tests run when DATABASE_URL is set)
 scripts/ci-local.sh --quick        # lint + Prettier + typecheck + tests
-scripts/ci-local.sh                # everything GitHub Actions runs: migrations twice, goldens, 5 E2Es, build
+scripts/ci-local.sh                # everything GitHub Actions runs: migrations twice, goldens, 6 E2Es, build
 pnpm format                        # fix Prettier
 pnpm --filter @idle/game-data build        # regenerate generated/config.json after editing data/*.csv
 pnpm --filter @idle/server db:migrate      # apply migrations (needs DATABASE_URL)
@@ -73,7 +73,10 @@ Chrome channel unless `GUILDHALL_BROWSER=chromium`.
    build script (never hand-edit or hand-merge it). Balance is tuned in config, not code, and must
    keep `tools/sim` band tests and the `sim:economy` targets from `docs/03`.
 8. **Player-facing text.** Legacy ids (`bamboo_grove`, `storm_scribe`, …) are internal only; the UI
-   reads names from `/api/v1/catalog` and strings from `@idle/i18n` (vi + en).
+   reads names from `/api/v1/catalog` and strings from `@idle/i18n` (vi + en) through `useLocale()`
+   — never a fixed locale, a literal in JSX, or sentences glued from fragments (use `{placeholders}`).
+   Every API error code has an `error.<CODE>` message in both languages; the server's English
+   `message` is for logs, not for players.
 9. **Secrets and raw research data** never enter git (`.gitignore` covers `research/*/raw/`).
 
 ## Definition of done

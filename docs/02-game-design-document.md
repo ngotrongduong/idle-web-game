@@ -193,6 +193,7 @@ Nâng cấp tốn vàng + nguyên liệu, có **thời gian xây** ngắn ở c�
 - Nguyên tắc: một hành động chính mỗi màn; chấm đỏ chỉ khi có thể làm ngay; số lớn rút gọn (1,2K / 3,4M / 5,6B); animation nhận thưởng; haptic (Vibration API) khi thăng tier.
 - **Accessibility**: tương phản AA, cỡ chữ điều chỉnh được, không dùng màu là tín hiệu duy nhất (độ hiếm có icon/viền), hỗ trợ `prefers-reduced-motion`.
 - i18n: `vi` (mặc định) và `en`; mọi chuỗi qua key, không hard-code.
+  - Đã cài (M1.8): nút **Tiếng Việt / English** ở đầu trang, đổi ngay không tải lại và không mất thao tác đang dở. Mọi người bắt đầu bằng tiếng Việt (không đoán theo ngôn ngữ trình duyệt); lựa chọn được nhớ trên thiết bị. Thông báo lỗi cũng theo ngôn ngữ đang chọn.
 
 ## 9. Âm thanh
 
